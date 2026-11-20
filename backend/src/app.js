@@ -32,7 +32,8 @@ app.use(
 // Rate Limiting (General API protection)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Limit each IP to 300 requests per window
+  max: env.NODE_ENV === 'development' ? 50000 : 300,
+  skip: (req) => env.NODE_ENV === 'development' || req.ip === '127.0.0.1' || req.ip === '::1',
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -50,7 +51,7 @@ app.use(
   express.json({
     limit: '20mb',
     verify: (req, res, buf) => {
-      if (req.originalUrl.includes('/api/webhooks')) {
+      if (req.originalUrl.includes('/api/webhooks') || req.originalUrl.includes('/api/whatsapp/webhook') || req.originalUrl.includes('/whatsapp/webhook')) {
         req.rawBody = buf;
       }
     },

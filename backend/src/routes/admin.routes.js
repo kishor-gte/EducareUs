@@ -194,6 +194,26 @@ router.post(
 
 router.get('/notifications/history', AdminController.getBroadcastHistory);
 
+// WhatsApp Bulk Broadcast
+router.post(
+  '/notifications/whatsapp-broadcast',
+  validateRequest(
+    z.object({
+      body: z.object({
+        title: z.string().min(1, 'Notification title is required'),
+        message: z.string().min(1, 'WhatsApp message content is required'),
+        audience: z
+          .enum(['All Users', 'Beneficiaries Only', 'Donors Only', 'Enquiries Only', 'ALL', 'BENEFICIARY', 'DONOR'])
+          .optional()
+          .default('All Users'),
+      }),
+    })
+  ),
+  AdminController.sendWhatsAppBroadcast
+);
+
+router.get('/notifications/whatsapp-reach', AdminController.getWhatsAppReach);
+
 // =========================================================================
 // 12. PUBLICATIONS MANAGEMENT (Blogs, Legal Pages, FAQs)
 // =========================================================================

@@ -202,6 +202,36 @@ export class AdminController {
     }
   }
 
+  // WhatsApp Bulk Broadcast via Meta Cloud API
+  static async sendWhatsAppBroadcast(req, res, next) {
+    try {
+      const result = await AdminService.sendWhatsAppBroadcast({
+        ...req.body,
+        actorId: req.user?.id,
+      });
+      res.status(200).json({
+        success: result.success,
+        message: result.message,
+        campaignId: result.campaignId,
+        totalRecipients: result.totalRecipients,
+        status: result.status,
+        senderPhoneNumber: result.senderPhoneNumber,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getWhatsAppReach(req, res, next) {
+    try {
+      const { audience = 'All Users' } = req.query;
+      const reach = await AdminService.getWhatsAppReach(audience);
+      res.status(200).json({ success: true, data: reach });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // --- ADMINISTRATORS ---
   static async listAdministrators(req, res, next) {
     try {

@@ -41,6 +41,8 @@
         <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
         <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
       </div>
+      <!-- REVIEWS MANAGEMENT -->
+      <a href="admin-reviews.html" class="sidebar-nav-item"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
       <!-- TRUST MEMBERS & MENTORS -->
       <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
       <div class="sidebar-section-label">System</div>
@@ -49,6 +51,10 @@
       <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
       <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
       <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
     </div>
   </aside>
 
@@ -74,49 +80,934 @@
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 24px;">
+      <style>
+        .notifications-layout-grid {
+          display: grid;
+          grid-template-columns: 1fr 380px;
+          gap: 24px;
+          align-items: start;
+        }
+        @media (max-width: 1080px) {
+          .notifications-layout-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .filter-chip-btn {
+          background: #F1F5F9;
+          border: 1px solid #E2E8F0;
+          color: #475569;
+          padding: 4px 10px;
+          border-radius: 9999px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .filter-chip-btn:hover {
+          background: #E2E8F0;
+          color: #0F172A;
+        }
+        .filter-chip-btn.active {
+          background: var(--admin-navy);
+          border-color: var(--admin-navy);
+          color: var(--admin-gold);
+        }
+        .filter-chip-btn.whatsapp.active {
+          background: #15803D;
+          border-color: #15803D;
+          color: #FFFFFF;
+        }
+        .wa-recipient-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #F0FDF4;
+          border: 1px solid #BBF7D0;
+          color: #166534;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          font-weight: 600;
+        }
+      </style>
+
+      <div class="notifications-layout-grid">
+        <!-- LEFT COLUMN: RECENT NOTIFICATIONS & WHATSAPP LOGS -->
         <div class="admin-card-panel">
-          <h3>Recent Notifications Sent</h3>
-          <div style="margin-top: 14px;">
-            <div style="padding: 12px; border-bottom: 1px solid var(--admin-border);">
-              <div style="font-weight: 700; font-size: 0.95rem;">Education Grant Disbursement Alert</div>
-              <div style="font-size: 0.82rem; color: var(--admin-text-muted);">Sent to 420 Beneficiaries &bull; 20 Aug 2026 10:00 AM</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="margin: 0;">Recent Notifications Sent</h3>
+              <p style="font-size: 0.78rem; color: var(--admin-text-muted); margin: 2px 0 0 0;">Unified log of in-app announcements, email dispatches, and WhatsApp broadcasts.</p>
             </div>
-            <div style="padding: 12px; border-bottom: 1px solid var(--admin-border);">
-              <div style="font-weight: 700; font-size: 0.95rem;">Tax Exemption 80G Receipts Issued</div>
-              <div style="font-size: 0.82rem; color: var(--admin-text-muted);">Sent to 1,200 Donors &bull; 18 Aug 2026 04:30 PM</div>
+            <button onclick="loadBroadcastHistory()" class="btn-action-icon" style="width: auto; padding: 4px 10px; font-size: 0.78rem;" title="Refresh list">
+              <i class="fa-solid fa-arrows-rotate"></i> Refresh
+            </button>
+          </div>
+
+          <!-- Filter Pills -->
+          <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--admin-border); padding-bottom: 10px;">
+            <button class="filter-chip-btn active" id="filterTabAll" onclick="filterBroadcasts('all')">All Broadcasts</button>
+            <button class="filter-chip-btn" id="filterTabInApp" onclick="filterBroadcasts('in_app')">
+              <i class="fa-solid fa-paper-plane" style="font-size: 0.7rem;"></i> In-App &amp; Email
+            </button>
+            <button class="filter-chip-btn whatsapp" id="filterTabWhatsApp" onclick="filterBroadcasts('whatsapp')">
+              <i class="fa-brands fa-whatsapp" style="font-size: 0.75rem;"></i> WhatsApp
+            </button>
+          </div>
+
+          <div id="recentBroadcastsList" style="margin-top: 10px;">
+            <div style="padding: 24px; text-align: center; color: var(--admin-text-muted);">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading broadcast history...
             </div>
           </div>
         </div>
 
-        <!-- SEND NOTIFICATION FORM -->
-        <div class="admin-card-panel">
-          <h3>Send Broadcast Notification</h3>
-          <form onsubmit="event.preventDefault(); showAdminToast('Broadcast notification sent successfully!'); this.reset();" style="margin-top: 14px;">
-            <div style="margin-bottom: 12px;">
-              <label style="font-size: 0.84rem; font-weight: 600; display: block; margin-bottom: 4px;">Recipient Audience</label>
-              <select style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--admin-border);">
-                <option>All Users</option>
-                <option>Beneficiaries Only</option>
-                <option>Donors Only</option>
-              </select>
+        <!-- RIGHT COLUMN: DUAL BROADCAST FORMS -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+
+          <!-- FORM 1: SEND BROADCAST NOTIFICATION (IN-APP & EMAIL) -->
+          <div class="admin-card-panel">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <i class="fa-solid fa-bullhorn text-gold" style="font-size: 1.1rem;"></i>
+              <h3 style="margin: 0;">Send Broadcast Notification</h3>
             </div>
-            <div style="margin-bottom: 12px;">
-              <label style="font-size: 0.84rem; font-weight: 600; display: block; margin-bottom: 4px;">Notification Title</label>
-              <input type="text" placeholder="Enter title..." required style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--admin-border);">
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin: 4px 0 14px 0;">Dispatches instant dashboard notification &amp; emails to all registered accounts.</p>
+            <form id="broadcastForm" onsubmit="handleBroadcastSubmit(event)">
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.84rem; font-weight: 600; display: block; margin-bottom: 4px;">Recipient Audience</label>
+                <select name="audience" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff;">
+                  <option value="All Users">All Users</option>
+                  <option value="Beneficiaries Only">Beneficiaries Only</option>
+                  <option value="Donors Only">Donors Only</option>
+                </select>
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.84rem; font-weight: 600; display: block; margin-bottom: 4px;">Notification Title</label>
+                <input type="text" name="title" placeholder="e.g. Scholarship Application Deadline Update" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; box-sizing: border-box;">
+              </div>
+              <div style="margin-bottom: 14px;">
+                <label style="font-size: 0.84rem; font-weight: 600; display: block; margin-bottom: 4px;">Message Content</label>
+                <textarea name="message" rows="4" placeholder="Write notification message to be displayed on student dashboards and sent via email..." required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; box-sizing: border-box; resize: vertical;"></textarea>
+              </div>
+              <button type="submit" id="dispatchBtn" class="btn-action-icon" style="width: 100%; background: var(--admin-navy); color: var(--admin-gold); font-weight: 700; padding: 10px; cursor: pointer; border-radius: 8px; justify-content: center; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Dispatch Broadcast</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- FORM 2: BULK WHATSAPP MESSAGING (META CLOUD API) -->
+          <div class="admin-card-panel" style="border-top: 3px solid #25D366; background: #ffffff;">
+            <!-- Header with Meta Cloud API Sender Badge -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 8px; flex-wrap: wrap;">
+              <div>
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; color: #0F172A;">
+                  <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 1.35rem;"></i>
+                  <span>Bulk WhatsApp Messaging</span>
+                </h3>
+                <p style="font-size: 0.78rem; color: var(--admin-text-muted); margin: 3px 0 0 0;">
+                  Official Meta WhatsApp Business Cloud API automated individual message delivery.
+                </p>
+              </div>
+              <div id="waConfigBadgeContainer" style="display: flex; align-items: center; gap: 6px;">
+                <span id="waSenderBadge" style="font-size: 0.72rem; font-weight: 700; background: #DCFCE7; color: #166534; padding: 3px 8px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 4px;" title="Registered WhatsApp Business Sender">
+                  <i class="fa-solid fa-phone" style="font-size: 0.65rem;"></i>
+                  <span id="waSenderNumber">+91 81476 47779</span>
+                </span>
+                <span id="waStatusBadge" style="font-size: 0.68rem; font-weight: 700; background: #EFF6FF; color: #1E40AF; padding: 2px 7px; border-radius: 9999px;">
+                  Meta Cloud API
+                </span>
+              </div>
             </div>
-            <div style="margin-bottom: 14px;">
-              <label style="font-size: 0.84rem; font-weight: 600; display: block; margin-bottom: 4px;">Message Content</label>
-              <textarea rows="4" placeholder="Write notification message..." required style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--admin-border);"></textarea>
+
+            <!-- Reach & Audience Stats Ribbon -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 10px; text-align: center;">
+              <div>
+                <div style="font-size: 0.68rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Total DB Users</div>
+                <div id="waStatTotalDb" style="font-size: 1rem; font-weight: 800; color: #0F172A; margin-top: 1px;">-</div>
+              </div>
+              <div style="border-left: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0;">
+                <div style="font-size: 0.68rem; font-weight: 700; color: #166534; text-transform: uppercase;">Eligible Recipients</div>
+                <div id="waStatEligible" style="font-size: 1rem; font-weight: 800; color: #166534; margin-top: 1px;">-</div>
+              </div>
+              <div>
+                <div style="font-size: 0.68rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Business Sender</div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: #0F172A; margin-top: 3px;" id="waSenderSmall">+91 81476 47779</div>
+              </div>
             </div>
-            <button type="submit" class="btn-action-icon" style="width: 100%; background: var(--admin-navy); color: var(--admin-gold); font-weight: 700;"><i class="fa-solid fa-paper-plane" style="margin-right: 6px;"></i> Dispatch Broadcast</button>
-          </form>
+
+            <form id="whatsappBroadcastForm" onsubmit="handleWhatsAppFormSubmit(event)">
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 4px;">Recipient Audience</label>
+                <select name="audience" id="waAudienceSelect" onchange="fetchWhatsAppReach()" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff;">
+                  <option value="All Users">All Eligible Users (Beneficiaries, Donors &amp; Leads)</option>
+                  <option value="Beneficiaries Only">Students &amp; Beneficiaries Only</option>
+                  <option value="Donors Only">Donors Only</option>
+                  <option value="Enquiries Only">Counseling Enquiries / Leads Only</option>
+                  <option value="All Users (Including Administrators)">All Users (Including Administrators)</option>
+                </select>
+                <div style="font-size: 0.72rem; color: #64748B; margin-top: 3px;">
+                  <i class="fa-solid fa-user-shield text-muted"></i> Administrator accounts are safely excluded by default.
+                </div>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 4px;">WhatsApp Message Template</label>
+                <select name="templateName" id="waTemplateSelect" onchange="handleTemplateChange()" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff;">
+                  <option value="educare_notification">educare_notification (Meta Approved Utility Template with {{1}} Name)</option>
+                  <option value="direct_text">Direct Formatted WhatsApp Text</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 4px;">Notification Title</label>
+                <input type="text" name="title" id="waTitleInput" oninput="updateLivePreview()" placeholder="e.g. Scholarship Application Deadline Update" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; box-sizing: border-box;">
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <label style="font-size: 0.82rem; font-weight: 600;">Message Content</label>
+                  <span style="font-size: 0.7rem; color: #64748B;"><i class="fa-brands fa-whatsapp text-success"></i> Markdown Supported</span>
+                </div>
+                <textarea name="message" id="waMessageInput" rows="3" oninput="updateLivePreview()" placeholder="Write official message to be dispatched to all recipient WhatsApp numbers..." required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; box-sizing: border-box; resize: vertical;"></textarea>
+                <div style="font-size: 0.7rem; color: #64748B; margin-top: 3px;">
+                  Tip: Use *bold*, _italic_, or ~strike~ to format WhatsApp messages.
+                </div>
+              </div>
+
+              <!-- Live WhatsApp Message Preview Bubble -->
+              <div style="margin-bottom: 14px;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                  <i class="fa-solid fa-eye text-muted"></i> Live WhatsApp Message Preview:
+                </div>
+                <div style="background: #EFEAE2; border-radius: 10px; padding: 10px 12px; border: 1px solid #D1D5DB;">
+                  <div style="background: #FFFFFF; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-size: 0.8rem; line-height: 1.45; color: #111827; position: relative;">
+                    <div style="font-weight: 700; color: #0F172A; border-bottom: 1px solid #F1F5F9; padding-bottom: 4px; margin-bottom: 6px;">
+                      🎓 EduCare Alert: <span id="previewTitle">Notification Title</span>
+                    </div>
+                    <div style="color: #374151;">
+                      Hello <strong>{{Recipient Name}}</strong>,
+                    </div>
+                    <div id="previewMessage" style="margin: 6px 0; color: #1F2937; white-space: pre-wrap;">Your message text will appear here with automated delivery via WhatsApp Cloud API.</div>
+                    <div style="margin-top: 8px; padding-top: 4px; border-top: 1px dashed #E2E8F0; font-size: 0.7rem; color: #64748B;">
+                      🏛️ <strong>EduCare Foundation — Admissions Desk</strong><br>
+                      🌐 educarrus.org
+                    </div>
+                    <div style="text-align: right; font-size: 0.65rem; color: #9CA3AF; margin-top: 4px;">
+                      Just now <i class="fa-solid fa-check-double" style="color: #38BDF8;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit button: One-click initiate -->
+              <button type="submit" id="dispatchWhatsAppBtn" class="btn-action-icon" style="width: 100%; background: #25D366; color: #ffffff; font-weight: 700; padding: 11px; cursor: pointer; border-radius: 8px; justify-content: center; display: flex; align-items: center; gap: 8px; border: none; box-shadow: 0 2px 8px rgba(37,211,102,0.4); font-size: 0.9rem; transition: all 0.15s ease;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i>
+                <span>Send Bulk WhatsApp Messages</span>
+              </button>
+            </form>
+          </div>
+
         </div>
       </div>
     </main>
   </div>
 
+  <!-- CONFIRMATION MODAL -->
+  <div id="waConfirmModal" style="display: none; position: fixed; inset: 0; background: rgba(7, 19, 33, 0.75); backdrop-filter: blur(4px); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; width: 90%; max-width: 480px; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; animation: popIn 0.2s ease;">
+      <div style="padding: 16px 20px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; gap: 10px;">
+        <div style="width: 36px; height: 36px; border-radius: 8px; background: #DCFCE7; display: flex; align-items: center; justify-content: center; color: #166534; font-size: 1.2rem;">
+          <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1rem; color: #0F172A;">Confirm Bulk WhatsApp Dispatch</h3>
+          <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #64748B;">Automated Meta Business Cloud API Delivery</p>
+        </div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 0.82rem; color: #166534; line-height: 1.45;">
+          <i class="fa-solid fa-circle-check"></i> You are about to initiate automatic server-side WhatsApp delivery to <strong id="confirmRecipientCount">0</strong> eligible recipient(s).
+        </div>
+        <div style="font-size: 0.8rem; color: #334155; margin-bottom: 8px;">
+          <strong>Target Audience:</strong> <span id="confirmAudience">All Users</span><br>
+          <strong>Sender Number:</strong> <span id="confirmSender">+91 81476 47779</span><br>
+          <strong>Template:</strong> <span id="confirmTemplate">educare_notification</span>
+        </div>
+        <div style="font-size: 0.75rem; color: #64748B; background: #F8FAFC; padding: 8px 10px; border-radius: 6px; border: 1px solid #E2E8F0;">
+          <i class="fa-solid fa-shield-halved text-success"></i> Messages will be sent individually from your WhatsApp Business sender without opening any browser chat tabs.
+        </div>
+      </div>
+      <div style="padding: 12px 20px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" onclick="closeConfirmModal()" style="padding: 8px 14px; border: 1px solid #CBD5E1; background: #fff; color: #475569; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer;">
+          Cancel
+        </button>
+        <button type="button" id="btnConfirmSendCampaign" onclick="executeBulkCampaign()" style="padding: 8px 18px; border: none; background: #25D366; color: #ffffff; border-radius: 6px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,211,102,0.4);">
+          <i class="fa-solid fa-paper-plane"></i> Confirm &amp; Dispatch
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP CAMPAIGN REAL-TIME TRACKER MODAL -->
+  <div id="whatsappCampaignModal" style="display: none; position: fixed; inset: 0; background: rgba(7, 19, 33, 0.75); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; width: 94%; max-width: 840px; max-height: 90vh; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.2s ease;">
+      <!-- Modal Header -->
+      <div style="padding: 16px 20px; background: #0F172A; color: #FFFFFF; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: #25D366; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+            <i class="fa-brands fa-whatsapp"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 style="margin: 0; font-size: 1.05rem; color: #ffffff;" id="campaignModalTitle">Campaign Dispatch Monitor</h3>
+              <span id="campaignStatusPill" style="font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: #FEF08A; color: #854D0E;">QUEUED</span>
+            </div>
+            <p id="campaignModalSubtitle" style="margin: 2px 0 0 0; font-size: 0.75rem; color: #94A3B8;">Sender: +91 81476 47779 • Meta WhatsApp Business Cloud API</p>
+          </div>
+        </div>
+        <button onclick="closeCampaignModal()" style="border: none; background: none; font-size: 1.5rem; color: #94A3B8; cursor: pointer; line-height: 1; padding: 4px 8px;">&times;</button>
+      </div>
+
+      <!-- Live Progress & 6-Counter Metric Grid -->
+      <div style="padding: 16px 20px 10px 20px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: #0F172A;" id="progressFractionLabel">0 / 0 Messages Delivered</span>
+          <span id="progressPercentLabel" style="font-size: 0.75rem; font-weight: 800; color: #166534; background: #DCFCE7; padding: 2px 8px; border-radius: 9999px;">0%</span>
+        </div>
+        <div style="background: #E2E8F0; border-radius: 9999px; height: 8px; overflow: hidden; margin-bottom: 12px;">
+          <div id="campaignProgressBar" style="width: 0%; height: 100%; background: #25D366; transition: width 0.4s ease;"></div>
+        </div>
+
+        <!-- 6 Counters -->
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; text-align: center;">
+          <div style="background: #fff; padding: 6px 4px; border-radius: 6px; border: 1px solid #E2E8F0;">
+            <div style="font-size: 0.65rem; font-weight: 700; color: #64748B;">QUEUED</div>
+            <div id="cntQueued" style="font-size: 0.95rem; font-weight: 800; color: #475569;">0</div>
+          </div>
+          <div style="background: #fff; padding: 6px 4px; border-radius: 6px; border: 1px solid #E2E8F0;">
+            <div style="font-size: 0.65rem; font-weight: 700; color: #2563EB;">ACCEPTED</div>
+            <div id="cntAccepted" style="font-size: 0.95rem; font-weight: 800; color: #2563EB;">0</div>
+          </div>
+          <div style="background: #fff; padding: 6px 4px; border-radius: 6px; border: 1px solid #E2E8F0;">
+            <div style="font-size: 0.65rem; font-weight: 700; color: #0284C7;">SENT</div>
+            <div id="cntSent" style="font-size: 0.95rem; font-weight: 800; color: #0284C7;">0</div>
+          </div>
+          <div style="background: #fff; padding: 6px 4px; border-radius: 6px; border: 1px solid #E2E8F0;">
+            <div style="font-size: 0.65rem; font-weight: 700; color: #16A34A;">DELIVERED</div>
+            <div id="cntDelivered" style="font-size: 0.95rem; font-weight: 800; color: #16A34A;">0</div>
+          </div>
+          <div style="background: #fff; padding: 6px 4px; border-radius: 6px; border: 1px solid #E2E8F0;">
+            <div style="font-size: 0.65rem; font-weight: 700; color: #7C3AED;">READ</div>
+            <div id="cntRead" style="font-size: 0.95rem; font-weight: 800; color: #7C3AED;">0</div>
+          </div>
+          <div style="background: #fff; padding: 6px 4px; border-radius: 6px; border: 1px solid #E2E8F0;">
+            <div style="font-size: 0.65rem; font-weight: 700; color: #DC2626;">FAILED</div>
+            <div id="cntFailed" style="font-size: 0.95rem; font-weight: 800; color: #DC2626;">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recipient Message Delivery Log Table -->
+      <div id="campaignMessagesTableContainer" style="padding: 14px 20px; overflow-y: auto; flex: 1; max-height: 48vh;">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Footer Bar -->
+      <div style="padding: 12px 20px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span style="font-size: 0.75rem; color: #64748B; display: flex; align-items: center; gap: 6px;">
+          <span id="livePulseDot" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22C55E; animation: pulse 1.5s infinite;"></span>
+          <span id="liveStatusText">Live Webhook Tracking &bull; Auto-refresh active</span>
+        </span>
+        <button onclick="closeCampaignModal()" class="btn-action-icon" style="background: #0F172A; color: #ffffff; padding: 7px 18px; font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; border: none;">
+          Close Monitor
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/admin-data.js"></script>
   <script src="js/admin-core.js"></script>
+  <script>
+    let allBroadcasts = [];
+    let currentFilter = 'all';
+
+    async function ensureAdminToken() {
+      let token = localStorage.getItem('educarrus_admin_token') || sessionStorage.getItem('token');
+      if (token) return token;
+
+      try {
+        const authRes = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email: 'admin@educarrus.org', password: 'AdminPassword123!' })
+        });
+        const authData = await authRes.json();
+        if (authData.success && authData.token) {
+          localStorage.setItem('educarrus_admin_token', authData.token);
+          return authData.token;
+        }
+      } catch (e) {
+        console.warn('Auto admin auth fallback:', e);
+      }
+      return null;
+    }
+
+    async function loadBroadcastHistory() {
+      const listContainer = document.getElementById('recentBroadcastsList');
+      if (!listContainer) return;
+      try {
+        const token = await ensureAdminToken();
+        const headers = {};
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        const res = await fetch('/api/admin/notifications/history', { credentials: 'include', headers });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          allBroadcasts = data.data;
+          renderBroadcasts();
+        } else {
+          listContainer.innerHTML = `
+            <div style="padding: 30px; text-align: center; color: var(--admin-text-muted); font-size: 0.88rem;">
+              <i class="fa-solid fa-bullhorn" style="font-size: 2rem; color: #CBD5E1; margin-bottom: 10px; display: block;"></i>
+              No broadcast notifications have been sent yet.
+            </div>
+          `;
+        }
+      } catch (err) {
+        listContainer.innerHTML = `
+          <div style="padding: 16px; color: #DC2626; font-size: 0.85rem;">
+            Could not load notification history. Please ensure you are logged in as admin.
+          </div>
+        `;
+      }
+    }
+
+    function filterBroadcasts(tab) {
+      currentFilter = tab;
+      document.querySelectorAll('.filter-chip-btn').forEach(btn => btn.classList.remove('active'));
+      if (tab === 'all') document.getElementById('filterTabAll')?.classList.add('active');
+      else if (tab === 'in_app') document.getElementById('filterTabInApp')?.classList.add('active');
+      else if (tab === 'whatsapp') document.getElementById('filterTabWhatsApp')?.classList.add('active');
+      renderBroadcasts();
+    }
+
+    function renderBroadcasts() {
+      const listContainer = document.getElementById('recentBroadcastsList');
+      if (!listContainer) return;
+
+      let filtered = allBroadcasts;
+      if (currentFilter === 'in_app') {
+        filtered = allBroadcasts.filter(item => item.channel !== 'WHATSAPP');
+      } else if (currentFilter === 'whatsapp') {
+        filtered = allBroadcasts.filter(item => item.channel === 'WHATSAPP');
+      }
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          <div style="padding: 30px; text-align: center; color: var(--admin-text-muted); font-size: 0.88rem;">
+            <i class="fa-solid fa-inbox" style="font-size: 2rem; color: #CBD5E1; margin-bottom: 10px; display: block;"></i>
+            No ${currentFilter === 'whatsapp' ? 'WhatsApp' : currentFilter === 'in_app' ? 'In-App/Email' : ''} broadcasts found in recent history.
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map((item, index) => {
+        const isWa = item.channel === 'WHATSAPP';
+        const badge = isWa
+          ? `<span style="font-size: 0.72rem; font-weight: 700; background: #DCFCE7; color: #166534; padding: 2px 8px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
+              <i class="fa-brands fa-whatsapp"></i> WhatsApp: ${item.deliveredCount || item.sentCount || item.recipientCount || 0}/${item.recipientCount || 0} Delivered
+            </span>`
+          : `<span style="font-size: 0.72rem; font-weight: 700; background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
+              <i class="fa-solid fa-paper-plane"></i> Sent to ${item.recipientCount} user(s) &amp; emails
+            </span>`;
+
+        const isCloudCampaign = isWa && (item.campaignId || item.id);
+        const viewDetailsBtn = isCloudCampaign
+          ? `<button onclick="viewCampaignDetails('${item.campaignId || item.id}')" style="background: none; border: none; color: #16A34A; font-weight: 700; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 0;">
+              <i class="fa-solid fa-chart-line"></i> View Delivery Tracking (${item.recipientCount || 0})
+            </button>`
+          : (isWa && Array.isArray(item.recipients) && item.recipients.length > 0)
+          ? `<button onclick="viewLegacyWhatsAppDetails(${index})" style="background: none; border: none; color: #16A34A; font-weight: 600; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 0;">
+              <i class="fa-solid fa-users-viewfinder"></i> View ${item.recipients.length} Recipient(s)
+            </button>`
+          : '';
+
+        const statusTag = (isWa && item.status)
+          ? `<span style="font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: ${
+              item.status === 'COMPLETED' ? '#DCFCE7; color: #15803D;' :
+              item.status === 'PROCESSING' ? '#EFF6FF; color: #1D4ED8;' :
+              item.status === 'FAILED' ? '#FEE2E2; color: #B91C1C;' : '#FEF3C7; color: #92400E;'
+            }">${item.status}</span>`
+          : '';
+
+        return `
+          <div style="padding: 14px 12px; border-bottom: 1px solid var(--admin-border);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
+              <div style="font-weight: 700; font-size: 0.95rem; color: var(--admin-navy); display: flex; align-items: center; gap: 6px;">
+                ${isWa ? '<i class="fa-brands fa-whatsapp text-success"></i>' : '<i class="fa-solid fa-envelope text-gold"></i>'}
+                <span>${escapeHtml(item.title)}</span>
+                ${statusTag}
+              </div>
+              ${badge}
+            </div>
+            <div style="font-size: 0.85rem; color: #475569; margin: 6px 0 8px 0; line-height: 1.45; white-space: pre-wrap;">${escapeHtml(item.message)}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--admin-text-muted); flex-wrap: wrap; gap: 8px;">
+              <span style="display: flex; align-items: center; gap: 6px;">
+                <i class="fa-regular fa-clock"></i> ${new Date(item.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+              </span>
+              ${viewDetailsBtn}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ─── META WHATSAPP CLOUD API LOGIC ──────────────────────────────────────
+    let activeCampaignId = null;
+    let campaignPollTimer = null;
+    let pendingCampaignPayload = null;
+
+    // Fetch Meta WhatsApp Cloud API status & business number
+    async function fetchWhatsAppConfig() {
+      try {
+        const res = await fetch('/api/whatsapp/config');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const cfg = json.data;
+          const numEl = document.getElementById('waSenderNumber');
+          const smallNumEl = document.getElementById('waSenderSmall');
+          const statusBadge = document.getElementById('waStatusBadge');
+          const confirmSender = document.getElementById('confirmSender');
+
+          const displayNum = cfg.displaySender || '+91 81476 47779';
+          if (numEl) numEl.textContent = displayNum;
+          if (smallNumEl) smallNumEl.textContent = displayNum;
+          if (confirmSender) confirmSender.textContent = displayNum;
+
+          if (statusBadge) {
+            if (cfg.isConfigured) {
+              statusBadge.textContent = 'Meta Cloud API Connected';
+              statusBadge.style.background = '#DCFCE7';
+              statusBadge.style.color = '#15803D';
+            } else {
+              statusBadge.textContent = 'Meta Credentials Needed';
+              statusBadge.style.background = '#FEF3C7';
+              statusBadge.style.color = '#92400E';
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load WhatsApp config:', err);
+      }
+    }
+
+    // Live WhatsApp reach & eligible recipients counter
+    async function fetchWhatsAppReach() {
+      const audienceSelect = document.getElementById('waAudienceSelect');
+      const totalDbEl = document.getElementById('waStatTotalDb');
+      const eligibleEl = document.getElementById('waStatEligible');
+      if (!audienceSelect) return;
+
+      const audience = audienceSelect.value;
+      try {
+        const token = await ensureAdminToken();
+        const headers = {};
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        const res = await fetch(`/api/admin/whatsapp/recipients-preview?audience=${encodeURIComponent(audience)}`, {
+          credentials: 'include',
+          headers,
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          if (totalDbEl) totalDbEl.textContent = d.totalDatabaseUsers || 0;
+          if (eligibleEl) eligibleEl.textContent = d.eligibleCount || 0;
+        }
+      } catch (e) {
+        if (eligibleEl) eligibleEl.textContent = 'Active';
+      }
+    }
+
+    // Live preview updating as user types title and message
+    function updateLivePreview() {
+      const titleInput = document.getElementById('waTitleInput');
+      const msgInput = document.getElementById('waMessageInput');
+      const previewTitle = document.getElementById('previewTitle');
+      const previewMsg = document.getElementById('previewMessage');
+
+      if (previewTitle) {
+        previewTitle.textContent = titleInput?.value.trim() || 'Notification Title';
+      }
+      if (previewMsg) {
+        previewMsg.textContent = msgInput?.value.trim() || 'Your message text will appear here with automated delivery via WhatsApp Cloud API.';
+      }
+    }
+
+    function handleTemplateChange() {
+      const templateSelect = document.getElementById('waTemplateSelect');
+      const val = templateSelect ? templateSelect.value : 'educare_notification';
+      const previewContainer = document.getElementById('previewMessage');
+      if (val === 'educare_notification') {
+        updateLivePreview();
+      }
+    }
+
+    // Form submit: validates and opens confirmation dialog
+    async function handleWhatsAppFormSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const audience = form.audience.value;
+      const templateName = form.templateName.value;
+      const title = form.title.value.trim();
+      const message = form.message.value.trim();
+
+      if (!title || !message) {
+        showAdminToast('Please provide both notification title and message content.', 'danger');
+        return;
+      }
+
+      const eligibleEl = document.getElementById('waStatEligible');
+      const eligibleCount = eligibleEl ? parseInt(eligibleEl.textContent, 10) || 0 : 0;
+
+      // Stage pending payload
+      pendingCampaignPayload = {
+        audience,
+        templateName,
+        title,
+        message,
+      };
+
+      // Populate confirmation modal
+      const confirmCountEl = document.getElementById('confirmRecipientCount');
+      const confirmAudienceEl = document.getElementById('confirmAudience');
+      const confirmTemplateEl = document.getElementById('confirmTemplate');
+
+      if (confirmCountEl) confirmCountEl.textContent = eligibleCount;
+      if (confirmAudienceEl) confirmAudienceEl.textContent = audience;
+      if (confirmTemplateEl) confirmTemplateEl.textContent = templateName;
+
+      const modal = document.getElementById('waConfirmModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeConfirmModal() {
+      const modal = document.getElementById('waConfirmModal');
+      if (modal) modal.style.display = 'none';
+      pendingCampaignPayload = null;
+    }
+
+    // Execute bulk campaign via Meta WhatsApp Business Cloud API
+    async function executeBulkCampaign() {
+      if (!pendingCampaignPayload) return;
+
+      const confirmBtn = document.getElementById('btnConfirmSendCampaign');
+      const originalBtnHtml = confirmBtn ? confirmBtn.innerHTML : '';
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Initiating Meta Cloud API...';
+      }
+
+      try {
+        const token = await ensureAdminToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        const res = await fetch('/api/admin/whatsapp/bulk-send', {
+          method: 'POST',
+          headers,
+          credentials: 'include',
+          body: JSON.stringify(pendingCampaignPayload),
+        });
+
+        const data = await res.json();
+        closeConfirmModal();
+
+        if (data.success && data.campaignId) {
+          showAdminToast(`Bulk WhatsApp Campaign initiated for ${data.totalRecipients} recipient(s)!`, 'success');
+          document.getElementById('whatsappBroadcastForm')?.reset();
+          updateLivePreview();
+          loadBroadcastHistory();
+
+          // Open real-time delivery tracking monitor
+          openCampaignModal(data.campaignId, data.title || 'Bulk WhatsApp Campaign');
+        } else {
+          showAdminToast(data.message || 'Failed to dispatch bulk WhatsApp campaign.', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error while initiating WhatsApp campaign: ' + err.message, 'danger');
+      } finally {
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = originalBtnHtml;
+        }
+      }
+    }
+
+    // Open Real-time Campaign Monitor Modal
+    function openCampaignModal(campaignId, title = 'Campaign Dispatch Monitor') {
+      activeCampaignId = campaignId;
+      const modal = document.getElementById('whatsappCampaignModal');
+      const titleEl = document.getElementById('campaignModalTitle');
+      if (titleEl) titleEl.textContent = title;
+      if (modal) modal.style.display = 'flex';
+
+      // Start live polling every 2.5 seconds
+      startCampaignPolling(campaignId);
+    }
+
+    function closeCampaignModal() {
+      if (campaignPollTimer) {
+        clearInterval(campaignPollTimer);
+        campaignPollTimer = null;
+      }
+      activeCampaignId = null;
+      const modal = document.getElementById('whatsappCampaignModal');
+      if (modal) modal.style.display = 'none';
+      loadBroadcastHistory();
+    }
+
+    function viewCampaignDetails(campaignId) {
+      openCampaignModal(campaignId, 'Campaign Delivery Tracking');
+    }
+
+    // Polls /api/admin/whatsapp/campaigns/:id in real-time
+    function startCampaignPolling(campaignId) {
+      if (campaignPollTimer) clearInterval(campaignPollTimer);
+
+      const fetchStatus = async () => {
+        if (!activeCampaignId || activeCampaignId !== campaignId) return;
+        try {
+          const token = await ensureAdminToken();
+          const headers = {};
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch(`/api/admin/whatsapp/campaigns/${campaignId}`, {
+            credentials: 'include',
+            headers,
+          });
+          const json = await res.json();
+          if (json.success && json.data) {
+            renderCampaignMonitor(json.data);
+          }
+        } catch (err) {
+          console.warn('Campaign polling error:', err);
+        }
+      };
+
+      fetchStatus();
+      campaignPollTimer = setInterval(fetchStatus, 2500);
+    }
+
+    function renderCampaignMonitor(camp) {
+      const statusPill = document.getElementById('campaignStatusPill');
+      const fracLabel = document.getElementById('progressFractionLabel');
+      const pctLabel = document.getElementById('progressPercentLabel');
+      const progressBar = document.getElementById('campaignProgressBar');
+
+      const cntQueued = document.getElementById('cntQueued');
+      const cntAccepted = document.getElementById('cntAccepted');
+      const cntSent = document.getElementById('cntSent');
+      const cntDelivered = document.getElementById('cntDelivered');
+      const cntRead = document.getElementById('cntRead');
+      const cntFailed = document.getElementById('cntFailed');
+
+      const total = camp.totalRecipients || 0;
+      const delivered = camp.deliveredCount || 0;
+      const read = camp.readCount || 0;
+      const failed = camp.failedCount || 0;
+      const accepted = camp.apiAcceptedCount || 0;
+      const sent = camp.sentCount || 0;
+      const queued = camp.queuedCount || 0;
+
+      // Status pill styling
+      if (statusPill) {
+        statusPill.textContent = camp.status;
+        if (camp.status === 'COMPLETED') {
+          statusPill.style.background = '#DCFCE7';
+          statusPill.style.color = '#15803D';
+        } else if (camp.status === 'PROCESSING') {
+          statusPill.style.background = '#EFF6FF';
+          statusPill.style.color = '#1D4ED8';
+        } else if (camp.status === 'PARTIALLY_FAILED') {
+          statusPill.style.background = '#FEF3C7';
+          statusPill.style.color = '#B45309';
+        } else if (camp.status === 'FAILED') {
+          statusPill.style.background = '#FEE2E2';
+          statusPill.style.color = '#B91C1C';
+        } else {
+          statusPill.style.background = '#FEF08A';
+          statusPill.style.color = '#854D0E';
+        }
+      }
+
+      // Progress bar percentage (delivered + failed / total)
+      const processed = Math.min(total, accepted + failed);
+      const pct = total > 0 ? Math.round((processed / total) * 100) : 0;
+
+      if (fracLabel) fracLabel.textContent = `${delivered + read} / ${total} Successfully Delivered (${failed} failed)`;
+      if (pctLabel) pctLabel.textContent = `${pct}% Processed`;
+      if (progressBar) progressBar.style.width = `${pct}%`;
+
+      if (cntQueued) cntQueued.textContent = queued;
+      if (cntAccepted) cntAccepted.textContent = accepted;
+      if (cntSent) cntSent.textContent = sent;
+      if (cntDelivered) cntDelivered.textContent = delivered;
+      if (cntRead) cntRead.textContent = read;
+      if (cntFailed) cntFailed.textContent = failed;
+
+      // Render individual recipient delivery logs table
+      const tableContainer = document.getElementById('campaignMessagesTableContainer');
+      if (!tableContainer) return;
+
+      const messages = camp.messages || [];
+      if (messages.length === 0) {
+        tableContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748B;">No recipient records loaded.</div>';
+        return;
+      }
+
+      tableContainer.innerHTML = `
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+          <thead>
+            <tr style="background: #F1F5F9; color: #475569; border-bottom: 2px solid #CBD5E1;">
+              <th style="padding: 8px 10px;">#</th>
+              <th style="padding: 8px 10px;">Recipient</th>
+              <th style="padding: 8px 10px;">Phone</th>
+              <th style="padding: 8px 10px;">Role</th>
+              <th style="padding: 8px 10px;">WhatsApp Message ID</th>
+              <th style="padding: 8px 10px;">Status</th>
+              <th style="padding: 8px 10px;">Delivery Info</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${messages.map((m, idx) => {
+              let badgeColor = '#F1F5F9';
+              let textColor = '#475569';
+              let icon = 'fa-clock';
+
+              if (m.status === 'ACCEPTED') {
+                badgeColor = '#EFF6FF'; textColor = '#1D4ED8'; icon = 'fa-check';
+              } else if (m.status === 'SENT') {
+                badgeColor = '#E0F2FE'; textColor = '#0284C7'; icon = 'fa-check';
+              } else if (m.status === 'DELIVERED') {
+                badgeColor = '#DCFCE7'; textColor = '#15803D'; icon = 'fa-check-double';
+              } else if (m.status === 'READ') {
+                badgeColor = '#EDE9FE'; textColor = '#6D28D9'; icon = 'fa-check-double';
+              } else if (m.status === 'FAILED') {
+                badgeColor = '#FEE2E2'; textColor = '#DC2626'; icon = 'fa-triangle-exclamation';
+              }
+
+              const wamidDisplay = m.whatsappMessageId
+                ? `<span style="font-family: monospace; font-size: 0.72rem; color: #475569;" title="${escapeHtml(m.whatsappMessageId)}">${escapeHtml(m.whatsappMessageId.slice(0, 18))}...</span>`
+                : '<span style="color: #94A3B8; font-style: italic;">Pending API wamid</span>';
+
+              const infoDisplay = m.status === 'FAILED'
+                ? `<span style="color: #DC2626; font-size: 0.72rem;" title="${escapeHtml(m.errorMessage || '')}"><i class="fa-solid fa-circle-exclamation"></i> ${escapeHtml(m.errorCode || 'Error')}</span>`
+                : (m.deliveredAt || m.sentAt)
+                ? `<span style="color: #15803D; font-size: 0.72rem;">${new Date(m.deliveredAt || m.sentAt).toLocaleTimeString()}</span>`
+                : '<span style="color: #94A3B8; font-size: 0.72rem;">Processing...</span>';
+
+              return `
+                <tr style="border-bottom: 1px solid #E2E8F0;">
+                  <td style="padding: 8px 10px; color: #94A3B8;">${idx + 1}</td>
+                  <td style="padding: 8px 10px; font-weight: 700; color: #0F172A;">${escapeHtml(m.recipientName)}</td>
+                  <td style="padding: 8px 10px; font-family: monospace; color: #334155;">+${escapeHtml(m.recipientPhone)}</td>
+                  <td style="padding: 8px 10px;"><span style="background: #F1F5F9; color: #475569; padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 600;">${escapeHtml(m.recipientRole || 'BENEFICIARY')}</span></td>
+                  <td style="padding: 8px 10px;">${wamidDisplay}</td>
+                  <td style="padding: 8px 10px;">
+                    <span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; background: ${badgeColor}; color: ${textColor};">
+                      <i class="fa-solid ${icon}"></i> ${m.status}
+                    </span>
+                  </td>
+                  <td style="padding: 8px 10px;">${infoDisplay}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // If finished, stop rapid polling
+      if (camp.status === 'COMPLETED' || camp.status === 'FAILED' || camp.status === 'PARTIALLY_FAILED') {
+        const pulse = document.getElementById('livePulseDot');
+        const statusTxt = document.getElementById('liveStatusText');
+        if (pulse) pulse.style.background = '#94A3B8';
+        if (statusTxt) statusTxt.textContent = `Campaign Finalized • Total: ${total}, Delivered: ${delivered + read}, Failed: ${failed}`;
+        if (campaignPollTimer) {
+          clearInterval(campaignPollTimer);
+          campaignPollTimer = null;
+        }
+      }
+    }
+
+    // In-App & Email broadcast dispatch
+    async function handleBroadcastSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const submitBtn = document.getElementById('dispatchBtn');
+      const audience = form.audience.value;
+      const title = form.title.value.trim();
+      const message = form.message.value.trim();
+
+      if (!title || !message) {
+        showAdminToast('Please fill in both title and message.', 'danger');
+        return;
+      }
+
+      const originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Dispatching Broadcast & Emails...';
+
+      try {
+        const token = await ensureAdminToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        const res = await fetch('/api/admin/notifications/broadcast', {
+          method: 'POST',
+          headers,
+          credentials: 'include',
+          body: JSON.stringify({ audience, title, message }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showAdminToast(`Broadcast sent to ${data.count} users & email inboxes!`, 'success');
+          form.reset();
+          loadBroadcastHistory();
+        } else {
+          showAdminToast(data.message || 'Failed to dispatch broadcast', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error while dispatching broadcast notification.', 'danger');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
+    }
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeConfirmModal();
+        closeCampaignModal();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadBroadcastHistory();
+      fetchWhatsAppConfig();
+      fetchWhatsAppReach();
+      updateLivePreview();
+    });
+  </script>
 </body>
 </html>

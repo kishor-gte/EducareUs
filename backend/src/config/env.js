@@ -1,6 +1,11 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
 const envSchema = z.object({
@@ -23,6 +28,35 @@ const envSchema = z.object({
   SMTP_PASS: z.string().default(''),
   EMAIL_FROM: z.string().default('"Educarrus Foundation" <admin@educarrus.org>'),
   GEMINI_API_KEY: z.string().default(process.env.GEMINI_API_KEY || ''),
+  WHATSAPP_BUSINESS_PHONE_NUMBER: z
+    .string()
+    .default(process.env.WHATSAPP_BUSINESS_PHONE_NUMBER || '918147647779'),
+  WHATSAPP_TOKEN: z
+    .string()
+    .default(process.env.WHATSAPP_TOKEN || process.env.WHATSAPP_ACCESS_TOKEN || ''),
+  WHATSAPP_ACCESS_TOKEN: z
+    .string()
+    .default(process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_TOKEN || ''),
+  WHATSAPP_PHONE_NUMBER_ID: z.string().default(process.env.WHATSAPP_PHONE_NUMBER_ID || ''),
+  WHATSAPP_BUSINESS_ACCOUNT_ID: z
+    .string()
+    .default(process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || ''),
+  WHATSAPP_WEBHOOK_VERIFY_TOKEN: z
+    .string()
+    .default(process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || 'educare_webhook_verify_token_2026'),
+  META_APP_SECRET: z.string().default(process.env.META_APP_SECRET || ''),
+  WHATSAPP_API_VERSION: z.string().default(process.env.WHATSAPP_API_VERSION || 'v21.0'),
+  WHATSAPP_TEMPLATE_NAME: z
+    .string()
+    .default(process.env.WHATSAPP_TEMPLATE_NAME || 'educare_notification'),
+  WHATSAPP_TEMPLATE_LANGUAGE: z
+    .string()
+    .default(process.env.WHATSAPP_TEMPLATE_LANGUAGE || 'en_US'),
+  WHATSAPP_GATEWAY_URL: z.string().default(process.env.WHATSAPP_GATEWAY_URL || ''),
+  ULTRAMSG_INSTANCE_ID: z.string().default(process.env.ULTRAMSG_INSTANCE_ID || ''),
+  ULTRAMSG_TOKEN: z.string().default(process.env.ULTRAMSG_TOKEN || ''),
+  GREEN_API_INSTANCE_ID: z.string().default(process.env.GREEN_API_INSTANCE_ID || ''),
+  GREEN_API_TOKEN: z.string().default(process.env.GREEN_API_TOKEN || ''),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

@@ -1,6 +1,8 @@
 import prisma from '../config/db.js';
 import bcrypt from 'bcryptjs';
 import { EmailService } from './email.service.js';
+import { WhatsAppService } from './whatsapp.service.js';
+import { WhatsAppCloudService } from './whatsappCloud.service.js';
 
 export class AdminService {
   /**
@@ -505,6 +507,29 @@ export class AdminService {
     };
   }
 
+  // --- WHATSAPP BROADCAST VIA META CLOUD API ---
+  static async sendWhatsAppBroadcast({
+    audience = 'All Users',
+    title,
+    message,
+    actorId,
+    templateName,
+    templateLanguage,
+  }) {
+    return await WhatsAppCloudService.createBulkCampaign({
+      audience,
+      title,
+      message,
+      createdById: actorId,
+      templateName,
+      templateLanguage,
+    });
+  }
+
+  static async getWhatsAppReach(audience = 'All Users') {
+    return await WhatsAppCloudService.resolveAudienceRecipients(audience);
+  }
+
   static async getRecentBroadcasts() {
     const notifications = await prisma.notification.findMany({
       where: { type: 'SYSTEM' },
@@ -519,7 +544,7 @@ export class AdminService {
       },
     });
 
-    // Group by title and message
+    // Group by title and message for in-app / email broadcasts
     const grouped = [];
     const seen = new Set();
     for (const n of notifications) {
@@ -533,12 +558,74 @@ export class AdminService {
           id: n.id,
           title: n.title,
           message: n.message,
+          channel: 'IN_APP',
           createdAt: n.createdAt,
           recipientCount: count,
         });
       }
     }
-    return grouped.slice(0, 10);
+
+    // Include official Meta WhatsApp Cloud API campaigns with real delivery stats
+    try {
+      const waCampaigns = await prisma.whatsAppCampaign.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+      });
+
+      for (const camp of waCampaigns) {
+        grouped.push({
+          id: camp.id,
+          campaignId: camp.id,
+          title: camp.title,
+          message: camp.messageBody,
+          channel: 'WHATSAPP',
+          createdAt: camp.createdAt,
+          recipientCount: camp.totalRecipients,
+          queuedCount: camp.queuedCount,
+          apiAcceptedCount: camp.apiAcceptedCount,
+          sentCount: camp.sentCount,
+          deliveredCount: camp.deliveredCount,
+          readCount: camp.readCount,
+          failedCount: camp.failedCount,
+          status: camp.status,
+          senderPhoneNumber: camp.senderPhoneNumber,
+        });
+      }
+    } catch (campErr) {
+      console.warn('Could not query WhatsApp campaigns:', campErr.message);
+    }
+
+    // Also include legacy WhatsApp broadcasts recorded in AuditLog if any
+    try {
+      const waLogs = await prisma.auditLog.findMany({
+        where: { action: 'DISPATCH_WHATSAPP_BROADCAST' },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      });
+
+      for (const log of waLogs) {
+        const state = log.newState || {};
+        const logTitle = state.title || 'WhatsApp Broadcast';
+        const logMsg = state.message || '';
+        // Avoid duplicate if already in campaigns
+        if (!grouped.some((g) => g.title === logTitle && Math.abs(new Date(g.createdAt) - new Date(log.createdAt)) < 5000)) {
+          grouped.push({
+            id: log.id,
+            title: logTitle,
+            message: logMsg,
+            channel: 'WHATSAPP',
+            createdAt: log.createdAt,
+            recipientCount: state.recipientsCount || (state.recipients ? state.recipients.length : 0),
+            recipients: state.recipients || [],
+          });
+        }
+      }
+    } catch (auditErr) {
+      console.warn('Could not query WhatsApp audit logs:', auditErr.message);
+    }
+
+    grouped.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return grouped.slice(0, 15);
   }
 
   // --- ADMINISTRATORS MANAGEMENT ---

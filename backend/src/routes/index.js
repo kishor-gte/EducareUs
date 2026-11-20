@@ -8,6 +8,7 @@ import enquiryRoutes from './enquiry.routes.js';
 import notificationRoutes from './notifications.routes.js';
 import supportRoutes from './support.routes.js';
 import chatRoutes from './chat.routes.js';
+import whatsappRoutes from './whatsapp.routes.js';
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.use('/auth', authRoutes);
 router.use('/public', publicRoutes);
 router.use('/donations', donationsRoutes);
 router.use('/webhooks', webhooksRoutes);
+router.use('/admin/whatsapp', whatsappRoutes);
 router.use('/admin', adminRoutes);
 router.use('/enquiries', enquiryRoutes);
 router.use('/notifications', notificationRoutes);
@@ -22,5 +24,6 @@ router.use('/support-tickets', supportRoutes);
 router.use('/support', supportRoutes);
 router.use('/chat', chatRoutes);
 router.use('/ai', chatRoutes);
+router.use('/whatsapp', whatsappRoutes);
 
 export default router;

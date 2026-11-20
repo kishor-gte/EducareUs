@@ -467,3 +467,72 @@ model TrustMember {
   @@index([displayOrder])
 }
 
+enum WhatsAppCampaignStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  PARTIALLY_FAILED
+  FAILED
+}
+
+enum WhatsAppMessageStatus {
+  QUEUED
+  PROCESSING
+  ACCEPTED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+model WhatsAppCampaign {
+  id                 String                 @id @default(uuid())
+  title              String
+  templateName       String                 @default("educare_notification")
+  templateLanguage   String                 @default("en_US")
+  audience           String                 @default("All Users")
+  senderNumberId     String?
+  senderPhoneNumber  String?
+  totalRecipients    Int                    @default(0)
+  queuedCount        Int                    @default(0)
+  apiAcceptedCount   Int                    @default(0)
+  sentCount          Int                    @default(0)
+  deliveredCount     Int                    @default(0)
+  readCount          Int                    @default(0)
+  failedCount        Int                    @default(0)
+  status             WhatsAppCampaignStatus @default(QUEUED)
+  messageBody        String                 @db.Text
+  createdById        String?
+  createdAt          DateTime               @default(now())
+  completedAt        DateTime?
+
+  messages           WhatsAppMessage[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model WhatsAppMessage {
+  id                 String                @id @default(uuid())
+  campaignId         String
+  campaign           WhatsAppCampaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  recipientUserId    String?
+  recipientName      String
+  recipientPhone     String                // E.164 formatted without '+' e.g. 918147647779
+  recipientRole      String?
+  whatsappMessageId  String?               @unique // Meta Graph API wamid
+  status             WhatsAppMessageStatus @default(QUEUED)
+  errorCode          String?
+  errorMessage       String?
+  sentAt             DateTime?
+  deliveredAt        DateTime?
+  readAt             DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  @@index([campaignId])
+  @@index([whatsappMessageId])
+  @@index([status])
+}
+
+

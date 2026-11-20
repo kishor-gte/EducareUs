@@ -58,6 +58,7 @@ export const UserDashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
+  const mainContentRef = useRef(null);
 
   // Tab navigation state (synced with URL ?tab=...)
   const initialTab = searchParams.get('tab') || 'dashboard';
@@ -68,6 +69,9 @@ export const UserDashboardPage = () => {
     const tabFromUrl = searchParams.get('tab') || 'dashboard';
     if (tabFromUrl !== activeTab) {
       setActiveTab(tabFromUrl);
+      if (mainContentRef.current) {
+        mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [searchParams]);
@@ -97,19 +101,18 @@ export const UserDashboardPage = () => {
     city: '',
     residentialAddress: '',
     pincode: '',
-    collegeName: 'Indian Institute of Information Technology',
-    collegeAddress: '26/C, Electronics City Phase 1, Hosur Road, Bengaluru, Karnataka 560100',
-    collegeType: 'Autonomous Institute / Deemed University',
-    rollNumber: '2024-CSE-0842',
-    courseName: 'B.Tech in Computer Science & Engineering',
-    branchName: 'Artificial Intelligence & Data Science',
-    academicYear: '2nd Year',
-    semester: 'Semester 4',
-    cgpa: '8.85 CGPA',
-    admissionYear: '2023',
-    graduationYear: '2027',
-    studentBio:
-      'Passionate first-generation engineering student aiming to build software solutions for education equity. Currently maintaining an 8.85 CGPA and active member of the Open Source Developers Club.',
+    collegeName: '',
+    collegeAddress: '',
+    collegeType: '',
+    rollNumber: '',
+    courseName: '',
+    branchName: '',
+    academicYear: '',
+    semester: '',
+    cgpa: '',
+    admissionYear: '',
+    graduationYear: '',
+    studentBio: '',
   });
 
   // Security password state
@@ -145,6 +148,9 @@ export const UserDashboardPage = () => {
     setActiveTab(tabId);
     setSearchParams({ tab: tabId });
     setMobileSidebarOpen(false);
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -295,8 +301,8 @@ export const UserDashboardPage = () => {
 
         return {
           ...prev,
-          fullName: user.fullName || savedLocal.fullName || prev.fullName,
-          email: user.email || prev.email,
+          fullName: user.fullName || savedLocal.fullName || prev.fullName || '',
+          email: user.email || prev.email || '',
           phone: cleanPhone,
           alternatePhone: cleanAltPhone,
           profilePhoto: user.avatarUrl || savedLocal.profilePhoto || prev.profilePhoto || '',
@@ -305,18 +311,18 @@ export const UserDashboardPage = () => {
           city: savedLocal.city || prev.city || '',
           residentialAddress: savedLocal.residentialAddress || prev.residentialAddress || '',
           pincode: savedLocal.pincode || prev.pincode || '',
-          collegeName: savedLocal.collegeName || prev.collegeName,
-          collegeAddress: savedLocal.collegeAddress || prev.collegeAddress,
-          collegeType: savedLocal.collegeType || prev.collegeType,
-          rollNumber: savedLocal.rollNumber || prev.rollNumber,
-          courseName: savedLocal.courseName || prev.courseName,
-          branchName: savedLocal.branchName || prev.branchName,
-          academicYear: savedLocal.academicYear || prev.academicYear,
-          semester: savedLocal.semester || prev.semester,
-          cgpa: savedLocal.cgpa || prev.cgpa,
-          admissionYear: savedLocal.admissionYear || prev.admissionYear,
-          graduationYear: savedLocal.graduationYear || prev.graduationYear,
-          studentBio: savedLocal.studentBio || prev.studentBio,
+          collegeName: savedLocal.collegeName || user.collegeName || prev.collegeName || '',
+          collegeAddress: savedLocal.collegeAddress || prev.collegeAddress || '',
+          collegeType: savedLocal.collegeType || prev.collegeType || '',
+          rollNumber: savedLocal.rollNumber || prev.rollNumber || '',
+          courseName: savedLocal.courseName || prev.courseName || '',
+          branchName: savedLocal.branchName || prev.branchName || '',
+          academicYear: savedLocal.academicYear || prev.academicYear || '',
+          semester: savedLocal.semester || prev.semester || '',
+          cgpa: savedLocal.cgpa || prev.cgpa || '',
+          admissionYear: savedLocal.admissionYear || prev.admissionYear || '',
+          graduationYear: savedLocal.graduationYear || prev.graduationYear || '',
+          studentBio: savedLocal.studentBio || prev.studentBio || '',
         };
       });
 
@@ -577,10 +583,10 @@ export const UserDashboardPage = () => {
       setReviewForm((prev) => ({
         ...prev,
         name: prev.name || authUser.fullName || '',
-        institution: prev.institution || (profileForm.courseEnrolled ? `${profileForm.courseEnrolled}, ${profileForm.collegeName || ''}` : profileForm.collegeName || ''),
+        institution: prev.institution || (profileForm.courseName ? `${profileForm.courseName}${profileForm.collegeName ? `, ${profileForm.collegeName}` : ''}` : profileForm.collegeName || ''),
       }));
     }
-  }, [existingScholarReview, authUser, profileForm.collegeName, profileForm.courseEnrolled]);
+  }, [existingScholarReview, authUser, profileForm.collegeName, profileForm.courseName]);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
@@ -665,7 +671,7 @@ export const UserDashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-slate-50/70">
+    <div className="h-full flex-1 w-full flex flex-col bg-slate-50/70 overflow-hidden min-h-0">
       {/* ─────────────────────────────────────────────────────────────
           MOBILE TOP SUB-HEADER BAR (Sticky under main navbar)
       ────────────────────────────────────────────────────────────── */}
@@ -786,9 +792,13 @@ export const UserDashboardPage = () => {
                 {profileForm.fullName || user?.fullName || 'Student Scholar'}
               </p>
               <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
-              <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md w-fit">
+              <div className={`mt-2 flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-md w-fit ${
+                user?.verificationStatus === 'VERIFIED'
+                  ? 'text-emerald-700 bg-emerald-50'
+                  : 'text-amber-800 bg-amber-50'
+              }`}>
                 <CheckCircle2 className="w-3 h-3" />
-                Verified Scholar
+                {user?.verificationStatus === 'VERIFIED' ? 'Verified Scholar' : 'Pending Verification'}
               </div>
             </div>
 
@@ -836,12 +846,12 @@ export const UserDashboardPage = () => {
       {/* ─────────────────────────────────────────────────────────────
           MAIN CONTENT AREA (Bootstrap Fluid + Responsive 100% Layout)
       ────────────────────────────────────────────────────────────── */}
-      <div className="container-fluid px-3 sm:px-6 lg:px-8 py-3 lg:py-6 flex-1 w-full max-w-full flex flex-col">
-        <div className="flex flex-col lg:flex-row gap-6 w-full flex-1">
+      <div className="container-fluid px-3 sm:px-6 lg:px-8 py-3 lg:py-6 flex-1 w-full max-w-full flex flex-col min-h-0 overflow-hidden">
+        <div className="flex flex-col lg:flex-row gap-6 w-full flex-1 min-h-0 overflow-hidden">
           {/* ═════════════════════════════════════════════════════════
               DESKTOP SIDEBAR (Fixed Left Column)
           ══════════════════════════════════════════════════════════ */}
-          <aside className="hidden lg:flex flex-col w-72 xl:w-80 shrink-0 space-y-4 pb-8 pr-1 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar">
+          <aside className="hidden lg:flex flex-col w-72 xl:w-80 shrink-0 space-y-4 pb-8 pr-1 h-full overflow-y-auto no-scrollbar">
               {/* Student Identity Card */}
               <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
                 <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
@@ -861,23 +871,34 @@ export const UserDashboardPage = () => {
                       {profileForm.fullName || user?.fullName || 'Student Scholar'}
                     </h3>
                     <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
-                    <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                    <span className={`inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                      user?.verificationStatus === 'VERIFIED'
+                        ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                        : 'text-amber-700 bg-amber-50 border-amber-200'
+                    }`}>
                       <CheckCircle2 className="w-3 h-3" />
-                      Verified Scholar
+                      {user?.verificationStatus === 'VERIFIED' ? 'Verified Scholar' : 'Pending Verification'}
                     </span>
                   </div>
                 </div>
 
                 {/* College Info in Sidebar */}
-                <div className="mt-3 pt-1 text-[11px] text-slate-600 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800 truncate">
-                    <Building className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span className="truncate">{profileForm.collegeName}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-slate-500 truncate">
-                    <GraduationCap className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="truncate">{profileForm.courseName}</span>
-                  </div>
+                <div className="mt-3 pt-1 text-[11px] space-y-1">
+                  {profileForm.collegeName ? (
+                    <div className="flex items-center gap-1.5 font-bold text-slate-800 truncate">
+                      <Building className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span className="truncate">{profileForm.collegeName}</span>
+                    </div>
+                  ) : null}
+                  {profileForm.courseName ? (
+                    <div className="flex items-center gap-1.5 text-slate-500 truncate">
+                      <GraduationCap className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span className="truncate">{profileForm.courseName}</span>
+                    </div>
+                  ) : null}
+                  {!profileForm.collegeName && !profileForm.courseName && (
+                    <p className="text-[11px] text-slate-400 italic">No college details linked yet</p>
+                  )}
                 </div>
               </div>
 
@@ -931,14 +952,22 @@ export const UserDashboardPage = () => {
                 </div>
               </nav>
 
-              {/* Verified Scholar Badge Card */}
-              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200/60 p-4 text-xs space-y-2">
-                <div className="flex items-center gap-2 text-amber-800 font-bold">
-                  <ShieldCheck className="w-4 h-4 text-amber-600" />
-                  <span>Authenticated Scholar</span>
+              {/* Scholar Verification Status Card */}
+              <div className={`rounded-2xl border p-4 text-xs space-y-2 ${
+                user?.verificationStatus === 'VERIFIED'
+                  ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/60'
+                  : 'bg-slate-50 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 font-bold">
+                  <ShieldCheck className={`w-4 h-4 ${user?.verificationStatus === 'VERIFIED' ? 'text-amber-600' : 'text-slate-500'}`} />
+                  <span className={user?.verificationStatus === 'VERIFIED' ? 'text-amber-800' : 'text-slate-700'}>
+                    {user?.verificationStatus === 'VERIFIED' ? 'Authenticated Scholar' : 'Pending Verification'}
+                  </span>
                 </div>
-                <p className="text-[11px] text-amber-900/80 leading-relaxed">
-                  Your academic record and enrollment credentials are officially registered on Educarrus.
+                <p className={`text-[11px] leading-relaxed ${user?.verificationStatus === 'VERIFIED' ? 'text-amber-900/80' : 'text-slate-500'}`}>
+                  {user?.verificationStatus === 'VERIFIED'
+                    ? 'Your academic record and enrollment credentials are officially registered on Educarrus.'
+                    : 'Complete your student profile to authenticate your academic record on Educarrus.'}
                 </p>
               </div>
           </aside>
@@ -946,7 +975,7 @@ export const UserDashboardPage = () => {
           {/* ═════════════════════════════════════════════════════════
               DYNAMIC TAB VIEW CONTAINER (Scrollable Right Column)
           ══════════════════════════════════════════════════════════ */}
-          <main className="flex-1 min-w-0 w-full space-y-6 pb-24 lg:pb-12 pr-1.5 pl-0.5">
+          <main ref={mainContentRef} className="flex-1 min-w-0 w-full space-y-6 pb-24 lg:pb-12 pr-1.5 pl-0.5 h-full overflow-y-auto">
             {/* ═════════════════════════════════════════════════════════
                 VIEW 1: DASHBOARD (OVERVIEW)
             ══════════════════════════════════════════════════════════ */}
@@ -981,9 +1010,13 @@ export const UserDashboardPage = () => {
                             Student Scholar
                           </span>
 
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                            user?.verificationStatus === 'VERIFIED'
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                              : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                          }`}>
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            Verified Scholar
+                            {user?.verificationStatus === 'VERIFIED' ? 'Verified Scholar' : 'Pending Verification'}
                           </span>
                         </div>
 
@@ -1110,9 +1143,13 @@ export const UserDashboardPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <StatCard
                     title="Account Verification"
-                    value={user?.verificationStatus || 'VERIFIED'}
+                    value={user?.verificationStatus || 'UNVERIFIED'}
                     icon={ShieldCheck}
-                    subtitle="Academic status authenticated"
+                    subtitle={
+                      user?.verificationStatus === 'VERIFIED'
+                        ? 'Academic status authenticated'
+                        : 'Profile verification pending'
+                    }
                   />
 
                   <StatCard
@@ -1122,17 +1159,17 @@ export const UserDashboardPage = () => {
                         ? profileForm.courseName.length > 24
                           ? profileForm.courseName.slice(0, 24) + '...'
                           : profileForm.courseName
-                        : 'B.Tech in CSE'
+                        : 'Not Provided'
                     }
                     icon={GraduationCap}
-                    subtitle={profileForm.branchName || 'Engineering & Technology'}
+                    subtitle={profileForm.branchName || (profileForm.courseName ? 'Specialization' : 'No course linked yet')}
                   />
 
                   <StatCard
                     title="Academic Year"
-                    value={profileForm.academicYear || '2nd Year'}
+                    value={profileForm.academicYear || 'Not Provided'}
                     icon={BookOpen}
-                    subtitle={profileForm.semester || 'Semester 4 Active Session'}
+                    subtitle={profileForm.semester ? `${profileForm.semester} Active Session` : 'No semester linked yet'}
                   />
                 </div>
 
@@ -1177,8 +1214,12 @@ export const UserDashboardPage = () => {
                         <BookOpen className="w-4 h-4 text-amber-600" />
                         <h4 className="font-bold text-slate-900 text-sm">Academic Credentials</h4>
                       </div>
-                      <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        Enrolled
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${
+                        profileForm.collegeName
+                          ? 'text-emerald-600 bg-emerald-50'
+                          : 'text-amber-700 bg-amber-50'
+                      }`}>
+                        {profileForm.collegeName ? 'Enrolled' : 'Pending Details'}
                       </span>
                     </div>
 
@@ -1186,28 +1227,32 @@ export const UserDashboardPage = () => {
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                         <span className="text-slate-500 font-medium">Institution</span>
                         <span className="text-slate-900 font-bold truncate max-w-[65%] text-right">
-                          {profileForm.collegeName}
+                          {profileForm.collegeName || 'Not Provided'}
                         </span>
                       </div>
 
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                         <span className="text-slate-500 font-medium">Course & Branch</span>
                         <span className="text-slate-900 font-bold truncate max-w-[65%] text-right">
-                          {profileForm.courseName}
+                          {profileForm.courseName
+                            ? `${profileForm.courseName}${profileForm.branchName ? ` (${profileForm.branchName})` : ''}`
+                            : 'Not Provided'}
                         </span>
                       </div>
 
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                         <span className="text-slate-500 font-medium">Current Session</span>
                         <span className="text-slate-900 font-bold">
-                          {profileForm.academicYear} ({profileForm.semester})
+                          {profileForm.academicYear
+                            ? `${profileForm.academicYear}${profileForm.semester ? ` (${profileForm.semester})` : ''}`
+                            : 'Not Provided'}
                         </span>
                       </div>
 
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                         <span className="text-slate-500 font-medium">Academic Performance</span>
                         <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded">
-                          {profileForm.cgpa || '8.85 CGPA'} (Merit Tier)
+                          {profileForm.cgpa ? profileForm.cgpa : 'Not Provided'}
                         </span>
                       </div>
                     </div>
@@ -1216,7 +1261,7 @@ export const UserDashboardPage = () => {
                       onClick={() => handleTabChange('profile')}
                       className="w-full py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
                     >
-                      View Complete Profile
+                      {profileForm.collegeName ? 'View Complete Profile' : 'Complete Academic Profile'}
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -1707,20 +1752,31 @@ export const UserDashboardPage = () => {
                           <h3 className="text-xl font-black text-slate-900 truncate">
                             {profileForm.fullName || user?.fullName || 'Student Scholar'}
                           </h3>
-                          <span className="text-[11px] font-bold px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200 flex items-center gap-1">
-                            <Check className="w-3 h-3" /> Verified Scholar
+                          <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${
+                            user?.verificationStatus === 'VERIFIED'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : 'bg-amber-50 text-amber-700 border-amber-200'
+                          }`}>
+                            <Check className="w-3 h-3" />
+                            {user?.verificationStatus === 'VERIFIED' ? 'Verified Scholar' : 'Pending Verification'}
                           </span>
                         </div>
 
-                        <p className="text-xs font-semibold text-slate-700 truncate">
-                          {profileForm.courseName} • {profileForm.rollNumber}
-                        </p>
+                        {profileForm.courseName || profileForm.rollNumber ? (
+                          <p className="text-xs font-semibold text-slate-700 truncate">
+                            {[profileForm.courseName, profileForm.rollNumber].filter(Boolean).join(' • ')}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-slate-400 italic">No course or roll number added yet</p>
+                        )}
 
                         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-y-1 gap-x-4 text-xs text-slate-500">
-                          <span className="flex items-center gap-1">
-                            <Building className="w-3.5 h-3.5 text-amber-600" />
-                            <span className="truncate max-w-[280px]">{profileForm.collegeName}</span>
-                          </span>
+                          {profileForm.collegeName ? (
+                            <span className="flex items-center gap-1">
+                              <Building className="w-3.5 h-3.5 text-amber-600" />
+                              <span className="truncate max-w-[280px]">{profileForm.collegeName}</span>
+                            </span>
+                          ) : null}
                           {(profileForm.city || profileForm.state) && (
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3.5 h-3.5 text-slate-400" />
@@ -1751,11 +1807,10 @@ export const UserDashboardPage = () => {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                             <div className="sm:col-span-2">
                               <label className="font-bold text-slate-700 block mb-1">
-                                College / University Full Name *
+                                College / University Full Name
                               </label>
                               <input
                                 type="text"
-                                required
                                 value={profileForm.collegeName}
                                 onChange={(e) =>
                                   setProfileForm({ ...profileForm, collegeName: e.target.value })
@@ -1767,11 +1822,10 @@ export const UserDashboardPage = () => {
 
                             <div className="sm:col-span-2">
                               <label className="font-bold text-slate-700 block mb-1">
-                                College Campus Address *
+                                College Campus Address
                               </label>
                               <input
                                 type="text"
-                                required
                                 value={profileForm.collegeAddress}
                                 onChange={(e) =>
                                   setProfileForm({ ...profileForm, collegeAddress: e.target.value })
@@ -1792,6 +1846,7 @@ export const UserDashboardPage = () => {
                                 }
                                 className="w-full font-medium text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
                               >
+                                <option value="">Select Institution Type</option>
                                 <option value="Autonomous Institute / Deemed University">
                                   Autonomous Institute / Deemed University
                                 </option>
@@ -1809,11 +1864,10 @@ export const UserDashboardPage = () => {
 
                             <div>
                               <label className="font-bold text-slate-700 block mb-1">
-                                Student Roll / Enrollment Number *
+                                Student Roll / Enrollment Number
                               </label>
                               <input
                                 type="text"
-                                required
                                 value={profileForm.rollNumber}
                                 onChange={(e) =>
                                   setProfileForm({ ...profileForm, rollNumber: e.target.value })
@@ -1825,11 +1879,10 @@ export const UserDashboardPage = () => {
 
                             <div>
                               <label className="font-bold text-slate-700 block mb-1">
-                                Degree / Course Name *
+                                Degree / Course Name
                               </label>
                               <input
                                 type="text"
-                                required
                                 value={profileForm.courseName}
                                 onChange={(e) =>
                                   setProfileForm({ ...profileForm, courseName: e.target.value })
@@ -1865,6 +1918,7 @@ export const UserDashboardPage = () => {
                                 }
                                 className="w-full font-medium text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
                               >
+                                <option value="">Select Academic Year</option>
                                 <option value="1st Year">1st Year</option>
                                 <option value="2nd Year">2nd Year</option>
                                 <option value="3rd Year">3rd Year</option>
@@ -1884,6 +1938,7 @@ export const UserDashboardPage = () => {
                                 }
                                 className="w-full font-medium text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
                               >
+                                <option value="">Select Current Semester</option>
                                 <option value="Semester 1">Semester 1</option>
                                 <option value="Semester 2">Semester 2</option>
                                 <option value="Semester 3">Semester 3</option>
@@ -2175,9 +2230,15 @@ export const UserDashboardPage = () => {
                                 College & Academic Credentials
                               </h3>
                             </div>
-                            <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
-                              {profileForm.collegeType}
-                            </span>
+                            {profileForm.collegeType ? (
+                              <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
+                                {profileForm.collegeType}
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-bold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200">
+                                Not Specified
+                              </span>
+                            )}
                           </div>
 
                           <div className="space-y-4">
@@ -2186,43 +2247,43 @@ export const UserDashboardPage = () => {
                                 College / University
                               </p>
                               <p className="text-base font-black text-slate-900 mt-0.5">
-                                {profileForm.collegeName}
+                                {profileForm.collegeName || 'Not Provided'}
                               </p>
                               <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1">
                                 <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                <span>{profileForm.collegeAddress}</span>
+                                <span>{profileForm.collegeAddress || 'Not Provided'}</span>
                               </p>
                             </div>
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Course / Degree</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.courseName}</p>
+                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.courseName || 'Not Provided'}</p>
                               </div>
 
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Specialization</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.branchName || 'CSE'}</p>
+                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.branchName || 'Not Provided'}</p>
                               </div>
 
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Roll / ID Number</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.rollNumber}</p>
+                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.rollNumber || 'Not Provided'}</p>
                               </div>
 
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Academic Year</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.academicYear}</p>
+                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.academicYear || 'Not Provided'}</p>
                               </div>
 
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Current Semester</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.semester}</p>
+                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.semester || 'Not Provided'}</p>
                               </div>
 
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Performance (CGPA)</p>
-                                <p className="font-black text-amber-600 text-xs mt-0.5">{profileForm.cgpa}</p>
+                                <p className="font-black text-amber-600 text-xs mt-0.5">{profileForm.cgpa || 'Not Provided'}</p>
                               </div>
                             </div>
                           </div>
@@ -2237,8 +2298,12 @@ export const UserDashboardPage = () => {
                                 Personal & Residential Records
                               </h3>
                             </div>
-                            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                              Profile Verified
+                            <span className={`text-[11px] font-bold px-2.5 py-1 rounded-md border ${
+                              user?.verificationStatus === 'VERIFIED'
+                                ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                                : 'text-amber-700 bg-amber-50 border-amber-200'
+                            }`}>
+                              {user?.verificationStatus === 'VERIFIED' ? 'Profile Verified' : 'Verification Pending'}
                             </span>
                           </div>
 
@@ -2246,7 +2311,7 @@ export const UserDashboardPage = () => {
                             <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                               <p className="text-[10px] font-bold uppercase text-slate-400">Full Legal Name</p>
                               <p className="font-bold text-slate-900 text-sm mt-0.5">
-                                {profileForm.fullName || user?.fullName}
+                                {profileForm.fullName || user?.fullName || 'Not provided'}
                               </p>
                             </div>
 
@@ -2272,12 +2337,12 @@ export const UserDashboardPage = () => {
                             <div className="sm:col-span-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
                               <p className="text-[10px] font-bold uppercase text-slate-400">Residential Address</p>
                               <p className="font-medium text-slate-900 text-xs mt-0.5">
-                                {profileForm.residentialAddress || 'Street address on file'}
+                                {profileForm.residentialAddress || 'Not provided'}
                               </p>
                               <p className="text-slate-500 text-xs mt-0.5">
                                 {profileForm.city && profileForm.state
                                   ? `${profileForm.city}, ${profileForm.state}`
-                                  : profileForm.city || profileForm.state || 'India'}
+                                  : profileForm.city || profileForm.state || 'Not specified'}
                                 {profileForm.pincode && ` - ${profileForm.pincode}`}
                               </p>
                             </div>
@@ -2293,7 +2358,9 @@ export const UserDashboardPage = () => {
                             </h4>
                           </div>
                           <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                            {profileForm.studentBio}
+                            {profileForm.studentBio || (
+                              <span className="text-slate-400 italic">No student bio or academic statement added yet. Click &apos;Edit Profile Information&apos; above to introduce yourself.</span>
+                            )}
                           </p>
                         </div>
                       </div>
@@ -2324,12 +2391,16 @@ export const UserDashboardPage = () => {
 
                         <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
                           <span className="text-slate-600 font-medium">Enrollment Status</span>
-                          <span className="text-emerald-600 font-bold">Confirmed</span>
+                          <span className={`font-bold ${profileForm.collegeName ? 'text-emerald-600' : 'text-amber-600'}`}>
+                            {profileForm.collegeName ? 'Confirmed' : 'Pending Details'}
+                          </span>
                         </div>
 
                         <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
                           <span className="text-slate-600 font-medium">Institution Record</span>
-                          <span className="text-emerald-600 font-bold">Active</span>
+                          <span className={`font-bold ${profileForm.collegeName ? 'text-emerald-600' : 'text-slate-500'}`}>
+                            {profileForm.collegeName ? 'Active' : 'Unlinked'}
+                          </span>
                         </div>
 
                         <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
