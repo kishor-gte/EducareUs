@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trust Members & Mentors — EduCareus Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cabinet+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    body, button, input, select, textarea {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    .trust-member-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .trust-member-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px -8px rgba(7, 22, 111, 0.12);
+      border-color: #CBD5E1;
+    }
+    .member-img-wrap {
+      height: 200px;
+      position: relative;
+      background: #0F172A;
+      overflow: hidden;
+    }
+    .member-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      transition: transform 0.4s ease;
+      filter: grayscale(85%);
+    }
+    .trust-member-card:hover .member-img-wrap img {
+      transform: scale(1.04);
+      filter: grayscale(0%);
+    }
+    .member-badge-pill {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+      letter-spacing: 0.04em;
+    }
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .status-active {
+      background: #ECFDF5;
+      color: #059669;
+      border: 1px solid #A7F3D0;
+    }
+    .status-inactive {
+      background: #F1F5F9;
+      color: #64748B;
+      border: 1px solid #CBD5E1;
+    }
+
+    /* Modal System */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: 20px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.35);
+      border: 1px solid #E2E8F0;
+      overflow: hidden;
+      animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header-navy {
+      background: #07166F;
+      color: #FFFFFF;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #FFB52E;
+    }
+    .modal-close-icon {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #FFFFFF;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .modal-close-icon:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: #FFB52E;
+    }
+    .modal-body-pad {
+      padding: 24px;
+    }
+    .modal-footer-pad {
+      padding: 16px 24px;
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .form-group-wrap {
+      margin-bottom: 16px;
+    }
+    .form-label-bold {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+    .form-input-modern {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      border-radius: 10px;
+      border: 1px solid #CBD5E1;
+      background: #F8FAFC;
+      color: #0F172A;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    .form-input-modern:focus {
+      background: #FFFFFF;
+      border-color: #07166F;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(7, 22, 111, 0.12);
+    }
+    .modal-btn-cancel {
+      padding: 10px 20px;
+      border-radius: 10px;
+      background: #F1F5F9;
+      color: #475569;
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: 1px solid #CBD5E1;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-btn-cancel:hover {
+      background: #E2E8F0;
+      color: #0F172A;
+    }
+    .modal-btn-save {
+      padding: 10px 24px;
+      border-radius: 10px;
+      background: #07166F;
+      color: #FFB52E;
+      font-weight: 800;
+      font-size: 0.88rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(7, 22, 111, 0.25);
+    }
+    .modal-btn-save:hover {
+      background: #0A1E96;
+      color: #FFFFFF;
+    }
+    .modal-btn-delete {
+      padding: 10px 24px;
+      border-radius: 10px;
+      background: #DC2626;
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.88rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+    }
+    .modal-btn-delete:hover {
+      background: #B91C1C;
+    }
+    .avatar-preset-btn {
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .avatar-preset-btn:hover {
+      border-color: #07166F;
+      color: #07166F;
+      background: #EFF6FF;
+    }
+    /* Modern Image Upload Dropzone */
+    .upload-dropzone {
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
+      background: #F8FAFC;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      position: relative;
+    }
+    .upload-dropzone:hover, .upload-dropzone.dragover {
+      border-color: #2563EB;
+      background: #EFF6FF;
+    }
+    .upload-icon-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #EEF2FF;
+      color: #07166F;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin: 0 auto;
+      transition: all 0.2s ease;
+    }
+    .upload-dropzone:hover .upload-icon-circle {
+      transform: translateY(-2px);
+      background: #07166F;
+      color: #FFB52E;
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+
+  <!-- ADMIN SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+
+      <!-- REVIEWS MANAGEMENT -->
+      <a href="admin-reviews.html" class="sidebar-nav-item"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
+
+      <!-- TRUST MEMBERS & MENTORS (Management) -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item active"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <!-- TOP HEADER -->
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="trustMemberSearchInput" placeholder="Search trust members by name, specialization, or bio...">
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <main class="admin-page-container">
+      <div class="page-title-block">
+        <div>
+          <h1>Trust Members &amp; Academic Mentors</h1>
+          <p>Add and manage verified board trust members, university alumni, and career mentors displayed in "Our Trusted Mentors" on the live homepage.</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button class="btn-action-icon" onclick="fetchTrustMembers()" style="width: auto; padding: 0 16px; cursor: pointer;" title="Refresh list">
+            <i class="fa-solid fa-arrows-rotate" id="refreshMembersIcon" style="margin-right: 6px;"></i> Refresh
+          </button>
+          <button class="btn-primary" onclick="openAddTrustMemberModal()" style="background: #07166F; color: #FFB52E; font-weight: 800; border: none; padding: 10px 20px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 14px rgba(7, 22, 111, 0.25);">
+            <i class="fa-solid fa-user-plus"></i> Add Trust Member
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI METRIC PILLS -->
+      <div class="kpi-grid-container" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 24px;">
+        <div class="kpi-stat-card">
+          <div class="kpi-header">
+            <span class="kpi-title-text">Total Trust Members</span>
+            <span class="kpi-badge-tag badge-tag-up">Database</span>
+          </div>
+          <div class="kpi-number-display" id="kpiTotalMembers">--</div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 6px;">
+            Mentorship council &amp; leadership
+          </div>
+        </div>
+
+        <div class="kpi-stat-card">
+          <div class="kpi-header">
+            <span class="kpi-title-text">Active on Homepage</span>
+            <span class="kpi-badge-tag badge-tag-up" style="background: #ECFDF5; color: #059669;">Live Status</span>
+          </div>
+          <div class="kpi-number-display" id="kpiActiveMembers" style="color: #059669;">--</div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 6px;">
+            Visible in "Our Trusted Mentors"
+          </div>
+        </div>
+
+        <div class="kpi-stat-card">
+          <div class="kpi-header">
+            <span class="kpi-title-text">Homepage Placement</span>
+            <span class="kpi-badge-tag badge-tag-up">Section I</span>
+          </div>
+          <div class="kpi-number-display" style="font-size: 1.25rem; color: #07166F;">Dynamic Grid</div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 6px;">
+            Auto-syncs to http://localhost:3000
+          </div>
+        </div>
+      </div>
+
+      <!-- CARDS GRID -->
+      <div id="membersGridContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+        <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--admin-text-muted);">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.6rem; color: var(--admin-navy); margin-bottom: 12px;"></i>
+          <p style="font-size: 0.9rem; font-weight: 600;">Loading Trust Members &amp; Mentors...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ADD / EDIT TRUST MEMBER MODAL -->
+  <div class="modal-overlay" id="trustMemberModal">
+    <div class="modal-box">
+      <div class="modal-header-navy">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-user-tie" style="color: #FFB52E; font-size: 1.1rem;"></i>
+          <div>
+            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #FFFFFF;" id="modalFormTitle">Add Trust Member</h3>
+            <p style="margin: 2px 0 0; font-size: 0.72rem; color: #CBD5E1;">Configures mentor profile for the public "Our Trusted Mentors" section.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-icon" onclick="closeTrustMemberModal()" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="trustMemberForm" onsubmit="handleTrustMemberSubmit(event)">
+        <input type="hidden" id="memberEditId">
+
+        <div class="modal-body-pad">
+          <!-- Row 1: Name and Specialization -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group-wrap">
+              <label class="form-label-bold">Full Name *</label>
+              <input type="text" id="memberNameInput" class="form-input-modern" placeholder="e.g. Dr. Sameer Verma" required>
+            </div>
+            <div class="form-group-wrap">
+              <label class="form-label-bold">Specialization / Role *</label>
+              <input type="text" id="memberSpecializationInput" class="form-input-modern" placeholder="e.g. AIIMS Alumnus • Medical Specialist" required>
+            </div>
+          </div>
+
+          <!-- Description / Bio -->
+          <div class="form-group-wrap">
+            <label class="form-label-bold">Description &amp; Mentorship Bio *</label>
+            <textarea id="memberDescriptionInput" class="form-input-modern" rows="3" placeholder="Describe their experience, university background, and the academic guidance they provide to scholars..." required style="resize: vertical;"></textarea>
+          </div>
+
+          <!-- Image File Upload Dropzone -->
+          <div class="form-group-wrap">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+              <label class="form-label-bold" style="margin-bottom: 0;">Profile Photo / Avatar Image *</label>
+              <span style="font-size: 0.72rem; color: #64748B;">Upload image from your device</span>
+            </div>
+
+            <div id="imageUploadDropzone" class="upload-dropzone" onclick="document.getElementById('memberImageFileInput').click()">
+              <!-- Empty / Prompt State -->
+              <div id="uploadPromptState" style="text-align: center; padding: 22px 14px;">
+                <div class="upload-icon-circle">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <p style="margin: 10px 0 3px; font-weight: 700; font-size: 0.85rem; color: #0F172A;">
+                  Click to browse photo or drag &amp; drop file here
+                </p>
+                <p style="margin: 0; font-size: 0.72rem; color: #64748B;">Supports JPG, PNG, WEBP, or SVG (Up to 10MB)</p>
+              </div>
+
+              <!-- Selected Preview State -->
+              <div id="uploadPreviewState" style="display: none; align-items: center; gap: 14px; padding: 14px; background: #F8FAFC;">
+                <img id="uploadPreviewAvatar" src="/pdf-extracted/img_4_26483.jpg" alt="Preview Avatar" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid #2563EB; box-shadow: 0 4px 10px rgba(0,0,0,0.08); flex-shrink: 0;">
+                <div style="flex: 1; min-width: 0;">
+                  <p id="uploadPreviewTitle" style="margin: 0 0 2px; font-weight: 700; font-size: 0.82rem; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">photo.jpg</p>
+                  <p id="uploadPreviewSubtitle" style="margin: 0; font-size: 0.72rem; color: #16A34A; font-weight: 600;">
+                    <i class="fa-solid fa-circle-check"></i> Image selected & ready
+                  </p>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" class="btn-action-icon" onclick="event.stopPropagation(); document.getElementById('memberImageFileInput').click();" style="width: 32px; height: 32px;" title="Choose different file">
+                    <i class="fa-solid fa-arrow-rotate-right"></i>
+                  </button>
+                  <button type="button" class="btn-action-icon" onclick="event.stopPropagation(); clearUploadedImage();" style="width: 32px; height: 32px; color: #DC2626; border-color: #FEE2E2;" title="Remove / Reset Image">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hidden file input & payload storage -->
+            <input type="file" id="memberImageFileInput" accept="image/*" style="display: none;" onchange="handleImageFileSelect(event)">
+            <input type="hidden" id="memberImagePayload" value="/pdf-extracted/img_4_26483.jpg">
+
+            <!-- Quick Template Presets -->
+            <div style="display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
+              <span style="font-size: 0.7rem; color: #64748B; font-weight: 700;">Or use default template:</span>
+              <button type="button" class="avatar-preset-btn" onclick="applyPresetPhoto('/pdf-extracted/img_4_26483.jpg', 'Tech Mentor Template')">Tech Mentor</button>
+              <button type="button" class="avatar-preset-btn" onclick="applyPresetPhoto('/pdf-extracted/img_5_40483.jpg', 'Medical Mentor Template')">Medical Mentor</button>
+              <button type="button" class="avatar-preset-btn" onclick="applyPresetPhoto('/pdf-extracted/img_6_97219.jpg', 'Management Template')">Management Leader</button>
+            </div>
+          </div>
+
+          <!-- Tag & Badge Color -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group-wrap">
+              <label class="form-label-bold">Tag / Badge Text</label>
+              <input type="text" id="memberTagInput" class="form-input-modern" placeholder="e.g. Medical Guidance, Academic Leader" value="Academic & Industry Leader">
+            </div>
+            <div class="form-group-wrap">
+              <label class="form-label-bold">Badge Color Theme</label>
+              <select id="memberBadgeColorInput" class="form-input-modern">
+                <option value="bg-[#FFB52E] text-[#172033]">Gold Badge (Amber &amp; Dark Navy)</option>
+                <option value="bg-[#07166F] text-white">Navy Badge (Deep Navy &amp; White)</option>
+                <option value="bg-emerald-600 text-white">Emerald Badge (Green &amp; White)</option>
+                <option value="bg-blue-600 text-white">Blue Badge (Royal Blue &amp; White)</option>
+                <option value="bg-purple-600 text-white">Purple Badge (Purple &amp; White)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Social Links (Optional) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+            <div class="form-group-wrap">
+              <label class="form-label-bold" style="font-size: 0.72rem;">LinkedIn URL</label>
+              <input type="url" id="memberLinkedinInput" class="form-input-modern" placeholder="https://linkedin.com/in/...">
+            </div>
+            <div class="form-group-wrap">
+              <label class="form-label-bold" style="font-size: 0.72rem;">Twitter / X URL</label>
+              <input type="url" id="memberTwitterInput" class="form-input-modern" placeholder="https://x.com/...">
+            </div>
+            <div class="form-group-wrap">
+              <label class="form-label-bold" style="font-size: 0.72rem;">GitHub / Web URL</label>
+              <input type="url" id="memberGithubInput" class="form-input-modern" placeholder="https://github.com/...">
+            </div>
+          </div>
+
+          <!-- Display Order and Active Checkbox -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid #F1F5F9;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label class="form-label-bold" style="margin: 0;">Display Order:</label>
+              <input type="number" id="memberOrderInput" class="form-input-modern" style="width: 70px; padding: 6px 10px;" value="1" min="0">
+            </div>
+
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; color: #07166F;">
+              <input type="checkbox" id="memberActiveCheckbox" checked style="width: 17px; height: 17px; accent-color: #07166F; cursor: pointer;">
+              <span>Publish to Homepage ("Our Trusted Mentors")</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer-pad">
+          <button type="button" class="modal-btn-cancel" onclick="closeTrustMemberModal()">Cancel</button>
+          <button type="submit" class="modal-btn-save" id="btnSaveMember">
+            <i class="fa-solid fa-check"></i> <span id="btnSaveMemberText">Save Trust Member</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="deleteConfirmModal">
+    <div class="modal-box" style="max-width: 440px;">
+      <div style="padding: 28px 24px 20px; text-align: center;">
+        <div style="width: 54px; height: 54px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.4rem;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 style="margin: 0 0 8px; font-size: 1.15rem; font-weight: 800; color: #0F172A;">Delete Trust Member?</h3>
+        <p style="margin: 0; font-size: 0.84rem; color: #64748B; line-height: 1.5;">
+          Are you sure you want to remove <strong id="deleteTargetMemberName" style="color: #0F172A;">this member</strong>? They will be immediately removed from the live homepage mentorship grid.
+        </p>
+      </div>
+
+      <div class="modal-footer-pad" style="justify-content: center; gap: 14px;">
+        <button type="button" class="modal-btn-cancel" onclick="closeDeleteConfirmModal()">Cancel</button>
+        <button type="button" class="modal-btn-delete" id="btnConfirmDelete" onclick="executeDeleteTrustMember()">
+          <i class="fa-solid fa-trash-can"></i> Delete Member
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-core.js"></script>
+  <script>
+    let trustMembersData = [];
+    let pendingDeleteId = null;
+
+    // Image Upload Handling
+    function handleImageFileSelect(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      processSelectedImageFile(file);
+    }
+
+    function processSelectedImageFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showAdminNotification('Please select a valid image file (JPG, PNG, WEBP).', 'error');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showAdminNotification('File size exceeds 10MB limit.', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result;
+        document.getElementById('memberImagePayload').value = base64;
+
+        // Update UI
+        document.getElementById('uploadPromptState').style.display = 'none';
+        document.getElementById('uploadPreviewState').style.display = 'flex';
+        document.getElementById('uploadPreviewAvatar').src = base64;
+        document.getElementById('uploadPreviewTitle').textContent = file.name;
+        document.getElementById('uploadPreviewSubtitle').innerHTML = `<i class="fa-solid fa-circle-check"></i> ${(file.size / 1024).toFixed(1)} KB — ready to upload`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearUploadedImage() {
+      const fileInput = document.getElementById('memberImageFileInput');
+      if (fileInput) fileInput.value = '';
+      document.getElementById('memberImagePayload').value = '/pdf-extracted/img_4_26483.jpg';
+      document.getElementById('uploadPromptState').style.display = 'block';
+      document.getElementById('uploadPreviewState').style.display = 'none';
+    }
+
+    function applyPresetPhoto(url, label) {
+      const fileInput = document.getElementById('memberImageFileInput');
+      if (fileInput) fileInput.value = '';
+      document.getElementById('memberImagePayload').value = url;
+      document.getElementById('uploadPromptState').style.display = 'none';
+      document.getElementById('uploadPreviewState').style.display = 'flex';
+      document.getElementById('uploadPreviewAvatar').src = url;
+      document.getElementById('uploadPreviewTitle').textContent = label || 'Template Photo';
+      document.getElementById('uploadPreviewSubtitle').innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Preset applied';
+    }
+
+    function setupDropzoneListeners() {
+      const dropzone = document.getElementById('imageUploadDropzone');
+      if (!dropzone) return;
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const file = dt?.files?.[0];
+        if (file) {
+          processSelectedImageFile(file);
+        }
+      });
+    }
+
+    // Fetch trust members from backend
+    async function fetchTrustMembers() {
+      const refreshIcon = document.getElementById('refreshMembersIcon');
+      if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+      try {
+        const searchVal = document.getElementById('trustMemberSearchInput')?.value || '';
+        const url = searchVal.trim()
+          ? `/api/admin/trust-members?search=${encodeURIComponent(searchVal.trim())}`
+          : '/api/admin/trust-members';
+
+        const res = await adminFetch(url);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data)) {
+            trustMembersData = json.data;
+            renderTrustMembers(trustMembersData);
+            updateKPIs(trustMembersData);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load trust members:', err);
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+      }
+    }
+
+    // Render Trust Members in dynamic card grid
+    function renderTrustMembers(members) {
+      const container = document.getElementById('membersGridContainer');
+      if (!container) return;
+
+      if (!Array.isArray(members) || members.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; background: #FFFFFF; border: 1px dashed #CBD5E1; border-radius: 18px;">
+            <div style="width: 52px; height: 52px; border-radius: 50%; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.4rem;">
+              <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <h4 style="margin: 0 0 6px; font-size: 1rem; font-weight: 800; color: #0F172A;">No Trust Members Found</h4>
+            <p style="margin: 0 0 16px; font-size: 0.8rem; color: #64748B;">Click below to add your first board trust member or academic mentor.</p>
+            <button class="btn-primary" onclick="openAddTrustMemberModal()" style="background: #07166F; color: #FFB52E; font-weight: 800; border: none; padding: 9px 18px; border-radius: 10px; cursor: pointer;">
+              <i class="fa-solid fa-plus"></i> Add Trust Member
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = members.map(m => {
+        const badgeColor = m.badgeColor || 'bg-[#FFB52E] text-[#172033]';
+        let badgeStyle = 'background: #FFB52E; color: #172033;';
+        if (badgeColor.includes('bg-[#07166F]')) badgeStyle = 'background: #07166F; color: #FFFFFF;';
+        if (badgeColor.includes('emerald')) badgeStyle = 'background: #059669; color: #FFFFFF;';
+        if (badgeColor.includes('blue')) badgeStyle = 'background: #2563EB; color: #FFFFFF;';
+        if (badgeColor.includes('purple')) badgeStyle = 'background: #7C3AED; color: #FFFFFF;';
+
+        return `
+          <div class="trust-member-card">
+            <!-- Image & Tag -->
+            <div class="member-img-wrap">
+              <img src="${m.image || '/pdf-extracted/img_4_26483.jpg'}" alt="${m.name}" onerror="this.onerror=null; this.src='/pdf-extracted/img_4_26483.jpg';">
+              <span class="member-badge-pill" style="${badgeStyle}">
+                ${m.tag || 'Academic Leader'}
+              </span>
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 18px 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px;">
+                  <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0F172A;">
+                    ${m.name}
+                  </h3>
+                  <span class="status-badge ${m.isActive ? 'status-active' : 'status-inactive'}">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: ${m.isActive ? '#059669' : '#94A3B8'};"></span>
+                    ${m.isActive ? 'Live' : 'Hidden'}
+                  </span>
+                </div>
+
+                <div style="font-size: 0.78rem; font-weight: 700; color: #07166F; margin-bottom: 8px;">
+                  ${m.specialization}
+                </div>
+
+                <p style="margin: 0; font-size: 0.78rem; color: #64748B; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                  ${m.description}
+                </p>
+              </div>
+
+              <!-- Social Links & Action Buttons -->
+              <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; gap: 8px; color: #94A3B8; font-size: 0.85rem;">
+                  ${m.linkedinUrl ? `<a href="${m.linkedinUrl}" target="_blank" style="color: #64748B;"><i class="fa-brands fa-linkedin hover:text-blue-600"></i></a>` : ''}
+                  ${m.twitterUrl ? `<a href="${m.twitterUrl}" target="_blank" style="color: #64748B;"><i class="fa-brands fa-x-twitter hover:text-slate-900"></i></a>` : ''}
+                  ${m.githubUrl ? `<a href="${m.githubUrl}" target="_blank" style="color: #64748B;"><i class="fa-brands fa-github hover:text-slate-900"></i></a>` : ''}
+                </div>
+
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" onclick="toggleMemberStatus('${m.id}')" title="${m.isActive ? 'Hide from homepage' : 'Publish to homepage'}" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #475569; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                    <i class="fa-solid ${m.isActive ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                  </button>
+                  <button type="button" onclick="openEditTrustMemberModal('${m.id}')" title="Edit Trust Member" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #07166F; background: #EFF6FF; color: #07166F; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" onclick="confirmDeleteMember('${m.id}', '${m.name.replace(/'/g, "\\'")}')" title="Delete Trust Member" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #FCA5A5; background: #FEF2F2; color: #DC2626; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateKPIs(members) {
+      const totalEl = document.getElementById('kpiTotalMembers');
+      if (totalEl) totalEl.textContent = members.length;
+
+      const activeEl = document.getElementById('kpiActiveMembers');
+      if (activeEl) {
+        const activeCount = members.filter(m => m.isActive).length;
+        activeEl.textContent = `${activeCount} Members`;
+      }
+    }
+
+    // Modal Control: Add
+    function openAddTrustMemberModal() {
+      document.getElementById('modalFormTitle').textContent = 'Add Trust Member';
+      document.getElementById('btnSaveMemberText').textContent = 'Save Trust Member';
+      document.getElementById('memberEditId').value = '';
+      document.getElementById('trustMemberForm').reset();
+      clearUploadedImage();
+      document.getElementById('memberTagInput').value = 'Academic & Industry Leader';
+      document.getElementById('memberOrderInput').value = trustMembersData.length + 1;
+      document.getElementById('memberActiveCheckbox').checked = true;
+
+      document.getElementById('trustMemberModal').classList.add('active');
+    }
+
+    // Modal Control: Edit
+    function openEditTrustMemberModal(id) {
+      const member = trustMembersData.find(m => m.id === id);
+      if (!member) return;
+
+      document.getElementById('modalFormTitle').textContent = 'Edit Trust Member';
+      document.getElementById('btnSaveMemberText').textContent = 'Update Member';
+      document.getElementById('memberEditId').value = member.id;
+      document.getElementById('memberNameInput').value = member.name || '';
+      document.getElementById('memberSpecializationInput').value = member.specialization || '';
+      document.getElementById('memberDescriptionInput').value = member.description || '';
+
+      const currentImage = member.image || '/pdf-extracted/img_4_26483.jpg';
+      document.getElementById('memberImagePayload').value = currentImage;
+      const fileInput = document.getElementById('memberImageFileInput');
+      if (fileInput) fileInput.value = '';
+      document.getElementById('uploadPromptState').style.display = 'none';
+      document.getElementById('uploadPreviewState').style.display = 'flex';
+      document.getElementById('uploadPreviewAvatar').src = currentImage;
+      document.getElementById('uploadPreviewTitle').textContent = `${member.name} Photo`;
+      document.getElementById('uploadPreviewSubtitle').innerHTML = '<i class="fa-solid fa-image"></i> Current photo • Click to change or upload new';
+
+      document.getElementById('memberTagInput').value = member.tag || 'Academic Leader';
+      document.getElementById('memberBadgeColorInput').value = member.badgeColor || 'bg-[#FFB52E] text-[#172033]';
+      document.getElementById('memberLinkedinInput').value = member.linkedinUrl || '';
+      document.getElementById('memberTwitterInput').value = member.twitterUrl || '';
+      document.getElementById('memberGithubInput').value = member.githubUrl || '';
+      document.getElementById('memberOrderInput').value = member.displayOrder || 0;
+      document.getElementById('memberActiveCheckbox').checked = Boolean(member.isActive);
+
+      document.getElementById('trustMemberModal').classList.add('active');
+    }
+
+    function closeTrustMemberModal() {
+      document.getElementById('trustMemberModal').classList.remove('active');
+    }
+
+    // Handle Form Submit (Add or Edit)
+    async function handleTrustMemberSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('memberEditId').value;
+      const btn = document.getElementById('btnSaveMember');
+      btn.disabled = true;
+
+      const payload = {
+        name: document.getElementById('memberNameInput').value.trim(),
+        specialization: document.getElementById('memberSpecializationInput').value.trim(),
+        description: document.getElementById('memberDescriptionInput').value.trim(),
+        image: document.getElementById('memberImagePayload').value.trim() || '/pdf-extracted/img_4_26483.jpg',
+        tag: document.getElementById('memberTagInput').value.trim() || 'Academic Leader',
+        badgeColor: document.getElementById('memberBadgeColorInput').value,
+        linkedinUrl: document.getElementById('memberLinkedinInput').value.trim() || null,
+        twitterUrl: document.getElementById('memberTwitterInput').value.trim() || null,
+        githubUrl: document.getElementById('memberGithubInput').value.trim() || null,
+        displayOrder: parseInt(document.getElementById('memberOrderInput').value) || 0,
+        isActive: document.getElementById('memberActiveCheckbox').checked,
+      };
+
+      try {
+        const url = editId ? `/api/admin/trust-members/${editId}` : '/api/admin/trust-members';
+        const method = editId ? 'PUT' : 'POST';
+
+        const res = await adminFetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          showAdminToast(editId ? 'Trust member updated successfully' : 'Trust member created and published to homepage', 'success');
+          closeTrustMemberModal();
+          await fetchTrustMembers();
+        } else {
+          const err = await res.json();
+          showAdminToast(err.message || 'Could not save trust member', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error while saving trust member', 'danger');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Toggle Member Status
+    async function toggleMemberStatus(id) {
+      try {
+        const res = await adminFetch(`/api/admin/trust-members/${id}/status`, { method: 'PATCH' });
+        if (res.ok) {
+          const json = await res.json();
+          showAdminToast(json.message || 'Status updated', 'success');
+          await fetchTrustMembers();
+        }
+      } catch (e) {
+        showAdminToast('Could not update status', 'danger');
+      }
+    }
+
+    // Delete Modal
+    function confirmDeleteMember(id, name) {
+      pendingDeleteId = id;
+      document.getElementById('deleteTargetMemberName').textContent = name;
+      document.getElementById('deleteConfirmModal').classList.add('active');
+    }
+
+    function closeDeleteConfirmModal() {
+      document.getElementById('deleteConfirmModal').classList.remove('active');
+      pendingDeleteId = null;
+    }
+
+    async function executeDeleteTrustMember() {
+      if (!pendingDeleteId) return;
+      const btn = document.getElementById('btnConfirmDelete');
+      btn.disabled = true;
+
+      try {
+        const res = await adminFetch(`/api/admin/trust-members/${pendingDeleteId}`, { method: 'DELETE' });
+        if (res.ok) {
+          showAdminToast('Trust member removed from live homepage', 'success');
+          closeDeleteConfirmModal();
+          await fetchTrustMembers();
+        } else {
+          showAdminToast('Could not delete trust member', 'danger');
+        }
+      } catch (e) {
+        showAdminToast('Network error deleting trust member', 'danger');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Real-time search filter
+    document.getElementById('trustMemberSearchInput')?.addEventListener('input', function(e) {
+      const term = e.target.value.toLowerCase().trim();
+      const filtered = trustMembersData.filter(m => {
+        return (m.name || '').toLowerCase().includes(term) ||
+               (m.specialization || '').toLowerCase().includes(term) ||
+               (m.description || '').toLowerCase().includes(term) ||
+               (m.tag || '').toLowerCase().includes(term);
+      });
+      renderTrustMembers(filtered);
+    });
+
+    // Close on overlay outside click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+        }
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupDropzoneListeners();
+      fetchTrustMembers();
+    });
+  </script>
+</body>
+</html>

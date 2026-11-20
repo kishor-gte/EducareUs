@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us Management — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .form-section-card {
+      background: #FFFFFF;
+      border-radius: 14px;
+      border: 1px solid var(--admin-border);
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .form-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #F1F5F9;
+      margin-bottom: 18px;
+    }
+    .section-num-pill {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #07166F;
+      color: #FFFFFF;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-action-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action-sm:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-action-edit { background: #2563EB; color: #FFFFFF; }
+    .btn-action-view { background: #0F172A; color: var(--admin-gold); }
+    .btn-action-pub { background: #059669; color: #FFFFFF; }
+    .btn-action-unpub { background: #D97706; color: #FFFFFF; }
+    .btn-action-del { background: #EF4444; color: #FFFFFF; }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-dialog {
+      background: #FFFFFF;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header-navy {
+      padding: 16px 22px;
+      background: var(--admin-navy);
+      color: #FFFFFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .repeat-item-card {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub active"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-up chevron-icon"></i></a>
+      <div class="sidebar-sub-menu open">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item active">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy); display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-circle-info text-gold"></i>
+        <span>Publications Suite / About Us Section Editor</span>
+      </div>
+      <div class="top-header-right">
+        <button class="btn-action-sm btn-action-view" onclick="openPreviewModal()">
+          <i class="fa-solid fa-eye"></i> Preview Live Section
+        </button>
+        <button class="btn-action-sm btn-action-unpub" onclick="saveAboutDraft(false)">
+          <i class="fa-solid fa-floppy-disk"></i> Save Draft
+        </button>
+        <button class="btn-primary-gold" onclick="publishAboutLive()">
+          <i class="fa-solid fa-paper-plane"></i> Publish Updates
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <!-- Title Block -->
+      <div class="page-title-block">
+        <div>
+          <h1>About Us Management</h1>
+          <p>Manage the About Us information, mission, vision, core values, and story displayed on the EduCare website.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="aboutStatusBadge" class="status-badge badge-published">PUBLISHED</span>
+          <span id="aboutVersionBadge" style="font-size: 0.75rem; font-weight: 700; color: var(--admin-text-muted); background: #F1F5F9; padding: 4px 10px; border-radius: 6px;">Version 1.0</span>
+          <a href="/#about-us" target="_blank" class="btn-action-sm btn-action-view" style="text-decoration: none;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> View on Homepage
+          </a>
+        </div>
+      </div>
+
+      <!-- FORM BODY -->
+      <form id="aboutForm" onsubmit="event.preventDefault();">
+        <!-- SECTION A: Basic Information -->
+        <div class="form-section-card">
+          <div class="form-section-header">
+            <span class="section-num-pill">A</span>
+            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--admin-navy);">Basic Section Information</h3>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+            <div>
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Section Badge / Eyebrow Text</label>
+              <input type="text" id="aboutBadgeInput" placeholder="ABOUT EDUCAREUS" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Main Heading <span style="color: #DC2626;">*</span></label>
+              <input type="text" id="aboutHeadingInput" placeholder="Empowering Meritorious Scholars Across India" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.95rem; font-weight: 700;" required>
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Highlighted / Accent Heading Text</label>
+              <input type="text" id="aboutHighlightedInput" placeholder="With Direct Institutional Fee Transfers & Zero Platform Fees" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Short Description / Introductory Lead Paragraph <span style="color: #DC2626;">*</span></label>
+              <textarea id="aboutShortDescInput" rows="3" placeholder="EduCareus was established to bridge the higher education financing gap for high-achieving medical, engineering, and professional college students from economically constrained backgrounds." style="width: 100%; padding: 10px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem; line-height: 1.5;" required></textarea>
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Detailed About Us Content (Rich Text)</label>
+              <div class="editor-toolbar" style="border: 1px solid var(--admin-border); border-bottom: none; border-radius: 8px 8px 0 0; background: #F8FAFC; padding: 6px; display: flex; gap: 4px; flex-wrap: wrap;">
+                <button type="button" class="editor-btn" onclick="execCmd('formatBlock', '<h2>')">H2</button>
+                <button type="button" class="editor-btn" onclick="execCmd('formatBlock', '<h3>')">H3</button>
+                <button type="button" class="editor-btn" onclick="execCmd('bold')"><i class="fa-solid fa-bold"></i></button>
+                <button type="button" class="editor-btn" onclick="execCmd('italic')"><i class="fa-solid fa-italic"></i></button>
+                <button type="button" class="editor-btn" onclick="execCmd('underline')"><i class="fa-solid fa-underline"></i></button>
+                <button type="button" class="editor-btn" onclick="execCmd('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i></button>
+                <button type="button" class="editor-btn" onclick="execCmd('insertOrderedList')"><i class="fa-solid fa-list-ol"></i></button>
+                <button type="button" class="editor-btn" onclick="promptLink()"><i class="fa-solid fa-link"></i></button>
+              </div>
+              <div id="aboutDetailedEditor" contenteditable="true" style="min-height: 160px; padding: 14px; border: 1px solid var(--admin-border); border-radius: 0 0 8px 8px; background: #FFFFFF; font-size: 0.88rem; line-height: 1.6;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION B: Images -->
+        <div class="form-section-card">
+          <div class="form-section-header">
+            <span class="section-num-pill">B</span>
+            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--admin-navy);">About Us Featured Images</h3>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <!-- Main Image -->
+            <div style="background: #F8FAFC; padding: 16px; border-radius: 10px; border: 1px solid var(--admin-border);">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 6px;">Primary Feature Image</label>
+              <div style="height: 140px; border-radius: 8px; overflow: hidden; border: 1px solid #CBD5E1; background: #0F172A; margin-bottom: 10px;">
+                <img id="mainImagePreview" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1000&auto=format&fit=crop&q=80" alt="Main Image Preview" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <label class="btn-action-sm btn-action-view" style="cursor: pointer; padding: 6px 12px;">
+                  <i class="fa-solid fa-upload"></i> Upload Image
+                  <input type="file" id="mainImageFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;" onchange="handleImageUpload(event, 'main')">
+                </label>
+                <input type="text" id="mainImageUrlInput" placeholder="Or image URL..." oninput="updateImagePreview('main', this.value)" style="flex: 1; padding: 6px 10px; border: 1px solid var(--admin-border); border-radius: 6px; font-size: 0.8rem;">
+              </div>
+              <input type="text" id="mainImageAltInput" placeholder="Alt text (e.g. EduCareus Education Team)" style="width: 100%; padding: 6px 10px; border: 1px solid var(--admin-border); border-radius: 6px; font-size: 0.8rem;">
+            </div>
+
+            <!-- Secondary Image -->
+            <div style="background: #F8FAFC; padding: 16px; border-radius: 10px; border: 1px solid var(--admin-border);">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 6px;">Secondary / Campus Image (Optional)</label>
+              <div style="height: 140px; border-radius: 8px; overflow: hidden; border: 1px solid #CBD5E1; background: #0F172A; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;">
+                <img id="secImagePreview" src="" alt="Secondary Image Preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                <span id="secImagePlaceholder" style="font-size: 0.75rem; color: #94A3B8;">No secondary image selected</span>
+              </div>
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <label class="btn-action-sm btn-action-view" style="cursor: pointer; padding: 6px 12px;">
+                  <i class="fa-solid fa-upload"></i> Upload Image
+                  <input type="file" id="secImageFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;" onchange="handleImageUpload(event, 'sec')">
+                </label>
+                <input type="text" id="secImageUrlInput" placeholder="Or image URL..." oninput="updateImagePreview('sec', this.value)" style="flex: 1; padding: 6px 10px; border: 1px solid var(--admin-border); border-radius: 6px; font-size: 0.8rem;">
+              </div>
+              <input type="text" id="secImageAltInput" placeholder="Alt text..." style="width: 100%; padding: 6px 10px; border: 1px solid var(--admin-border); border-radius: 6px; font-size: 0.8rem;">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION C: Mission and Vision -->
+        <div class="form-section-card">
+          <div class="form-section-header">
+            <span class="section-num-pill">C</span>
+            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--admin-navy);">Mission &amp; Vision Statements</h3>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+            <!-- Mission Card -->
+            <div style="background: #F8FAFC; padding: 18px; border-radius: 12px; border: 1px solid var(--admin-border);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--admin-navy);">
+                  <i class="fa-solid fa-bullseye text-gold"></i>
+                  <span>Our Mission</span>
+                </div>
+                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                  <input type="checkbox" id="missionEnabledToggle" checked style="accent-color: #059669;">
+                  <span>Show Card</span>
+                </label>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="missionHeadingInput" placeholder="Our Mission" style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem; font-weight: 700;">
+                <textarea id="missionDescInput" rows="3" placeholder="Mission statement..." style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.82rem; line-height: 1.5;"></textarea>
+              </div>
+            </div>
+
+            <!-- Vision Card -->
+            <div style="background: #F8FAFC; padding: 18px; border-radius: 12px; border: 1px solid var(--admin-border);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--admin-navy);">
+                  <i class="fa-solid fa-eye text-gold"></i>
+                  <span>Our Vision</span>
+                </div>
+                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                  <input type="checkbox" id="visionEnabledToggle" checked style="accent-color: #059669;">
+                  <span>Show Card</span>
+                </label>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="visionHeadingInput" placeholder="Our Vision" style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem; font-weight: 700;">
+                <textarea id="visionDescInput" rows="3" placeholder="Vision statement..." style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.82rem; line-height: 1.5;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION D: Our Story -->
+        <div class="form-section-card">
+          <div class="form-section-header" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="section-num-pill">D</span>
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--admin-navy);">Our Background &amp; Story</h3>
+            </div>
+            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+              <input type="checkbox" id="storyEnabledToggle" checked style="accent-color: #059669;">
+              <span>Include Story Subsection</span>
+            </label>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Story Heading</label>
+              <input type="text" id="storyHeadingInput" placeholder="The EduCareus Journey" style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem; font-weight: 700;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Story Narrative</label>
+              <textarea id="storyDescInput" rows="4" placeholder="How EduCareus was founded, its milestones, and purpose..." style="width: 100%; padding: 10px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem; line-height: 1.6;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION E: Core Values -->
+        <div class="form-section-card">
+          <div class="form-section-header" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="section-num-pill">E</span>
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--admin-navy);">Core Organizational Values</h3>
+            </div>
+            <button type="button" class="btn-action-sm btn-action-view" onclick="addNewValueCard()">
+              <i class="fa-solid fa-plus"></i> Add Value Card
+            </button>
+          </div>
+
+          <div id="valuesContainer" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Values render dynamically -->
+          </div>
+        </div>
+
+        <!-- SECTION F: Call to Action -->
+        <div class="form-section-card">
+          <div class="form-section-header" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="section-num-pill">F</span>
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--admin-navy);">Call-to-Action Box</h3>
+            </div>
+            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+              <input type="checkbox" id="ctaEnabledToggle" checked style="accent-color: #059669;">
+              <span>Enable CTA Card</span>
+            </label>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">CTA Heading</label>
+              <input type="text" id="ctaHeadingInput" placeholder="Ready to Support India’s Meritorious Scholars?" style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem; font-weight: 700;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">CTA Description</label>
+              <input type="text" id="ctaDescInput" placeholder="Connect with our team to sponsor a student fee challan or explore college admission guidance." style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Button Text</label>
+              <input type="text" id="ctaButtonTextInput" placeholder="Submit Guidance Inquiry" style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Button Link Destination</label>
+              <input type="text" id="ctaButtonUrlInput" placeholder="/userdashboard?tab=enquiry or /courses" style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sticky Form Footer -->
+        <div style="position: sticky; bottom: 0; background: #FFFFFF; border-top: 1px solid var(--admin-border); padding: 16px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 100;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button type="button" class="btn-action-sm btn-action-view" onclick="openPreviewModal()" style="padding: 9px 16px;">
+              <i class="fa-solid fa-eye"></i> Preview Live Section
+            </button>
+            <button type="button" class="btn-action-sm btn-action-unpub" onclick="unpublishAbout()" id="unpublishBtn" style="padding: 9px 16px;">
+              <i class="fa-solid fa-pause"></i> Unpublish Section
+            </button>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn-action-sm btn-action-unpub" onclick="saveAboutDraft(false)" style="padding: 9px 16px;">
+              <i class="fa-solid fa-floppy-disk"></i> Save Draft
+            </button>
+            <button type="button" class="btn-primary-gold" onclick="publishAboutLive()" style="padding: 9px 20px;">
+              <i class="fa-solid fa-paper-plane"></i> Publish Live
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <!-- PREVIEW MODAL -->
+  <div class="modal-overlay" id="aboutPreviewModal">
+    <div class="modal-dialog" style="max-width: 900px;">
+      <div class="modal-header-navy">
+        <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #FFFFFF;">
+          <i class="fa-solid fa-desktop text-gold" style="margin-right: 6px;"></i>
+          Live Preview — About Us Homepage Section
+        </h3>
+        <button onclick="closePreviewModal()" style="background: none; border: none; color: #94A3B8; font-size: 1.2rem; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div style="padding: 28px; overflow-y: auto; max-height: 80vh; background: #FFFFFF;" id="previewContentContainer">
+        <!-- Rendered preview -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-core.js"></script>
+  <script>
+    let currentAboutData = {};
+    let valuesList = [];
+
+    function showAdminToast(msg, type = 'success') {
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.bottom = '24px';
+      toast.style.right = '24px';
+      toast.style.padding = '12px 20px';
+      toast.style.borderRadius = '10px';
+      toast.style.fontSize = '0.84rem';
+      toast.style.fontWeight = '700';
+      toast.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
+      toast.style.zIndex = '99999';
+      toast.style.display = 'flex';
+      toast.style.alignItems = 'center';
+      toast.style.gap = '8px';
+
+      if (type === 'success') {
+        toast.style.background = '#059669';
+        toast.style.color = '#FFFFFF';
+        toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${msg}`;
+      } else {
+        toast.style.background = '#DC2626';
+        toast.style.color = '#FFFFFF';
+        toast.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${msg}`;
+      }
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    function execCmd(command, value = null) {
+      document.execCommand(command, false, value);
+      document.getElementById('aboutDetailedEditor').focus();
+    }
+
+    function promptLink() {
+      const url = prompt('Enter URL (https://...):', 'https://');
+      if (url && url !== 'https://') execCmd('createLink', url);
+    }
+
+    function handleImageUpload(e, target) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const base64 = evt.target.result;
+        if (target === 'main') {
+          document.getElementById('mainImagePreview').src = base64;
+          document.getElementById('mainImageUrlInput').value = base64;
+        } else {
+          document.getElementById('secImagePreview').src = base64;
+          document.getElementById('secImagePreview').style.display = 'block';
+          document.getElementById('secImagePlaceholder').style.display = 'none';
+          document.getElementById('secImageUrlInput').value = base64;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateImagePreview(target, url) {
+      if (target === 'main') {
+        document.getElementById('mainImagePreview').src = url || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1000&auto=format&fit=crop&q=80';
+      } else {
+        if (url && url.trim()) {
+          document.getElementById('secImagePreview').src = url;
+          document.getElementById('secImagePreview').style.display = 'block';
+          document.getElementById('secImagePlaceholder').style.display = 'none';
+        } else {
+          document.getElementById('secImagePreview').style.display = 'none';
+          document.getElementById('secImagePlaceholder').style.display = 'block';
+        }
+      }
+    }
+
+    function renderValuesList() {
+      const container = document.getElementById('valuesContainer');
+      if (valuesList.length === 0) {
+        container.innerHTML = `<span style="font-size: 0.78rem; color: #94A3B8;">No values added yet. Click "+ Add Value Card" above.</span>`;
+        return;
+      }
+
+      container.innerHTML = valuesList.map((val, idx) => `
+        <div class="repeat-item-card" data-idx="${idx}">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; color: #0F172A;">
+              <span style="width: 20px; height: 20px; border-radius: 4px; background: #07166F; color: #FFF; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;">${idx + 1}</span>
+              <span>${val.title || 'Untitled Value'}</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="btn-action-sm btn-action-del" onclick="removeValueCard(${idx})" style="padding: 4px 8px;">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 120px; gap: 10px; margin-bottom: 6px;">
+            <input type="text" value="${val.title || ''}" placeholder="Value Title" onchange="valuesList[${idx}].title = this.value; renderValuesList();" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">
+            <select onchange="valuesList[${idx}].icon = this.value;" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.8rem;">
+              <option value="ShieldCheck" ${val.icon === 'ShieldCheck' ? 'selected' : ''}>ShieldCheck</option>
+              <option value="Award" ${val.icon === 'Award' ? 'selected' : ''}>Award</option>
+              <option value="Building2" ${val.icon === 'Building2' ? 'selected' : ''}>Building2</option>
+              <option value="Sparkles" ${val.icon === 'Sparkles' ? 'selected' : ''}>Sparkles</option>
+              <option value="GraduationCap" ${val.icon === 'GraduationCap' ? 'selected' : ''}>GraduationCap</option>
+              <option value="HeartHandshake" ${val.icon === 'HeartHandshake' ? 'selected' : ''}>HeartHandshake</option>
+            </select>
+          </div>
+          <textarea rows="2" placeholder="Value description..." onchange="valuesList[${idx}].description = this.value;" style="width: 100%; padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.8rem; line-height: 1.4;">${val.description || ''}</textarea>
+        </div>
+      `).join('');
+    }
+
+    function addNewValueCard() {
+      valuesList.push({
+        id: 'val-' + Date.now(),
+        title: 'New Core Value',
+        description: 'Description of commitment to student success...',
+        icon: 'ShieldCheck',
+        displayOrder: valuesList.length + 1,
+        enabled: true,
+      });
+      renderValuesList();
+    }
+
+    function removeValueCard(idx) {
+      valuesList.splice(idx, 1);
+      renderValuesList();
+    }
+
+    async function loadAboutData() {
+      try {
+        const res = await fetch('/api/admin/homepage-sections/about-us', { credentials: 'include' });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const s = json.data;
+          const d = s.draftData || {};
+          currentAboutData = d;
+
+          document.getElementById('aboutStatusBadge').className = `status-badge ${s.status === 'PUBLISHED' ? 'badge-published' : 'badge-draft'}`;
+          document.getElementById('aboutStatusBadge').innerText = s.status || 'DRAFT';
+          document.getElementById('aboutVersionBadge').innerText = `Version ${s.version || '1.0'}`;
+
+          document.getElementById('aboutBadgeInput').value = d.badge || '';
+          document.getElementById('aboutHeadingInput').value = d.heading || '';
+          document.getElementById('aboutHighlightedInput').value = d.highlightedHeading || '';
+          document.getElementById('aboutShortDescInput').value = d.shortDescription || '';
+          document.getElementById('aboutDetailedEditor').innerHTML = d.detailedContent || '';
+
+          document.getElementById('mainImageUrlInput').value = d.mainImage || '';
+          updateImagePreview('main', d.mainImage);
+          document.getElementById('mainImageAltInput').value = d.mainImageAlt || '';
+
+          document.getElementById('secImageUrlInput').value = d.secondaryImage || '';
+          updateImagePreview('sec', d.secondaryImage);
+          document.getElementById('secImageAltInput').value = d.secondaryImageAlt || '';
+
+          if (d.mission) {
+            document.getElementById('missionHeadingInput').value = d.mission.heading || 'Our Mission';
+            document.getElementById('missionDescInput').value = d.mission.description || '';
+            document.getElementById('missionEnabledToggle').checked = d.mission.enabled !== false;
+          }
+
+          if (d.vision) {
+            document.getElementById('visionHeadingInput').value = d.vision.heading || 'Our Vision';
+            document.getElementById('visionDescInput').value = d.vision.description || '';
+            document.getElementById('visionEnabledToggle').checked = d.vision.enabled !== false;
+          }
+
+          if (d.story) {
+            document.getElementById('storyHeadingInput').value = d.story.heading || 'The EduCareus Journey';
+            document.getElementById('storyDescInput').value = d.story.description || '';
+            document.getElementById('storyEnabledToggle').checked = d.story.enabled !== false;
+          }
+
+          valuesList = Array.isArray(d.values) ? d.values : [];
+          renderValuesList();
+
+          if (d.cta) {
+            document.getElementById('ctaHeadingInput').value = d.cta.heading || '';
+            document.getElementById('ctaDescInput').value = d.cta.description || '';
+            document.getElementById('ctaButtonTextInput').value = d.cta.buttonText || '';
+            document.getElementById('ctaButtonUrlInput').value = d.cta.buttonUrl || '';
+            document.getElementById('ctaEnabledToggle').checked = d.cta.enabled !== false;
+          }
+        }
+      } catch (err) {
+        showAdminToast('Network error loading About Us data', 'danger');
+      }
+    }
+
+    function gatherFormData() {
+      return {
+        badge: document.getElementById('aboutBadgeInput').value.trim(),
+        heading: document.getElementById('aboutHeadingInput').value.trim(),
+        highlightedHeading: document.getElementById('aboutHighlightedInput').value.trim(),
+        shortDescription: document.getElementById('aboutShortDescInput').value.trim(),
+        detailedContent: document.getElementById('aboutDetailedEditor').innerHTML,
+        mainImage: document.getElementById('mainImageUrlInput').value.trim(),
+        mainImageAlt: document.getElementById('mainImageAltInput').value.trim(),
+        secondaryImage: document.getElementById('secImageUrlInput').value.trim(),
+        secondaryImageAlt: document.getElementById('secImageAltInput').value.trim(),
+        mission: {
+          heading: document.getElementById('missionHeadingInput').value.trim(),
+          description: document.getElementById('missionDescInput').value.trim(),
+          icon: 'Target',
+          enabled: document.getElementById('missionEnabledToggle').checked,
+        },
+        vision: {
+          heading: document.getElementById('visionHeadingInput').value.trim(),
+          description: document.getElementById('visionDescInput').value.trim(),
+          icon: 'Eye',
+          enabled: document.getElementById('visionEnabledToggle').checked,
+        },
+        story: {
+          heading: document.getElementById('storyHeadingInput').value.trim(),
+          description: document.getElementById('storyDescInput').value.trim(),
+          enabled: document.getElementById('storyEnabledToggle').checked,
+        },
+        values: valuesList,
+        cta: {
+          heading: document.getElementById('ctaHeadingInput').value.trim(),
+          description: document.getElementById('ctaDescInput').value.trim(),
+          buttonText: document.getElementById('ctaButtonTextInput').value.trim(),
+          buttonUrl: document.getElementById('ctaButtonUrlInput').value.trim(),
+          enabled: document.getElementById('ctaEnabledToggle').checked,
+        },
+      };
+    }
+
+    async function saveAboutDraft(silent = false) {
+      const payload = gatherFormData();
+      try {
+        const res = await fetch('/api/admin/homepage-sections/about-us', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.success) {
+          if (!silent) showAdminToast('About Us draft saved successfully!', 'success');
+          loadAboutData();
+          return true;
+        } else {
+          showAdminToast(json.message || 'Draft save failed', 'danger');
+          return false;
+        }
+      } catch (err) {
+        showAdminToast('Network error saving draft', 'danger');
+        return false;
+      }
+    }
+
+    async function publishAboutLive() {
+      const saved = await saveAboutDraft(true);
+      if (!saved) return;
+
+      try {
+        const res = await fetch('/api/admin/homepage-sections/about-us/publish', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast('About Us section published live to website!', 'success');
+          loadAboutData();
+        } else {
+          showAdminToast(json.message || 'Publishing failed', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error publishing section', 'danger');
+      }
+    }
+
+    async function unpublishAbout() {
+      if (!confirm('Are you sure you want to unpublish the About Us section? It will be hidden from public visitors.')) return;
+      try {
+        const res = await fetch('/api/admin/homepage-sections/about-us/unpublish', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast('Section unpublished from live website.', 'success');
+          loadAboutData();
+        } else {
+          showAdminToast(json.message || 'Unpublish failed', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error unpublishing section', 'danger');
+      }
+    }
+
+    function openPreviewModal() {
+      const d = gatherFormData();
+      const container = document.getElementById('previewContentContainer');
+      container.innerHTML = `
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 30px;">
+          ${d.badge ? `<span style="background: #F1F5F9; color: #475569; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">${d.badge}</span>` : ''}
+          <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 900; color: #0F172A; margin: 12px 0 6px;">
+            ${d.heading}
+            ${d.highlightedHeading ? `<span style="color: #07166F; display: block; font-size: 1.3rem;">${d.highlightedHeading}</span>` : ''}
+          </h2>
+          <p style="color: #64748B; font-size: 0.9rem; line-height: 1.6;">${d.shortDescription}</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; margin-bottom: 30px;">
+          <div style="border-radius: 16px; overflow: hidden; height: 260px; background: #0F172A;">
+            <img src="${d.mainImage || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1000'}" alt="${d.mainImageAlt || ''}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="font-size: 0.88rem; color: #334155; line-height: 1.6;">
+            ${d.detailedContent || '<p>Detailed mission and institutional background...</p>'}
+          </div>
+        </div>
+
+        ${d.mission?.enabled || d.vision?.enabled ? `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 30px;">
+            ${d.mission?.enabled ? `
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 14px; padding: 20px;">
+                <h4 style="font-size: 0.95rem; font-weight: 800; color: #07166F; margin: 0 0 6px;">${d.mission.heading || 'Our Mission'}</h4>
+                <p style="font-size: 0.8rem; color: #64748B; margin: 0; line-height: 1.5;">${d.mission.description}</p>
+              </div>
+            ` : ''}
+            ${d.vision?.enabled ? `
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 14px; padding: 20px;">
+                <h4 style="font-size: 0.95rem; font-weight: 800; color: #07166F; margin: 0 0 6px;">${d.vision.heading || 'Our Vision'}</h4>
+                <p style="font-size: 0.8rem; color: #64748B; margin: 0; line-height: 1.5;">${d.vision.description}</p>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+
+        ${d.cta?.enabled ? `
+          <div style="background: linear-gradient(135deg, #07166F, #0A1F8F); color: #FFF; border-radius: 16px; padding: 24px; text-align: center;">
+            <h4 style="font-size: 1.1rem; font-weight: 800; margin: 0 0 6px;">${d.cta.heading}</h4>
+            <p style="font-size: 0.82rem; color: #CBD5E1; margin: 0 0 16px;">${d.cta.description}</p>
+            <button type="button" class="btn-primary-gold" style="padding: 8px 20px; font-size: 0.82rem;">${d.cta.buttonText || 'Contact Us'}</button>
+          </div>
+        ` : ''}
+      `;
+      document.getElementById('aboutPreviewModal').style.display = 'flex';
+    }
+
+    function closePreviewModal() {
+      document.getElementById('aboutPreviewModal').style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAboutData);
+  </script>
+</body>
+</html>

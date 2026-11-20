@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Management — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .college-logo-thumb {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid var(--admin-border);
+      background: #FFFFFF;
+      padding: 2px;
+    }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-dialog {
+      background: #FFFFFF;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header-navy {
+      padding: 16px 22px;
+      background: var(--admin-navy);
+      color: #FFFFFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-action-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action-sm:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .btn-action-edit { background: #2563EB; color: #FFFFFF; }
+    .btn-action-view { background: #0F172A; color: var(--admin-gold); }
+    .btn-action-pub { background: #059669; color: #FFFFFF; }
+    .btn-action-unpub { background: #D97706; color: #FFFFFF; }
+    .btn-action-del { background: #EF4444; color: #FFFFFF; }
+
+    .course-mini-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      background: #EEF2FF;
+      color: #4338CA;
+      border: 1px solid #C7D2FE;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin: 2px;
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub active"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-up chevron-icon"></i></a>
+      <div class="sidebar-sub-menu open">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item active">Manage Colleges</a>
+      </div>
+
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- REVIEWS MANAGEMENT -->
+      <a href="admin-reviews.html" class="sidebar-nav-item"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="globalCollegeSearch" placeholder="Search colleges by name, city, state, or affiliation..." oninput="handleSearch(this.value)">
+      </div>
+      <div class="top-header-right">
+        <button class="btn-primary-gold" onclick="openAddCollegeModal()" style="display: inline-flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-plus"></i>
+          <span>+ Add New College</span>
+        </button>
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <!-- Page Title -->
+      <div class="page-title-block">
+        <div>
+          <h1>College &amp; Institution Management</h1>
+          <p>Manage accredited universities, colleges, and institutions associated with courses.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-primary-gold" onclick="openAddCollegeModal()">
+            <i class="fa-solid fa-circle-plus"></i> + Add New College
+          </button>
+          <a href="admin-courses.html" class="btn-action-sm btn-action-view" style="padding: 9px 14px; font-size: 0.82rem; text-decoration: none;">
+            <i class="fa-solid fa-book-bookmark"></i> Manage Courses
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div style="background: #FFFFFF; border-radius: 12px; border: 1px solid var(--admin-border); padding: 18px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase;">Total Colleges</div>
+            <div id="statTotalColleges" style="font-size: 1.6rem; font-weight: 800; color: var(--admin-navy); margin-top: 4px;">0</div>
+          </div>
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #EEF2FF; color: #4F46E5; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; border-radius: 12px; border: 1px solid var(--admin-border); padding: 18px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase;">Active Institutions</div>
+            <div id="statActiveColleges" style="font-size: 1.6rem; font-weight: 800; color: #059669; margin-top: 4px;">0</div>
+          </div>
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #ECFDF5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; border-radius: 12px; border: 1px solid var(--admin-border); padding: 18px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase;">Government / Autonomous</div>
+            <div id="statGovColleges" style="font-size: 1.6rem; font-weight: 800; color: #2563EB; margin-top: 4px;">0</div>
+          </div>
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fa-solid fa-landmark"></i>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; border-radius: 12px; border: 1px solid var(--admin-border); padding: 18px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase;">Linked to Courses</div>
+            <div id="statLinkedColleges" style="font-size: 1.6rem; font-weight: 800; color: #D97706; margin-top: 4px;">0</div>
+          </div>
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fa-solid fa-link"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div style="background: #FFFFFF; border-radius: 12px; border: 1px solid var(--admin-border); padding: 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <select id="filterCollegeStatus" onchange="handleStatusFilter(this.value)" style="padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.84rem; font-weight: 600; color: var(--admin-navy);">
+            <option value="ALL">All Statuses</option>
+            <option value="ACTIVE">Active Only</option>
+            <option value="INACTIVE">Inactive Only</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn-action-sm btn-action-view" onclick="loadColleges()" style="padding: 8px 12px;" title="Refresh Table">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Colleges Table -->
+      <div style="background: #FFFFFF; border-radius: 12px; border: 1px solid var(--admin-border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <table class="admin-data-table" style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th style="width: 70px;">Logo</th>
+              <th>College / Institution Name</th>
+              <th>Location</th>
+              <th>Type &amp; Affiliation</th>
+              <th>Associated Courses</th>
+              <th style="text-align: center;">Status</th>
+              <th style="text-align: right; width: 160px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="collegesTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 40px; color: var(--admin-text-muted);">
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 1.5rem; color: var(--admin-gold); margin-bottom: 8px;"></i>
+                <div>Loading colleges directory...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- ADD / EDIT COLLEGE MODAL -->
+  <div class="modal-overlay" id="collegeModal">
+    <div class="modal-dialog" style="max-width: 780px;">
+      <div class="modal-header-navy">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,181,46,0.2); color: var(--admin-gold); display: flex; align-items: center; justify-content: center;">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div>
+            <h3 id="modalCollegeTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #FFFFFF;">Add New College</h3>
+            <span style="font-size: 0.74rem; color: #94A3B8;">Accredited universities &amp; institutions directory</span>
+          </div>
+        </div>
+        <button onclick="closeCollegeModal()" style="background: none; border: none; color: #94A3B8; font-size: 1.2rem; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div style="padding: 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+          <div style="grid-column: 1 / -1;">
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">College / Institution Name <span style="color: #DC2626;">*</span></label>
+            <input type="text" id="collegeNameInput" placeholder="e.g. All India Institute of Medical Sciences (AIIMS)" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;" required>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">City</label>
+            <input type="text" id="collegeCityInput" placeholder="e.g. New Delhi, Bengaluru" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">State</label>
+            <input type="text" id="collegeStateInput" placeholder="e.g. Delhi, Karnataka, Maharashtra" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Institution Type</label>
+            <select id="collegeTypeInput" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+              <option value="Government Autonomous">Government Autonomous</option>
+              <option value="Central University">Central University</option>
+              <option value="State University">State University</option>
+              <option value="Deemed University">Deemed University</option>
+              <option value="Private University">Private University</option>
+              <option value="Autonomous Institute">Autonomous Institute</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">University Affiliation / Accreditations</label>
+            <input type="text" id="collegeAffiliationInput" placeholder="e.g. AICTE / UGC Approved, NAAC A++" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Official Website URL</label>
+            <input type="url" id="collegeWebsiteInput" placeholder="https://www.aiims.edu" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Status</label>
+            <select id="collegeStatusInput" style="width: 100%; padding: 9px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem;">
+              <option value="ACTIVE">Active (Eligible for Courses)</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </div>
+
+          <!-- Logo Upload -->
+          <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 80px 1fr; gap: 14px; align-items: center; background: #F8FAFC; padding: 12px; border-radius: 8px; border: 1px solid var(--admin-border);">
+            <div style="width: 80px; height: 60px; border-radius: 6px; background: #FFF; border: 1px solid #CBD5E1; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+              <img id="collegeLogoPreview" src="https://images.unsplash.com/photo-1562774053-701939374585?w=100&auto=format&fit=crop&q=80" alt="Logo Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">College Logo</label>
+              <div style="display: flex; gap: 8px;">
+                <label class="btn-action-sm btn-action-view" style="padding: 6px 12px; cursor: pointer;">
+                  <i class="fa-solid fa-upload"></i> Upload Logo
+                  <input type="file" id="collegeLogoFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;" onchange="handleLogoUpload(event)">
+                </label>
+                <input type="text" id="collegeLogoUrlInput" placeholder="Or paste logo URL (https://...)" oninput="updateLogoFromUrl(this.value)" style="flex: 1; padding: 6px 10px; border: 1px solid var(--admin-border); border-radius: 6px; font-size: 0.8rem;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Associated Courses -->
+          <div style="grid-column: 1 / -1;">
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 6px;">
+              Associate with Courses
+            </label>
+            <div id="courseCheckboxesContainer" style="max-height: 140px; overflow-y: auto; border: 1px solid var(--admin-border); border-radius: 8px; padding: 10px; background: #F8FAFC; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px;">
+              <span style="font-size: 0.75rem; color: #64748B;">Loading courses...</span>
+            </div>
+          </div>
+
+          <div style="grid-column: 1 / -1;">
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 4px;">Short Description / Campus Highlights</label>
+            <textarea id="collegeDescInput" rows="3" placeholder="Overview of campus, research infrastructure, entrance quota seats, and fee structure details." style="width: 100%; padding: 8px 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 0.85rem; line-height: 1.5;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 16px 24px; background: #F8FAFC; border-top: 1px solid var(--admin-border); display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn-action-sm btn-action-del" onclick="closeCollegeModal()" style="padding: 8px 16px; background: #64748B;">
+          Cancel
+        </button>
+        <button type="button" class="btn-action-sm btn-action-pub" onclick="saveCollegeForm()" style="padding: 8px 18px;">
+          <i class="fa-solid fa-floppy-disk"></i> Save College Record
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="deleteCollegeModal">
+    <div class="modal-dialog" style="max-width: 440px;">
+      <div style="padding: 24px; text-align: center;">
+        <div style="width: 54px; height: 54px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 16px;">
+          <i class="fa-solid fa-trash-can"></i>
+        </div>
+        <h3 style="margin: 0 0 8px; font-size: 1.15rem; font-weight: 800; color: var(--admin-navy);">Delete College Record?</h3>
+        <p style="font-size: 0.82rem; color: var(--admin-text-muted); line-height: 1.5; margin: 0 0 20px;">
+          Are you sure you want to delete <strong id="deleteCollegeName" style="color: var(--admin-navy);">this college</strong>? This will safely unlink it from courses without deleting any course records.
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button class="btn-action-sm btn-action-view" onclick="closeDeleteCollegeModal()" style="padding: 8px 18px; background: #64748B;">
+            Cancel
+          </button>
+          <button class="btn-action-sm btn-action-del" onclick="executeDeleteCollege()" style="padding: 8px 18px;">
+            <i class="fa-solid fa-trash"></i> Delete College
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-core.js"></script>
+  <script>
+    let allColleges = [];
+    let allCoursesList = [];
+    let currentStatusFilter = 'ALL';
+    let currentEditingCollegeId = null;
+    let collegeToDeleteId = null;
+
+    function showAdminToast(msg, type = 'success') {
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.bottom = '24px';
+      toast.style.right = '24px';
+      toast.style.padding = '12px 20px';
+      toast.style.borderRadius = '10px';
+      toast.style.fontSize = '0.84rem';
+      toast.style.fontWeight = '700';
+      toast.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
+      toast.style.zIndex = '99999';
+      toast.style.display = 'flex';
+      toast.style.alignItems = 'center';
+      toast.style.gap = '8px';
+
+      if (type === 'success') {
+        toast.style.background = '#059669';
+        toast.style.color = '#FFFFFF';
+        toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${msg}`;
+      } else {
+        toast.style.background = '#DC2626';
+        toast.style.color = '#FFFFFF';
+        toast.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${msg}`;
+      }
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    async function loadColleges() {
+      const tbody = document.getElementById('collegesTableBody');
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--admin-text-muted);"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 1.5rem; color: var(--admin-gold); margin-bottom: 8px;"></i><div>Loading colleges directory...</div></td></tr>`;
+
+      try {
+        const res = await fetch('/api/admin/colleges?limit=200', { credentials: 'include' });
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          allColleges = json.data;
+          updateSummary();
+          renderCollegesTable();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #DC2626;">Failed to load colleges.</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #DC2626;">Network error connecting to Colleges API.</td></tr>`;
+      }
+    }
+
+    function updateSummary() {
+      const total = allColleges.length;
+      const active = allColleges.filter(c => c.status === 'ACTIVE').length;
+      const gov = allColleges.filter(c => (c.institutionType || '').includes('Government') || (c.institutionType || '').includes('Autonomous')).length;
+      const linked = allColleges.filter(c => c.courses && c.courses.length > 0).length;
+
+      document.getElementById('statTotalColleges').innerText = total;
+      document.getElementById('statActiveColleges').innerText = active;
+      document.getElementById('statGovColleges').innerText = gov;
+      document.getElementById('statLinkedColleges').innerText = linked;
+    }
+
+    function renderCollegesTable() {
+      const tbody = document.getElementById('collegesTableBody');
+      const q = (document.getElementById('globalCollegeSearch').value || '').toLowerCase().trim();
+
+      let filtered = allColleges.filter(c => {
+        if (currentStatusFilter !== 'ALL' && c.status !== currentStatusFilter) return false;
+        if (q) {
+          const mName = (c.name || '').toLowerCase().includes(q);
+          const mCity = (c.city || '').toLowerCase().includes(q);
+          const mState = (c.state || '').toLowerCase().includes(q);
+          const mAffil = (c.universityAffiliation || '').toLowerCase().includes(q);
+          if (!mName && !mCity && !mState && !mAffil) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 48px; color: var(--admin-text-muted);">
+              <div style="width: 50px; height: 50px; border-radius: 50%; background: #F1F5F9; color: #94A3B8; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin: 0 auto 12px;">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+              <div style="font-weight: 700; font-size: 0.95rem; color: var(--admin-navy);">No Colleges Found</div>
+              <p style="font-size: 0.8rem; margin-top: 4px;">Click <strong>"+ Add New College"</strong> to register partner universities and institutions.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const coursesList = c.courses && c.courses.length > 0
+          ? c.courses.map(crs => `<span class="course-mini-chip">${crs.name}</span>`).join('')
+          : `<span style="font-size: 0.72rem; color: #94A3B8; font-style: italic;">No linked courses</span>`;
+
+        return `
+          <tr style="border-bottom: 1px solid var(--admin-border);">
+            <td>
+              <img src="${c.logoUrl || 'https://images.unsplash.com/photo-1562774053-701939374585?w=100&auto=format&fit=crop&q=80'}" alt="${c.name}" class="college-logo-thumb" onerror="this.src='https://images.unsplash.com/photo-1562774053-701939374585?w=100&auto=format&fit=crop&q=80'">
+            </td>
+            <td>
+              <div style="font-weight: 700; color: var(--admin-navy); font-size: 0.9rem;">
+                ${c.name}
+              </div>
+              ${c.websiteUrl ? `<a href="${c.websiteUrl}" target="_blank" style="font-size: 0.72rem; color: #2563EB; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px;"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.65rem;"></i> Visit Website</a>` : ''}
+            </td>
+            <td>
+              <div style="font-size: 0.8rem; font-weight: 600; color: #334155;">
+                ${c.city ? c.city + ', ' : ''}${c.state || c.country || 'India'}
+              </div>
+            </td>
+            <td>
+              <span style="display: inline-block; padding: 2px 7px; border-radius: 4px; background: #F1F5F9; color: #475569; font-size: 0.72rem; font-weight: 700;">
+                ${c.institutionType || 'General'}
+              </span>
+              <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 3px;">
+                ${c.universityAffiliation || 'Accredited'}
+              </div>
+            </td>
+            <td>
+              <div>${coursesList}</div>
+            </td>
+            <td style="text-align: center;">
+              <span class="status-badge ${c.status === 'ACTIVE' ? 'badge-published' : 'badge-draft'}">
+                ${c.status}
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: 6px;">
+                <button class="btn-action-sm btn-action-edit" onclick="openEditCollegeModal('${c.id}')" title="Edit College">
+                  <i class="fa-solid fa-pen"></i> Edit
+                </button>
+                <button class="btn-action-sm btn-action-del" onclick="promptDeleteCollege('${c.id}', '${c.name.replace(/'/g, "\\'")}')" title="Delete College">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function handleSearch(val) { renderCollegesTable(); }
+    function handleStatusFilter(val) { currentStatusFilter = val; renderCollegesTable(); }
+
+    async function loadCoursesForSelection(selectedIds = []) {
+      const container = document.getElementById('courseCheckboxesContainer');
+      try {
+        const res = await fetch('/api/admin/courses?limit=100', { credentials: 'include' });
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          allCoursesList = json.data;
+          if (allCoursesList.length === 0) {
+            container.innerHTML = `<span style="font-size: 0.75rem; color: #64748B;">No courses registered yet.</span>`;
+            return;
+          }
+          container.innerHTML = allCoursesList.map(crs => {
+            const isChecked = selectedIds.includes(crs.id);
+            return `
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 600; color: #1E293B; cursor: pointer; padding: 4px 6px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2E8F0;">
+                <input type="checkbox" name="courseCheck" value="${crs.id}" ${isChecked ? 'checked' : ''} style="accent-color: #07166F;">
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${crs.name}</span>
+              </label>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        container.innerHTML = `<span style="font-size: 0.75rem; color: #DC2626;">Failed to load courses.</span>`;
+      }
+    }
+
+    function handleLogoUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById('collegeLogoPreview').src = evt.target.result;
+        document.getElementById('collegeLogoUrlInput').value = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateLogoFromUrl(url) {
+      if (url && url.trim()) document.getElementById('collegeLogoPreview').src = url.trim();
+    }
+
+    function openAddCollegeModal() {
+      currentEditingCollegeId = null;
+      document.getElementById('modalCollegeTitle').innerText = 'Add New College';
+      document.getElementById('collegeNameInput').value = '';
+      document.getElementById('collegeCityInput').value = '';
+      document.getElementById('collegeStateInput').value = '';
+      document.getElementById('collegeTypeInput').value = 'Government Autonomous';
+      document.getElementById('collegeAffiliationInput').value = '';
+      document.getElementById('collegeWebsiteInput').value = '';
+      document.getElementById('collegeStatusInput').value = 'ACTIVE';
+      document.getElementById('collegeDescInput').value = '';
+      document.getElementById('collegeLogoUrlInput').value = '';
+      document.getElementById('collegeLogoPreview').src = 'https://images.unsplash.com/photo-1562774053-701939374585?w=100&auto=format&fit=crop&q=80';
+
+      loadCoursesForSelection([]);
+      document.getElementById('collegeModal').style.display = 'flex';
+    }
+
+    async function openEditCollegeModal(id) {
+      currentEditingCollegeId = id;
+      document.getElementById('modalCollegeTitle').innerText = 'Edit College Record';
+
+      try {
+        const res = await fetch(`/api/admin/colleges/${id}`, { credentials: 'include' });
+        const json = await res.json();
+        if (!json.success || !json.data) return;
+
+        const c = json.data;
+        document.getElementById('collegeNameInput').value = c.name || '';
+        document.getElementById('collegeCityInput').value = c.city || '';
+        document.getElementById('collegeStateInput').value = c.state || '';
+        document.getElementById('collegeTypeInput').value = c.institutionType || 'Government Autonomous';
+        document.getElementById('collegeAffiliationInput').value = c.universityAffiliation || '';
+        document.getElementById('collegeWebsiteInput').value = c.websiteUrl || '';
+        document.getElementById('collegeStatusInput').value = c.status || 'ACTIVE';
+        document.getElementById('collegeDescInput').value = c.description || '';
+        document.getElementById('collegeLogoUrlInput').value = c.logoUrl || '';
+        document.getElementById('collegeLogoPreview').src = c.logoUrl || 'https://images.unsplash.com/photo-1562774053-701939374585?w=100&auto=format&fit=crop&q=80';
+
+        const selectedCourses = c.courses ? c.courses.map(crs => crs.id) : [];
+        loadCoursesForSelection(selectedCourses);
+
+        document.getElementById('collegeModal').style.display = 'flex';
+      } catch (err) {
+        showAdminToast('Failed to load college details', 'danger');
+      }
+    }
+
+    function closeCollegeModal() {
+      document.getElementById('collegeModal').style.display = 'none';
+      currentEditingCollegeId = null;
+    }
+
+    async function saveCollegeForm() {
+      const name = document.getElementById('collegeNameInput').value.trim();
+      if (!name) {
+        showAdminToast('College Name is required', 'danger');
+        document.getElementById('collegeNameInput').focus();
+        return;
+      }
+
+      const checkedBoxes = document.querySelectorAll('input[name="courseCheck"]:checked');
+      const courseIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+      const payload = {
+        name,
+        city: document.getElementById('collegeCityInput').value.trim() || null,
+        state: document.getElementById('collegeStateInput').value.trim() || null,
+        institutionType: document.getElementById('collegeTypeInput').value,
+        universityAffiliation: document.getElementById('collegeAffiliationInput').value.trim() || null,
+        websiteUrl: document.getElementById('collegeWebsiteInput').value.trim() || null,
+        status: document.getElementById('collegeStatusInput').value,
+        description: document.getElementById('collegeDescInput').value.trim() || null,
+        logoUrl: document.getElementById('collegeLogoUrlInput').value.trim() || null,
+        courseIds,
+      };
+
+      try {
+        let res;
+        if (currentEditingCollegeId) {
+          res = await fetch(`/api/admin/colleges/${currentEditingCollegeId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch('/api/admin/colleges', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+        }
+
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast('College record saved successfully!', 'success');
+          closeCollegeModal();
+          loadColleges();
+        } else {
+          showAdminToast(json.message || 'Saving failed', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error saving college', 'danger');
+      }
+    }
+
+    function promptDeleteCollege(id, name) {
+      collegeToDeleteId = id;
+      document.getElementById('deleteCollegeName').innerText = `"${name}"`;
+      document.getElementById('deleteCollegeModal').style.display = 'flex';
+    }
+
+    function closeDeleteCollegeModal() {
+      document.getElementById('deleteCollegeModal').style.display = 'none';
+      collegeToDeleteId = null;
+    }
+
+    async function executeDeleteCollege() {
+      if (!collegeToDeleteId) return;
+      try {
+        const res = await fetch(`/api/admin/colleges/${collegeToDeleteId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast('College deleted safely.', 'success');
+          closeDeleteCollegeModal();
+          loadColleges();
+        } else {
+          showAdminToast(json.message || 'Delete failed', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error deleting college', 'danger');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadColleges();
+    });
+  </script>
+</body>
+</html>

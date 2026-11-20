@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholar Reviews &amp; Ratings — EduCareus Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cabinet+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    /* Global Typography & Font Family */
+    body, button, input, select, textarea {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    .star-rating {
+      color: #F59E0B;
+      display: inline-flex;
+      gap: 3px;
+      font-size: 0.82rem;
+    }
+    .scholar-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #07166F;
+      color: #FFB52E;
+      font-weight: 800;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .badge-scholar {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #ECFDF5;
+      color: #059669;
+      border: 1px solid #A7F3D0;
+    }
+    .comment-bubble {
+      font-size: 0.82rem;
+      color: #334155;
+      line-height: 1.45;
+      max-width: 480px;
+      font-style: italic;
+    }
+    .problem-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       PREMIUM POPUP & MODAL SYSTEM (Resolves Screenshot Styling)
+    ═══════════════════════════════════════════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72) !important;
+      backdrop-filter: blur(6px) !important;
+      -webkit-backdrop-filter: blur(6px) !important;
+      z-index: 99999 !important;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    .modal-dialog {
+      background: #FFFFFF !important;
+      width: 100% !important;
+      border-radius: 16px !important;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4), 0 0 0 1px rgba(15, 23, 42, 0.08) !important;
+      overflow: hidden !important;
+      max-height: 94vh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      animation: modalSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+    @keyframes modalSlideIn {
+      0% { opacity: 0; transform: scale(0.96) translateY(12px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header-navy {
+      padding: 18px 24px;
+      background: #07166F;
+      color: #FFFFFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #FFB52E;
+    }
+    .modal-close-icon-btn {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border: none !important;
+      color: #FFFFFF !important;
+      width: 34px !important;
+      height: 34px !important;
+      border-radius: 8px !important;
+      font-size: 1.1rem !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
+    }
+    .modal-close-icon-btn:hover {
+      background: #EF4444 !important;
+      transform: rotate(90deg) scale(1.05);
+    }
+    .modal-input-label {
+      display: block !important;
+      font-size: 0.8rem !important;
+      font-weight: 700 !important;
+      color: #07166F !important;
+      margin-bottom: 6px !important;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .modal-input-field {
+      width: 100% !important;
+      padding: 10px 14px !important;
+      border: 1.5px solid #CBD5E1 !important;
+      border-radius: 10px !important;
+      font-size: 0.88rem !important;
+      font-family: inherit !important;
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      transition: all 0.2s ease !important;
+      box-sizing: border-box !important;
+      outline: none !important;
+    }
+    .modal-input-field:focus {
+      border-color: #07166F !important;
+      box-shadow: 0 0 0 3px rgba(7, 22, 111, 0.12) !important;
+      background: #F8FAFC !important;
+    }
+    .modal-btn-cancel {
+      padding: 10px 20px !important;
+      border-radius: 10px !important;
+      background: #F1F5F9 !important;
+      color: #475569 !important;
+      font-weight: 700 !important;
+      font-size: 0.88rem !important;
+      border: 1px solid #CBD5E1 !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+    }
+    .modal-btn-cancel:hover {
+      background: #E2E8F0 !important;
+      color: #0F172A !important;
+    }
+    .modal-btn-save {
+      padding: 10px 24px !important;
+      border-radius: 10px !important;
+      background: #07166F !important;
+      color: #FFB52E !important;
+      font-weight: 800 !important;
+      font-size: 0.88rem !important;
+      border: none !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 4px 14px rgba(7, 22, 111, 0.25) !important;
+    }
+    .modal-btn-save:hover {
+      background: #0A1E96 !important;
+      color: #FFFFFF !important;
+      transform: translateY(-1px);
+    }
+    .modal-btn-delete {
+      padding: 11px 24px !important;
+      border-radius: 10px !important;
+      background: #DC2626 !important;
+      color: #FFFFFF !important;
+      font-weight: 800 !important;
+      font-size: 0.88rem !important;
+      border: none !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35) !important;
+    }
+    .modal-btn-delete:hover {
+      background: #B91C1C !important;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- ADMIN SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap brand-icon"></i>
+        <div class="brand-text">
+          <span class="brand-title">EduCareus</span>
+          <span class="brand-subtitle">ADMIN CONTROL PANEL</span>
+        </div>
+      </div>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-menu-scroll">
+      <div class="sidebar-section-label">Main</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-gauge-high"></i><span class="nav-text">Dashboard</span></a>
+      <a href="admin-donations.html" class="sidebar-nav-item"><i class="fa-solid fa-hand-holding-dollar"></i><span class="nav-text">Donations</span></a>
+      <a href="admin-donors.html" class="sidebar-nav-item"><i class="fa-solid fa-heart"></i><span class="nav-text">Donors</span></a>
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+
+      <!-- REVIEWS MANAGEMENT (Active) -->
+      <a href="admin-reviews.html" class="sidebar-nav-item active"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="reviewSearchInput" oninput="handleSearchInput()" placeholder="Search review comments, scholar name, college, issue resolved...">
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+        <button onclick="handleAdminLogout(event)" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" title="Sign Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <div class="page-title-block" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px;">
+        <div>
+          <h1>Scholar Reviews &amp; Admin Ratings</h1>
+          <p>Review and moderate feedback from scholars about how admins solved their problems. The last 5 approved reviews automatically appear on the homepage.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <a href="/#testimonials" target="_blank" class="btn-action-icon" style="width: auto; padding: 8px 14px; font-weight: 700; font-size: 0.82rem; background: #FFFFFF; border: 1px solid var(--admin-border); text-decoration: none; color: var(--admin-navy);" title="View homepage reviews section">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live on Homepage (Last 5)
+          </a>
+          <button onclick="openReviewModal('CREATE')" class="btn-primary" style="padding: 9px 18px; font-size: 0.88rem;">
+            <i class="fa-solid fa-plus"></i> Add Scholar Review
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick KPI Counters -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted); font-weight: 700; text-transform: uppercase;">Total Reviews</div>
+            <div id="statTotal" style="font-size: 1.5rem; font-weight: 900; color: var(--admin-navy);">0</div>
+          </div>
+          <i class="fa-solid fa-comments" style="font-size: 1.5rem; color: #94A3B8;"></i>
+        </div>
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: #059669; font-weight: 700; text-transform: uppercase;">5-Star Reviews</div>
+            <div id="statFiveStar" style="font-size: 1.5rem; font-weight: 900; color: #059669;">0</div>
+          </div>
+          <i class="fa-solid fa-star" style="font-size: 1.5rem; color: #10B981;"></i>
+        </div>
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: #D97706; font-weight: 700; text-transform: uppercase;">4-Star Reviews</div>
+            <div id="statFourStar" style="font-size: 1.5rem; font-weight: 900; color: #D97706;">0</div>
+          </div>
+          <i class="fa-solid fa-star-half-stroke" style="font-size: 1.5rem; color: #F59E0B;"></i>
+        </div>
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: #2563EB; font-weight: 700; text-transform: uppercase;">Average Rating</div>
+            <div id="statAvgRating" style="font-size: 1.5rem; font-weight: 900; color: #2563EB;">5.0 / 5</div>
+          </div>
+          <i class="fa-solid fa-award" style="font-size: 1.5rem; color: #3B82F6;"></i>
+        </div>
+      </div>
+
+      <!-- Filters & Reviews Table -->
+      <div class="admin-card-panel">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--admin-border); padding-bottom: 12px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="ratingFilterTabs">
+            <button onclick="setRatingFilter('ALL')" class="btn-filter-tab active" data-rating="ALL" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-navy); color: #fff; font-size: 0.8rem; font-weight: 700; cursor: pointer;">All Ratings</button>
+            <button onclick="setRatingFilter('5')" class="btn-filter-tab" data-rating="5" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: #fff; color: var(--admin-text); font-size: 0.8rem; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-star" style="color: #F59E0B;"></i> 5 Stars</button>
+            <button onclick="setRatingFilter('4')" class="btn-filter-tab" data-rating="4" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: #fff; color: var(--admin-text); font-size: 0.8rem; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-star" style="color: #F59E0B;"></i> 4 Stars</button>
+            <button onclick="setRatingFilter('BELOW4')" class="btn-filter-tab" data-rating="BELOW4" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: #fff; color: var(--admin-text); font-size: 0.8rem; font-weight: 600; cursor: pointer;">3 Stars &amp; Below</button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span style="font-size: 0.78rem; color: #64748B;" id="reviewCountLabel">Showing 0 reviews</span>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div style="overflow-x: auto;">
+          <table class="admin-data-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="width: 220px;">Scholar / Beneficiary</th>
+                <th style="width: 120px;">Rating</th>
+                <th style="width: 180px;">Problem Solved</th>
+                <th>Experience &amp; Admin Feedback</th>
+                <th style="width: 120px;">Submitted</th>
+                <th style="width: 140px; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reviewsTbody">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 40px; color: var(--admin-text-muted);">
+                  <i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i> Loading scholar reviews...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       MODAL 1: ADD / EDIT SCHOLAR REVIEW (Enhanced Premium Design)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-dialog" style="max-width: 660px;">
+      <!-- Navy Header Bar with Gold Star Badge -->
+      <div class="modal-header-navy">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(255, 181, 46, 0.2); color: #FFB52E; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div>
+            <h3 id="modalTitle" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.01em;">Edit Scholar Review</h3>
+            <span style="font-size: 0.75rem; color: #94A3B8; font-weight: 500;">Dynamic problem resolution feedback for public homepage</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeReviewModal()" class="modal-close-icon-btn" title="Close Dialog">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="reviewForm" onsubmit="handleReviewSubmit(event)" style="display: flex; flex-direction: column; flex: 1; margin: 0;">
+        <input type="hidden" id="reviewId">
+        <div style="padding: 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; background: #FFFFFF;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div>
+              <label class="modal-input-label">Scholar Full Name <span style="color: #DC2626;">*</span></label>
+              <input type="text" id="reviewNameInput" required class="modal-input-field" placeholder="e.g. Danial K.">
+            </div>
+            <div>
+              <label class="modal-input-label">Scholar Badge / Role <span style="color: #DC2626;">*</span></label>
+              <select id="reviewRoleInput" class="modal-input-field">
+                <option value="Verified Student Scholar">Verified Student Scholar</option>
+                <option value="Verified B.Tech Scholar">Verified B.Tech Scholar</option>
+                <option value="Verified MBBS Scholar">Verified MBBS Scholar</option>
+                <option value="Verified BCA Scholar">Verified BCA Scholar</option>
+                <option value="Verified Engineering Scholar">Verified Engineering Scholar</option>
+                <option value="Verified Postgraduate Scholar">Verified Postgraduate Scholar</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div>
+              <label class="modal-input-label">College / Degree</label>
+              <input type="text" id="reviewInstitutionInput" class="modal-input-field" placeholder="e.g. CSE, NIT Warangal">
+            </div>
+            <div>
+              <label class="modal-input-label">Rating (Stars) <span style="color: #DC2626;">*</span></label>
+              <select id="reviewRatingSelect" class="modal-input-field" style="font-weight: 700; color: #D97706;">
+                <option value="5">★★★★★ 5.0 (Outstanding Resolution)</option>
+                <option value="4">★★★★☆ 4.0 (Very Good Guidance)</option>
+                <option value="3">★★★☆☆ 3.0 (Satisfactory Help)</option>
+                <option value="2">★★☆☆☆ 2.0 (Needs Improvement)</option>
+                <option value="1">★☆☆☆☆ 1.0 (Poor Resolution)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="modal-input-label">Problem Category Solved by Admin <span style="color: #DC2626;">*</span></label>
+            <select id="reviewProblemInput" class="modal-input-field">
+              <option value="Direct College Fee Payment & Challan Verification">Direct College Fee Payment &amp; Challan Verification</option>
+              <option value="Scholarship Aid & Application Approval">Scholarship Aid &amp; Application Approval</option>
+              <option value="Medical Counseling & Aid Approval">Medical Counseling &amp; Aid Approval</option>
+              <option value="Engineering / B.Tech Fee Reconciliation">Engineering / B.Tech Fee Reconciliation</option>
+              <option value="College Admission Guidance & Course Selection">College Admission Guidance &amp; Course Selection</option>
+              <option value="Document & Identity Verification Assistance">Document &amp; Identity Verification Assistance</option>
+              <option value="Emergency Student Tuition Resolution">Emergency Student Tuition Resolution</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="modal-input-label">Review Comment &amp; Admin Resolution Experience <span style="color: #DC2626;">*</span></label>
+            <textarea id="reviewCommentInput" required rows="4" class="modal-input-field" style="line-height: 1.5; resize: vertical;" placeholder="How did the admin help you through the problem? Share details..."></textarea>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 10px;">
+            <input type="checkbox" id="reviewApprovedCheck" checked style="width: 18px; height: 18px; accent-color: #059669; cursor: pointer;">
+            <label for="reviewApprovedCheck" style="font-size: 0.85rem; font-weight: 700; color: #1E293B; cursor: pointer; margin: 0;">
+              Approved for Public Homepage Display (Displayed within Last 5 Reviews)
+            </label>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 16px 24px; border-top: 1px solid #E2E8F0; background: #F8FAFC;">
+          <button type="button" onclick="closeReviewModal()" class="modal-btn-cancel">
+            Cancel
+          </button>
+          <button type="submit" id="saveReviewBtn" class="modal-btn-save">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Save Review</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       MODAL 2: DELETE CONFIRMATION (Enhanced Premium Alert Design)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-dialog" style="max-width: 460px;">
+      <div style="padding: 28px 24px 20px; text-align: center; background: #FFFFFF;">
+        <!-- Vibrant Warning Circle -->
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.6rem; border: 4px solid #FEF2F2; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #0F172A; margin: 0 0 8px; letter-spacing: -0.01em;">Delete Scholar Review?</h3>
+        <p style="font-size: 0.88rem; color: #64748B; margin: 0 0 24px; line-height: 1.55;">
+          Are you sure you want to permanently delete the review by <strong id="deleteScholarName" style="color: #07166F; font-weight: 800;">kishor</strong>? This action cannot be undone and will immediately update the live homepage.
+        </p>
+        <input type="hidden" id="deleteReviewId">
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button type="button" onclick="closeDeleteModal()" class="modal-btn-cancel" style="min-width: 100px;">
+            Cancel
+          </button>
+          <button type="button" id="confirmDeleteBtn" onclick="executeDeleteReview()" class="modal-btn-delete">
+            <i class="fa-solid fa-trash-can"></i>
+            <span>Delete Review</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-core.js"></script>
+  <script>
+    let allReviews = [];
+    let currentRatingFilter = 'ALL';
+    let searchQuery = '';
+
+    async function loadReviews() {
+      const tbody = document.getElementById('reviewsTbody');
+      try {
+        const res = await adminFetch('/api/admin/reviews');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          allReviews = data.data;
+          updateCounters();
+          renderReviewsTable();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #DC2626;">Failed to load reviews. Please check your admin session.</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #DC2626;">Network error connecting to Reviews API.</td></tr>`;
+      }
+    }
+
+    function updateCounters() {
+      const total = allReviews.length;
+      const fiveStar = allReviews.filter(r => (r.rating || 5) === 5).length;
+      const fourStar = allReviews.filter(r => r.rating === 4).length;
+      const avg = total > 0 ? (allReviews.reduce((sum, r) => sum + (r.rating || 5), 0) / total).toFixed(1) : '5.0';
+
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statFiveStar').innerText = fiveStar;
+      document.getElementById('statFourStar').innerText = fourStar;
+      document.getElementById('statAvgRating').innerText = `${avg} / 5`;
+    }
+
+    function setRatingFilter(rating) {
+      currentRatingFilter = rating;
+      document.querySelectorAll('#ratingFilterTabs .btn-filter-tab').forEach(btn => {
+        if (btn.getAttribute('data-rating') === rating) {
+          btn.style.background = 'var(--admin-navy)';
+          btn.style.color = '#fff';
+        } else {
+          btn.style.background = '#fff';
+          btn.style.color = 'var(--admin-text)';
+        }
+      });
+      renderReviewsTable();
+    }
+
+    function handleSearchInput() {
+      searchQuery = (document.getElementById('reviewSearchInput').value || '').toLowerCase().trim();
+      renderReviewsTable();
+    }
+
+    function renderReviewsTable() {
+      const tbody = document.getElementById('reviewsTbody');
+      const filtered = allReviews.filter(r => {
+        let matchRating = true;
+        if (currentRatingFilter === '5') matchRating = (r.rating || 5) === 5;
+        else if (currentRatingFilter === '4') matchRating = (r.rating || 5) === 4;
+        else if (currentRatingFilter === 'BELOW4') matchRating = (r.rating || 5) < 4;
+
+        let matchSearch = true;
+        if (searchQuery) {
+          const text = [r.name, r.role, r.institution, r.comment, r.problemType].filter(Boolean).join(' ').toLowerCase();
+          matchSearch = text.includes(searchQuery);
+        }
+
+        return matchRating && matchSearch;
+      });
+
+      document.getElementById('reviewCountLabel').innerText = `Showing ${filtered.length} of ${allReviews.length} reviews`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: var(--admin-text-muted);">
+              <i class="fa-solid fa-comments" style="font-size: 2rem; color: #CBD5E1; margin-bottom: 10px; display: block;"></i>
+              No scholar reviews found matching your filters.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => {
+        const rating = r.rating || 5;
+        const starsHtml = Array.from({ length: 5 }, (_, i) => 
+          `<i class="fa-${i < rating ? 'solid' : 'regular'} fa-star"></i>`
+        ).join('');
+        const initials = r.initials || (r.name ? r.name.substring(0, 2).toUpperCase() : 'SC');
+
+        return `
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="scholar-avatar">${escapeHtml(initials)}</div>
+                <div>
+                  <div style="font-weight: 800; color: var(--admin-navy); font-size: 0.9rem;">${escapeHtml(r.name)}</div>
+                  <div class="badge-scholar">${escapeHtml(r.role || 'Verified Student Scholar')}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="star-rating">${starsHtml}</div>
+              <div style="font-size: 0.72rem; color: #64748B; font-weight: 700; margin-top: 2px;">${rating}.0 / 5</div>
+            </td>
+            <td>
+              <div style="font-weight: 700; font-size: 0.8rem; color: #1E293B; margin-bottom: 2px;">${escapeHtml(r.institution || 'Educarrus Scholar')}</div>
+              ${r.problemType ? `<span class="problem-tag">${escapeHtml(r.problemType)}</span>` : '<span style="font-size: 0.75rem; color: #94A3B8;">General Resolution</span>'}
+            </td>
+            <td>
+              <div class="comment-bubble">“${escapeHtml(r.comment)}”</div>
+            </td>
+            <td style="font-size: 0.78rem; color: var(--admin-text-muted);">
+              ${new Date(r.createdAt || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                <button onclick="openReviewModal('EDIT', '${r.id}')" class="btn-action-sm btn-action-edit" title="Edit Review">
+                  <i class="fa-solid fa-pen-to-square"></i> Edit
+                </button>
+                <button onclick="openDeleteModal('${r.id}')" class="btn-action-sm btn-action-del" title="Delete Review">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openReviewModal(mode, id = null) {
+      const modal = document.getElementById('reviewModal');
+      const title = document.getElementById('modalTitle');
+      const form = document.getElementById('reviewForm');
+      form.reset();
+
+      if (mode === 'CREATE') {
+        title.innerText = 'Add New Scholar Review';
+        document.getElementById('reviewId').value = '';
+        document.getElementById('reviewNameInput').value = '';
+        document.getElementById('reviewRoleInput').value = 'Verified Student Scholar';
+        document.getElementById('reviewInstitutionInput').value = '';
+        document.getElementById('reviewRatingSelect').value = '5';
+        document.getElementById('reviewProblemInput').value = 'Scholarship Aid & Application Approval';
+        document.getElementById('reviewCommentInput').value = '';
+        document.getElementById('reviewApprovedCheck').checked = true;
+      } else {
+        title.innerText = 'Edit Scholar Review';
+        const review = allReviews.find(r => r.id === id);
+        if (!review) return;
+        document.getElementById('reviewId').value = review.id;
+        document.getElementById('reviewNameInput').value = review.name || '';
+        document.getElementById('reviewRoleInput').value = review.role || 'Verified Student Scholar';
+        document.getElementById('reviewInstitutionInput').value = review.institution || '';
+        document.getElementById('reviewRatingSelect').value = String(review.rating || 5);
+        document.getElementById('reviewProblemInput').value = review.problemType || '';
+        document.getElementById('reviewCommentInput').value = review.comment || '';
+        document.getElementById('reviewApprovedCheck').checked = review.isApproved !== false;
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').style.display = 'none';
+    }
+
+    async function handleReviewSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('reviewId').value;
+      const name = document.getElementById('reviewNameInput').value.trim();
+      const role = document.getElementById('reviewRoleInput').value.trim();
+      const institution = document.getElementById('reviewInstitutionInput').value.trim();
+      const rating = parseInt(document.getElementById('reviewRatingSelect').value, 10) || 5;
+      const problemType = document.getElementById('reviewProblemInput').value.trim();
+      const comment = document.getElementById('reviewCommentInput').value.trim();
+      const isApproved = document.getElementById('reviewApprovedCheck').checked;
+
+      if (!name || !comment) {
+        showAdminToast('Scholar name and review comment are required.', 'danger');
+        return;
+      }
+
+      const payload = { name, role, institution, rating, problemType, comment, isApproved };
+      const isEdit = Boolean(id);
+      const url = isEdit ? `/api/admin/reviews/${id}` : '/api/public/reviews';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      const saveBtn = document.getElementById('saveReviewBtn');
+      const orig = saveBtn.innerHTML;
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+      try {
+        const res = await adminFetch(url, {
+          method,
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast(isEdit ? 'Review updated successfully!' : 'Review created successfully!', 'success');
+          closeReviewModal();
+          loadReviews();
+        } else {
+          showAdminToast(json.message || 'Operation failed', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error saving review', 'danger');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = orig;
+      }
+    }
+
+    function openDeleteModal(id) {
+      const review = allReviews.find(r => r.id === id);
+      if (!review) return;
+      document.getElementById('deleteReviewId').value = review.id;
+      document.getElementById('deleteScholarName').innerText = review.name;
+      document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    async function executeDeleteReview() {
+      const id = document.getElementById('deleteReviewId').value;
+      if (!id) return;
+      const btn = document.getElementById('confirmDeleteBtn');
+      const orig = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+
+      try {
+        const res = await adminFetch(`/api/admin/reviews/${id}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast('Review deleted permanently.', 'success');
+          closeDeleteModal();
+          loadReviews();
+        } else {
+          showAdminToast(json.message || 'Failed to delete review', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error deleting review', 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadReviews();
+    });
+  </script>
+</body>
+</html>

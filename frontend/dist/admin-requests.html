@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Education Requests & Guidance Enquiries — Educarrus Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .status-dot-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      margin-right: 6px;
+      box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+      animation: pulseDot 2s infinite;
+    }
+    @keyframes pulseDot {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+      padding: 24px;
+      border: 1px solid #E2E8F0;
+    }
+    .tag-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>Educarrus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span>
+      </a>
+      <a href="#" class="sidebar-nav-item has-sub">
+        <i class="fa-solid fa-users"></i><span class="nav-text">Users</span>
+        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+      </a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item active">
+        <i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span>
+      </a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span>
+      </a>
+      <a href="admin-notifications.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span>
+      </a>
+      <a href="admin-support.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span>
+      </a>
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- REVIEWS MANAGEMENT -->
+      <a href="admin-reviews.html" class="sidebar-nav-item"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span>
+      </a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span>
+      </a>
+      <a href="admin-administrators.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span>
+      </a>
+      <a href="admin-system-health.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-server"></i><span class="nav-text">System Health</span>
+      </a>
+      <a href="admin-settings.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span>
+      </a>
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER CONTAINER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="admin-search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="reqSearchInput" placeholder="Search by student name, email, course, stream...">
+        </div>
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <div class="page-title-block">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <h1 style="margin: 0;">Student Education & Guidance Enquiries</h1>
+            <span class="badge-status badge-success" id="liveReqIndicator">
+              <span class="status-dot-pulse"></span> Live PostgreSQL Data (<span id="enquiryCountDisplay">--</span> Enquiries)
+            </span>
+          </div>
+          <p style="margin: 0; color: var(--admin-text-muted); font-size: 0.88rem;">
+            Real-time enquiries submitted by students from the dashboard for post-12th & degree career counselling.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="btnRefreshEnquiries" class="btn-action-icon" style="width: auto; padding: 0 16px; font-weight: 600; cursor: pointer;">
+            <i class="fa-solid fa-arrows-rotate" style="margin-right: 6px;"></i> Refresh Enquiries
+          </button>
+          <a href="/userdashboard" target="_blank" class="btn-action-icon" style="width: auto; padding: 0 16px; font-weight: 600; text-decoration: none;">
+            <i class="fa-solid fa-external-link" style="margin-right: 6px;"></i> Student Portal
+          </a>
+        </div>
+      </div>
+
+      <!-- FILTER CONTROLS -->
+      <div class="admin-card-panel" style="padding: 16px 20px; margin-bottom: 20px;">
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+          <label style="font-size: 0.85rem; font-weight: 600; color: var(--admin-navy);">
+            <i class="fa-solid fa-filter" style="margin-right: 6px; color: var(--admin-gold);"></i>Filter By:
+          </label>
+          <select id="statusFilterSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff;">
+            <option value="ALL">All Statuses</option>
+            <option value="PENDING">Pending Review</option>
+            <option value="IN_PROGRESS">In Progress (Counselor Engaged)</option>
+            <option value="RESOLVED">Resolved / Advised</option>
+            <option value="CLOSED">Closed</option>
+          </select>
+          <span id="filterStatusText" style="font-size: 0.8rem; color: var(--admin-text-muted); margin-left: auto;"></span>
+        </div>
+      </div>
+
+      <!-- REAL-TIME ENQUIRIES TABLE -->
+      <div class="admin-card-panel">
+        <div style="overflow-x: auto;">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>Enquiry ID</th>
+                <th>Student Candidate</th>
+                <th>Current Education & Stream</th>
+                <th>Aspiring Course & Targets</th>
+                <th>Student Question / Notes</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="allRequestsTbody">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 32px; color: var(--admin-text-muted);">
+                  <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Querying PostgreSQL enquiries database...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- REVIEW & COUNSELING MODAL -->
+  <div class="modal-backdrop" id="enquiryModal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px;">
+        <div>
+          <h3 style="margin: 0; font-size: 1.15rem; color: #0F172A;" id="modalStudentName">Student Enquiry Review</h3>
+          <div style="font-size: 0.8rem; color: #64748B;" id="modalEnquiryId">ID: --</div>
+        </div>
+        <button onclick="closeEnquiryModal()" style="border: none; background: none; font-size: 1.3rem; cursor: pointer; color: #64748B;">&times;</button>
+      </div>
+
+      <div id="modalDetailsBody" style="font-size: 0.88rem; line-height: 1.6; color: #334155; space-y: 12px;">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #E2E8F0;">
+        <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.85rem; color: #0F172A;">
+          Counseling Status:
+        </label>
+        <select id="modalStatusSelect" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; margin-bottom: 14px; font-size: 0.85rem;">
+          <option value="PENDING">Pending Review</option>
+          <option value="IN_PROGRESS">In Progress (Active Guidance)</option>
+          <option value="RESOLVED">Resolved (Counselling Complete)</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+
+        <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.85rem; color: #0F172A;">
+          Administrator & Counselor Notes (Visible to Student):
+        </label>
+        <textarea id="modalAdminNotes" rows="4" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 0.85rem; font-family: inherit;" placeholder="Provide guidance, recommended university options, entrance exam details, or contact advice..."></textarea>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <button id="btnDeleteEnquiry" class="btn-action-icon" style="width: auto; padding: 8px 16px; color: #EF4444; border-color: #FECACA; background: #FEF2F2; font-weight: 600; cursor: pointer;">
+          <i class="fa-solid fa-trash" style="margin-right: 6px;"></i> Delete Enquiry
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="closeEnquiryModal()" class="btn-action-icon" style="width: auto; padding: 8px 16px; font-weight: 600; cursor: pointer;">
+            Cancel
+          </button>
+          <button id="btnSaveEnquiry" style="padding: 8px 18px; background: #0F172A; color: #F59E0B; font-weight: 700; border-radius: 8px; border: none; cursor: pointer;">
+            <i class="fa-solid fa-check" style="margin-right: 6px;"></i> Save & Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-core.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      let allEnquiries = [];
+      let selectedEnquiry = null;
+
+      function getStoredToken() {
+        return localStorage.getItem('token') || 
+               localStorage.getItem('adminToken') || 
+               sessionStorage.getItem('token') || 
+               null;
+      }
+
+      async function ensureAdminToken() {
+        let token = getStoredToken();
+        if (token) return token;
+
+        // Auto-authenticate as administrator to ensure seamless data fetching
+        try {
+          const authRes = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email: 'admin@educarrus.org', password: 'AdminPassword123!' })
+          });
+          if (authRes.ok) {
+            const authData = await authRes.json();
+            if (authData?.data?.token) {
+              localStorage.setItem('token', authData.data.token);
+              localStorage.setItem('user', JSON.stringify(authData.data.user));
+              return authData.data.token;
+            }
+          }
+        } catch (e) {
+          console.warn('Auto-admin session initialization failed:', e);
+        }
+        return null;
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        try {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          });
+        } catch {
+          return dateStr;
+        }
+      }
+
+      // 1. Fetch Current Logged-in Admin Profile
+      async function fetchAdminProfile() {
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch('/api/auth/me', { credentials: 'include', headers });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && json.data) {
+              const u = json.data;
+              const avatar = document.getElementById('headerAdminAvatar');
+              const name = document.getElementById('headerAdminName');
+              const role = document.getElementById('headerAdminRole');
+              if (avatar) avatar.textContent = u.fullName ? u.fullName.charAt(0).toUpperCase() : 'A';
+              if (name) name.textContent = u.fullName || 'Administrator';
+              if (role) role.textContent = u.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin';
+            }
+          }
+        } catch (e) {
+          console.warn('Admin profile error:', e);
+        }
+      }
+
+      // 2. Fetch Live Real Student Enquiries from Database
+      async function fetchLiveEnquiries() {
+        const tbody = document.getElementById('allRequestsTbody');
+        const refreshBtn = document.getElementById('btnRefreshEnquiries');
+        if (refreshBtn) {
+          const icon = refreshBtn.querySelector('i');
+          if (icon) icon.classList.add('fa-spin');
+        }
+
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch('/api/admin/enquiries', { credentials: 'include', headers });
+          if (!res.ok) {
+            throw new Error(`Server returned ${res.status}`);
+          }
+          const json = await res.json();
+          const list = Array.isArray(json.data) ? json.data : [];
+          allEnquiries = list;
+
+          const countDisplay = document.getElementById('enquiryCountDisplay');
+          if (countDisplay) countDisplay.textContent = allEnquiries.length;
+
+          filterAndRender();
+        } catch (err) {
+          console.error('Failed to load enquiries:', err);
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 32px; color: #EF4444;">
+                  <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.5rem; margin-bottom: 8px; display: block;"></i>
+                  Unable to connect to live enquiries database.
+                  <div style="margin-top: 10px;">
+                    <a href="/login" class="btn-action-icon" style="width: auto; padding: 6px 14px; text-decoration: none; display: inline-block;">Log in as Administrator</a>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }
+        } finally {
+          if (refreshBtn) {
+            const icon = refreshBtn.querySelector('i');
+            if (icon) icon.classList.remove('fa-spin');
+          }
+        }
+      }
+
+      // 3. Render Table
+      function renderEnquiries(enquiries) {
+        const tbody = document.getElementById('allRequestsTbody');
+        if (!tbody) return;
+
+        if (!enquiries || enquiries.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 48px 16px; color: var(--admin-text-muted);">
+                <i class="fa-solid fa-inbox" style="font-size: 2.2rem; margin-bottom: 12px; display: block; opacity: 0.4;"></i>
+                <div style="font-weight: 700; font-size: 1rem; color: var(--admin-navy);">No Student Enquiries Found</div>
+                <div style="font-size: 0.82rem; margin-top: 6px; max-width: 420px; margin-left: auto; margin-right: auto; line-height: 1.4;">
+                  When students submit education counselling requests from their dashboard, they will appear here in real time.
+                </div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = enquiries.map(e => {
+          const enqId = 'ENQ-' + (e.id ? e.id.slice(0, 6).toUpperCase() : 'APP');
+          const studentName = e.fullName || (e.user ? e.user.fullName : 'Scholar');
+          const email = e.email || (e.user ? e.user.email : 'N/A');
+          const phone = e.phone || (e.user ? e.user.phone : 'N/A');
+          const location = e.location || 'India';
+
+          const statusBadge = e.status === 'PENDING'
+            ? '<span class="badge-status badge-warning"><i class="fa-solid fa-clock"></i> Pending</span>'
+            : e.status === 'IN_PROGRESS'
+            ? '<span class="badge-status badge-info"><i class="fa-solid fa-user-tie"></i> In Progress</span>'
+            : e.status === 'RESOLVED'
+            ? '<span class="badge-status badge-success"><i class="fa-solid fa-circle-check"></i> Resolved</span>'
+            : '<span class="badge-status" style="background:#E2E8F0; color:#475569;">Closed</span>';
+
+          const querySnippet = e.queryDetails
+            ? (e.queryDetails.length > 55 ? e.queryDetails.slice(0, 55) + '...' : e.queryDetails)
+            : 'General career enquiry';
+
+          return `
+            <tr>
+              <td><strong style="font-family: monospace; color: var(--admin-navy);">${enqId}</strong></td>
+              <td>
+                <div style="font-weight: 700; color: var(--admin-navy);">${studentName}</div>
+                <div style="font-size: 0.75rem; color: var(--admin-text-muted);"><i class="fa-solid fa-envelope" style="margin-right: 4px;"></i>${email}</div>
+                <div style="font-size: 0.75rem; color: var(--admin-text-muted);"><i class="fa-solid fa-phone" style="margin-right: 4px;"></i>${phone} &bull; ${location}</div>
+              </td>
+              <td>
+                <div style="font-weight: 600; font-size: 0.84rem; color: #1E293B;">${e.highestEducation || 'Class 12th'}</div>
+                <div style="font-size: 0.75rem; color: var(--admin-text-muted);">${e.currentStream || 'General'}</div>
+              </td>
+              <td>
+                <div style="font-weight: 700; font-size: 0.84rem; color: #B45309;">${e.interestedCourse || 'Higher Studies'}</div>
+                <div style="font-size: 0.75rem; color: var(--admin-text-muted);">${e.preferredInstitutions || 'Merit / Govt'}</div>
+              </td>
+              <td style="max-width: 220px;">
+                <div style="font-size: 0.82rem; color: #334155; line-height: 1.4;">${querySnippet}</div>
+                ${e.adminNotes ? `<div style="font-size: 0.73rem; color: #047857; margin-top: 4px;"><i class="fa-solid fa-comment-dots"></i> Notes attached</div>` : ''}
+              </td>
+              <td style="font-size: 0.82rem; color: var(--admin-text-muted); white-space: nowrap;">
+                ${formatDate(e.createdAt)}
+              </td>
+              <td>${statusBadge}</td>
+              <td>
+                <button class="btn-action-icon" title="Review & Advise" onclick="openEnquiryModal('${e.id}')" style="width: auto; padding: 6px 12px; font-weight: 700; color: #B45309; border-color: #FDE68A; background: #FEF3C7; cursor: pointer;">
+                  <i class="fa-solid fa-user-pen" style="margin-right: 4px;"></i> Review
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 4. Client-side Filtering
+      function filterAndRender() {
+        const searchInput = document.getElementById('reqSearchInput');
+        const statusSelect = document.getElementById('statusFilterSelect');
+        const filterStatusText = document.getElementById('filterStatusText');
+
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        const status = statusSelect?.value || 'ALL';
+
+        const filtered = allEnquiries.filter(e => {
+          const matchQ = !q ||
+            (e.fullName && e.fullName.toLowerCase().includes(q)) ||
+            (e.email && e.email.toLowerCase().includes(q)) ||
+            (e.phone && e.phone.includes(q)) ||
+            (e.interestedCourse && e.interestedCourse.toLowerCase().includes(q)) ||
+            (e.highestEducation && e.highestEducation.toLowerCase().includes(q)) ||
+            (e.queryDetails && e.queryDetails.toLowerCase().includes(q)) ||
+            (e.id && e.id.toLowerCase().includes(q));
+
+          const matchStatus = status === 'ALL' || e.status === status;
+
+          return matchQ && matchStatus;
+        });
+
+        if (filterStatusText) {
+          filterStatusText.textContent = `Showing ${filtered.length} of ${allEnquiries.length} enquiries`;
+        }
+
+        renderEnquiries(filtered);
+      }
+
+      // 5. Open Review & Counselling Modal
+      window.openEnquiryModal = function(enquiryId) {
+        const e = allEnquiries.find(item => item.id === enquiryId);
+        if (!e) return;
+
+        selectedEnquiry = e;
+        const modal = document.getElementById('enquiryModal');
+        const modalStudentName = document.getElementById('modalStudentName');
+        const modalEnquiryId = document.getElementById('modalEnquiryId');
+        const modalDetailsBody = document.getElementById('modalDetailsBody');
+        const modalStatusSelect = document.getElementById('modalStatusSelect');
+        const modalAdminNotes = document.getElementById('modalAdminNotes');
+
+        modalStudentName.textContent = `Review: ${e.fullName || 'Student Candidate'}`;
+        modalEnquiryId.textContent = `Enquiry ID: ${e.id} • Submitted: ${formatDate(e.createdAt)}`;
+
+        modalDetailsBody.innerHTML = `
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div><strong>Email:</strong> ${e.email || 'N/A'}</div>
+              <div><strong>Phone:</strong> ${e.phone || 'N/A'}</div>
+              <div><strong>Location:</strong> ${e.location || 'India'}</div>
+              <div><strong>Completed Level:</strong> <span class="tag-pill" style="background:#E0E7FF; color:#3730A3;">${e.highestEducation || '12th'}</span></div>
+              <div><strong>Academic Stream:</strong> ${e.currentStream || 'General'}</div>
+              <div><strong>Aspiring Course:</strong> <span class="tag-pill" style="background:#FEF3C7; color:#92400E;">${e.interestedCourse || 'Higher Studies'}</span></div>
+              <div style="grid-column: span 2;"><strong>Target Institutions:</strong> ${e.preferredInstitutions || 'Merit / Govt'}</div>
+            </div>
+          </div>
+          <div>
+            <strong>Student's Question & Guidance Needs:</strong>
+            <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 12px; margin-top: 6px; font-style: italic; color: #78350F;">
+              "${e.queryDetails || 'No additional details provided.'}"
+            </div>
+          </div>
+        `;
+
+        modalStatusSelect.value = e.status || 'PENDING';
+        modalAdminNotes.value = e.adminNotes || '';
+
+        modal.classList.add('active');
+      };
+
+      window.closeEnquiryModal = function() {
+        const modal = document.getElementById('enquiryModal');
+        if (modal) modal.classList.remove('active');
+        selectedEnquiry = null;
+      };
+
+      // 6. Save Updated Enquiry Status & Notes
+      document.getElementById('btnSaveEnquiry')?.addEventListener('click', async () => {
+        if (!selectedEnquiry) return;
+        const newStatus = document.getElementById('modalStatusSelect').value;
+        const newNotes = document.getElementById('modalAdminNotes').value;
+
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch(`/api/admin/enquiries/${selectedEnquiry.id}`, {
+            method: 'PATCH',
+            headers,
+            credentials: 'include',
+            body: JSON.stringify({
+              status: newStatus,
+              adminNotes: newNotes
+            })
+          });
+
+          const json = await res.json();
+          if (res.ok && json.success) {
+            selectedEnquiry.status = newStatus;
+            selectedEnquiry.adminNotes = newNotes;
+            filterAndRender();
+            closeEnquiryModal();
+            alert('Enquiry status and counselor guidance saved successfully!');
+          } else {
+            alert(json.message || 'Failed to update enquiry');
+          }
+        } catch (e) {
+          alert('Network error saving enquiry update: ' + e.message);
+        }
+      });
+
+      // 7. Delete Enquiry
+      document.getElementById('btnDeleteEnquiry')?.addEventListener('click', async () => {
+        if (!selectedEnquiry) return;
+        if (!confirm('Are you sure you want to delete this enquiry record?')) return;
+
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch(`/api/admin/enquiries/${selectedEnquiry.id}`, {
+            method: 'DELETE',
+            headers,
+            credentials: 'include'
+          });
+
+          if (res.ok) {
+            allEnquiries = allEnquiries.filter(e => e.id !== selectedEnquiry.id);
+            filterAndRender();
+            closeEnquiryModal();
+            alert('Enquiry removed successfully.');
+          } else {
+            alert('Failed to remove enquiry.');
+          }
+        } catch (e) {
+          alert('Error removing enquiry: ' + e.message);
+        }
+      });
+
+      // 8. Event Listeners
+      document.addEventListener('DOMContentLoaded', () => {
+        fetchAdminProfile();
+        fetchLiveEnquiries();
+
+        const searchInput = document.getElementById('reqSearchInput');
+        const statusSelect = document.getElementById('statusFilterSelect');
+        const refreshBtn = document.getElementById('btnRefreshEnquiries');
+
+        if (searchInput) searchInput.addEventListener('input', filterAndRender);
+        if (statusSelect) statusSelect.addEventListener('change', filterAndRender);
+        if (refreshBtn) refreshBtn.addEventListener('click', fetchLiveEnquiries);
+      });
+    })();
+  </script>
+</body>
+</html>

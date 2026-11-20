@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Settings — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body-wrap">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="admin-users.html" class="sidebar-nav-item"><i class="fa-solid fa-users"></i><span class="nav-text">All Users</span></a>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- REVIEWS MANAGEMENT -->
+      <a href="admin-reviews.html" class="sidebar-nav-item"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item active"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER CONTAINER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+
+    <!-- TOP HEADER -->
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="settingsSearchInput" placeholder="Search configuration keys, descriptions...">
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-page-container">
+
+      <!-- TITLE ROW & ACTIONS -->
+      <div class="page-title-block" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <h1>Global System Settings</h1>
+          <p>Real-time platform parameters, fee governance, compliance credentials, and runtime configuration.</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="btn-primary" onclick="openAddSettingModal()" style="display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-plus"></i> <span>Add Configuration Key</span>
+          </button>
+          <button class="btn-action-icon" onclick="loadSettings()" title="Reload from PostgreSQL" style="width: auto; padding: 0 14px;">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CORE PLATFORM PREFERENCES QUICK-EDIT FORM -->
+      <div class="admin-card-panel" style="margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 style="margin: 0; font-size: 1.05rem;"><i class="fa-solid fa-sliders text-gold" style="margin-right: 8px;"></i> Core Platform Parameters</h3>
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin: 4px 0 0 0;">Primary configuration variables stored directly in PostgreSQL system registry.</p>
+          </div>
+          <button class="btn-primary" id="saveQuickSettingsBtn" onclick="saveQuickPreferences()" style="font-size: 0.85rem; padding: 8px 18px;">
+            <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i> Save Parameters
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Platform Name (PLATFORM_NAME)</label>
+            <input type="text" id="pref_PLATFORM_NAME" placeholder="EduCareus Education Foundation" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+          </div>
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Official Support Email (SUPPORT_EMAIL)</label>
+            <input type="email" id="pref_SUPPORT_EMAIL" placeholder="admin@educarrus.org" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+          </div>
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Tax Exemption 80G Code (TAX_EXEMPTION_CODE)</label>
+            <input type="text" id="pref_TAX_EXEMPTION_CODE" placeholder="80G-EDUCAREUS-2026-X99" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+          </div>
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Platform Fee % (PLATFORM_FEE_PERCENT)</label>
+            <input type="number" id="pref_PLATFORM_FEE_PERCENT" min="0" max="100" step="0.5" placeholder="0" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+          </div>
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Max Daily Withdrawal (INR)</label>
+            <input type="number" id="pref_MAX_WITHDRAWAL_PER_DAY" min="1000" step="5000" placeholder="200000" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+          </div>
+        </div>
+      </div>
+
+      <!-- FULL SETTINGS REGISTRY TABLE CARD -->
+      <div class="admin-card-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 style="margin: 0; font-size: 1.05rem;"><i class="fa-solid fa-database text-gold" style="margin-right: 6px;"></i> All PostgreSQL Settings Registry</h3>
+            <span class="badge-status badge-success" id="settingsCountBadge">0 Keys</span>
+          </div>
+
+          <!-- CATEGORY FILTER -->
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <label style="font-size: 0.82rem; color: var(--admin-text-muted); font-weight: 600;">Category:</label>
+            <select id="categoryFilterSelect" onchange="applySettingsFilter()" style="padding: 7px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.82rem; background: #fff; font-weight: 500;">
+              <option value="ALL">All Categories</option>
+              <option value="GENERAL">GENERAL</option>
+              <option value="PAYMENT">PAYMENT</option>
+              <option value="LEGAL">LEGAL</option>
+              <option value="SECURITY">SECURITY</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th style="min-width: 180px;">Configuration Key</th>
+                <th style="min-width: 220px;">Current Value</th>
+                <th style="min-width: 110px;">Category</th>
+                <th style="min-width: 200px;">Description</th>
+                <th style="min-width: 140px;">Last Updated</th>
+                <th style="min-width: 110px; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="settingsTbody">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 36px; color: var(--admin-text-muted);">
+                  <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading system settings...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: ADD / EDIT SETTING -->
+  <div class="admin-modal-overlay" id="settingModal" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 480px; width: 90%;">
+      <div class="admin-modal-header">
+        <h3 id="settingModalTitle"><i class="fa-solid fa-gear text-gold" style="margin-right: 8px;"></i> Configure System Setting</h3>
+        <button class="modal-close-btn" onclick="closeSettingModal()">&times;</button>
+      </div>
+      <form id="settingForm" onsubmit="submitSaveSetting(event)" style="padding: 20px;">
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Setting Key (UPPERCASE) *</label>
+          <input type="text" id="modalSettingKey" required placeholder="e.g. MIN_DONATION_AMOUNT" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; font-family: monospace;">
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Setting Value *</label>
+          <textarea id="modalSettingValue" required rows="3" placeholder="String, Number, or JSON object" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; font-family: monospace;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Category</label>
+          <select id="modalSettingCategory" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff;">
+            <option value="GENERAL">GENERAL</option>
+            <option value="PAYMENT">PAYMENT</option>
+            <option value="LEGAL">LEGAL</option>
+            <option value="SECURITY">SECURITY</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Description</label>
+          <input type="text" id="modalSettingDesc" placeholder="Explanation of this setting's behavior" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn-action-icon" style="width: auto; padding: 0 16px;" onclick="closeSettingModal()">Cancel</button>
+          <button type="submit" id="saveSettingSubmitBtn" class="btn-primary">Save Setting</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM DELETE SETTING -->
+  <div class="admin-modal-overlay" id="deleteSettingModal" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 440px;">
+      <div class="admin-modal-header" style="border-bottom-color: rgba(239, 68, 68, 0.2);">
+        <h3 style="color: #EF4444;"><i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Reset / Delete Setting</h3>
+        <button class="modal-close-btn" onclick="closeDeleteSettingModal()">&times;</button>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 0.9rem; color: #334155; line-height: 1.5; margin: 0 0 16px 0;">
+          Are you sure you want to delete this setting key from PostgreSQL? The platform will revert to default code fallbacks.
+        </p>
+        <div style="background: #f8fafc; border: 1px solid var(--admin-border); border-radius: 6px; padding: 10px; font-size: 0.85rem; margin-bottom: 18px;">
+          <div><strong>Key:</strong> <code id="delSettingKey" style="color: #EF4444; font-weight: 700;"></code></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn-action-icon" style="width: auto; padding: 0 16px;" onclick="closeDeleteSettingModal()">Cancel</button>
+          <button type="button" id="confirmDeleteSettingBtn" class="btn-primary" style="background: #EF4444; border-color: #EF4444;" onclick="executeDeleteSetting()">Delete Setting</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="adminToastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 8px;"></div>
+
+  <script src="js/admin-core.js"></script>
+  <script>
+    const API_BASE = '/api';
+    let allSettings = [];
+    let pendingDeleteKey = null;
+
+    function getAdminToken() {
+      return localStorage.getItem('token') ||
+             localStorage.getItem('adminToken') ||
+             sessionStorage.getItem('token') ||
+             sessionStorage.getItem('adminToken') ||
+             '';
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('adminToastContainer');
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? '#059669' : (type === 'error' ? '#EF4444' : '#3B82F6');
+      toast.style.cssText = `background: ${bg}; color: white; padding: 12px 18px; border-radius: 8px; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease;`;
+      const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info');
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    async function loadSettings() {
+      const tbody = document.getElementById('settingsTbody');
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 36px; color: var(--admin-text-muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading settings from PostgreSQL...</td></tr>`;
+
+      try {
+        if (window.ensureAdminToken && !getAdminToken()) {
+          await window.ensureAdminToken();
+        }
+
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/settings`) : fetch(`${API_BASE}/admin/settings`, {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          }
+        }));
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          allSettings = json.data;
+          document.getElementById('settingsCountBadge').textContent = `${allSettings.length} Keys`;
+          populateQuickPreferences(allSettings);
+          applySettingsFilter();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 36px; color: #EF4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading settings: ${json.message || 'Unknown error'}</td></tr>`;
+        }
+      } catch (err) {
+        console.error('Failed to load settings:', err);
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 36px; color: #EF4444;"><i class="fa-solid fa-circle-exclamation"></i> Network error connecting to backend service.</td></tr>`;
+      }
+    }
+
+    function populateQuickPreferences(settings) {
+      const map = {};
+      settings.forEach(s => {
+        map[s.key] = s.value;
+      });
+
+      if (map.PLATFORM_NAME !== undefined) document.getElementById('pref_PLATFORM_NAME').value = map.PLATFORM_NAME;
+      if (map.SUPPORT_EMAIL !== undefined) document.getElementById('pref_SUPPORT_EMAIL').value = map.SUPPORT_EMAIL;
+      if (map.TAX_EXEMPTION_CODE !== undefined) document.getElementById('pref_TAX_EXEMPTION_CODE').value = map.TAX_EXEMPTION_CODE;
+      if (map.PLATFORM_FEE_PERCENT !== undefined) document.getElementById('pref_PLATFORM_FEE_PERCENT').value = map.PLATFORM_FEE_PERCENT;
+      if (map.MAX_WITHDRAWAL_PER_DAY !== undefined) document.getElementById('pref_MAX_WITHDRAWAL_PER_DAY').value = map.MAX_WITHDRAWAL_PER_DAY;
+    }
+
+    async function saveQuickPreferences() {
+      const btn = document.getElementById('saveQuickSettingsBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+      const token = getAdminToken();
+      const updates = [
+        { key: 'PLATFORM_NAME', value: document.getElementById('pref_PLATFORM_NAME').value.trim(), category: 'GENERAL', description: 'Public platform name' },
+        { key: 'SUPPORT_EMAIL', value: document.getElementById('pref_SUPPORT_EMAIL').value.trim(), category: 'GENERAL', description: 'Official support email address' },
+        { key: 'TAX_EXEMPTION_CODE', value: document.getElementById('pref_TAX_EXEMPTION_CODE').value.trim(), category: 'LEGAL', description: '80G Tax Exemption code' },
+        { key: 'PLATFORM_FEE_PERCENT', value: Number(document.getElementById('pref_PLATFORM_FEE_PERCENT').value) || 0, category: 'PAYMENT', description: 'Platform fee percentage' },
+        { key: 'MAX_WITHDRAWAL_PER_DAY', value: Number(document.getElementById('pref_MAX_WITHDRAWAL_PER_DAY').value) || 200000, category: 'PAYMENT', description: 'Daily withdrawal limit' }
+      ];
+
+      try {
+        for (const item of updates) {
+          await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/settings/${item.key}`, {
+            method: 'PUT',
+            body: JSON.stringify(item)
+          }) : fetch(`${API_BASE}/admin/settings/${item.key}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify(item)
+          }));
+        }
+        showToast('All platform preferences saved to PostgreSQL in real-time!');
+        loadSettings();
+      } catch (err) {
+        console.error('Failed saving preferences:', err);
+        showToast('Failed saving preferences', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i> Save Parameters`;
+      }
+    }
+
+    function applySettingsFilter() {
+      const search = (document.getElementById('settingsSearchInput').value || '').trim().toLowerCase();
+      const cat = document.getElementById('categoryFilterSelect').value;
+
+      const filtered = allSettings.filter(s => {
+        if (cat !== 'ALL' && s.category !== cat) return false;
+        if (!search) return true;
+
+        const key = (s.key || '').toLowerCase();
+        const desc = (s.description || '').toLowerCase();
+        const val = typeof s.value === 'object' ? JSON.stringify(s.value).toLowerCase() : String(s.value).toLowerCase();
+
+        return key.includes(search) || desc.includes(search) || val.includes(search);
+      });
+
+      renderSettingsTable(filtered);
+    }
+
+    document.getElementById('settingsSearchInput').addEventListener('input', applySettingsFilter);
+
+    function renderSettingsTable(settings) {
+      const tbody = document.getElementById('settingsTbody');
+      if (settings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--admin-text-muted);"><i class="fa-solid fa-sliders" style="font-size: 1.6rem; display: block; margin-bottom: 8px;"></i> No configuration keys found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = settings.map(s => {
+        const valStr = typeof s.value === 'object' ? JSON.stringify(s.value) : String(s.value);
+        const displayVal = valStr.length > 55 ? `${valStr.slice(0, 55)}...` : valStr;
+
+        const catBadge = s.category === 'SECURITY'
+          ? `<span class="badge-status badge-alert">SECURITY</span>`
+          : (s.category === 'PAYMENT' ? `<span class="badge-status badge-success">PAYMENT</span>` : `<span class="badge-status badge-info">${s.category || 'GENERAL'}</span>`);
+
+        const dateStr = s.updatedAt ? new Date(s.updatedAt).toLocaleString('en-US', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        }) : 'Default';
+
+        const safeSettingData = encodeURIComponent(JSON.stringify(s));
+
+        return `
+          <tr>
+            <td>
+              <code style="font-weight: 700; color: var(--admin-navy); font-size: 0.84rem; background: #f8fafc; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--admin-border);">${s.key}</code>
+            </td>
+            <td>
+              <div style="font-family: monospace; font-size: 0.82rem; color: #0284c7; word-break: break-all;" title="${valStr}">${displayVal}</div>
+            </td>
+            <td>${catBadge}</td>
+            <td style="font-size: 0.82rem; color: var(--admin-text-muted);">${s.description || 'No description provided'}</td>
+            <td style="font-size: 0.8rem; color: var(--admin-text-muted);">${dateStr}</td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button class="btn-action-icon" title="Edit Setting Value" onclick="openEditSettingModal('${safeSettingData}')" style="margin-right: 4px;">
+                <i class="fa-solid fa-pen-to-square text-gold"></i>
+              </button>
+              <button class="btn-action-icon" title="Delete / Reset Setting" onclick="openDeleteSettingModal('${s.key}')" style="color: #EF4444;">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // --- ADD / EDIT SETTING MODAL ---
+    function openAddSettingModal() {
+      document.getElementById('settingModalTitle').innerHTML = `<i class="fa-solid fa-plus text-gold" style="margin-right: 8px;"></i> Add Configuration Key`;
+      document.getElementById('settingForm').reset();
+      document.getElementById('modalSettingKey').disabled = false;
+      document.getElementById('settingModal').style.display = 'flex';
+    }
+
+    function openEditSettingModal(encodedData) {
+      try {
+        const s = JSON.parse(decodeURIComponent(encodedData));
+        document.getElementById('settingModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-gold" style="margin-right: 8px;"></i> Edit Setting: ${s.key}`;
+        document.getElementById('modalSettingKey').value = s.key;
+        document.getElementById('modalSettingKey').disabled = true; // Key is fixed when editing
+        document.getElementById('modalSettingValue').value = typeof s.value === 'object' ? JSON.stringify(s.value, null, 2) : s.value;
+        document.getElementById('modalSettingCategory').value = s.category || 'GENERAL';
+        document.getElementById('modalSettingDesc').value = s.description || '';
+        document.getElementById('settingModal').style.display = 'flex';
+      } catch (err) {
+        console.error('Failed to open edit setting modal:', err);
+      }
+    }
+
+    function closeSettingModal() {
+      document.getElementById('settingModal').style.display = 'none';
+    }
+
+    async function submitSaveSetting(e) {
+      e.preventDefault();
+      const btn = document.getElementById('saveSettingSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+      const key = document.getElementById('modalSettingKey').value.trim().toUpperCase();
+      let rawVal = document.getElementById('modalSettingValue').value.trim();
+      const category = document.getElementById('modalSettingCategory').value;
+      const description = document.getElementById('modalSettingDesc').value.trim();
+
+      let parsedVal = rawVal;
+      // Try to parse number or json if applicable
+      if (!isNaN(rawVal) && rawVal !== '') {
+        parsedVal = Number(rawVal);
+      } else if (rawVal.startsWith('{') || rawVal.startsWith('[')) {
+        try {
+          parsedVal = JSON.parse(rawVal);
+        } catch (e) {}
+      }
+
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/settings/${key}`, {
+          method: 'PUT',
+          body: JSON.stringify({ value: parsedVal, category, description })
+        }) : fetch(`${API_BASE}/admin/settings/${key}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          },
+          body: JSON.stringify({ value: parsedVal, category, description })
+        }));
+        const json = await res.json();
+        if (json.success && json.data) {
+          showToast(`Setting '${key}' saved successfully!`);
+          const idx = allSettings.findIndex(s => s.key === key);
+          if (idx !== -1) {
+            allSettings[idx] = json.data;
+          } else {
+            allSettings.push(json.data);
+          }
+          document.getElementById('settingsCountBadge').textContent = `${allSettings.length} Keys`;
+          populateQuickPreferences(allSettings);
+          applySettingsFilter();
+          closeSettingModal();
+        } else {
+          showToast(json.message || 'Failed to save setting', 'error');
+        }
+      } catch (err) {
+        console.error('Error saving setting:', err);
+        showToast('Network error saving setting', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Save Setting';
+      }
+    }
+
+    // --- DELETE SETTING MODAL ---
+    function openDeleteSettingModal(key) {
+      pendingDeleteKey = key;
+      document.getElementById('delSettingKey').textContent = key;
+      document.getElementById('deleteSettingModal').style.display = 'flex';
+    }
+
+    function closeDeleteSettingModal() {
+      pendingDeleteKey = null;
+      document.getElementById('deleteSettingModal').style.display = 'none';
+    }
+
+    async function executeDeleteSetting() {
+      if (!pendingDeleteKey) return;
+      const btn = document.getElementById('confirmDeleteSettingBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Deleting...`;
+
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/settings/${pendingDeleteKey}`, {
+          method: 'DELETE'
+        }) : fetch(`${API_BASE}/admin/settings/${pendingDeleteKey}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          }
+        }));
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Setting '${pendingDeleteKey}' deleted successfully`);
+          allSettings = allSettings.filter(s => s.key !== pendingDeleteKey);
+          document.getElementById('settingsCountBadge').textContent = `${allSettings.length} Keys`;
+          populateQuickPreferences(allSettings);
+          applySettingsFilter();
+          closeDeleteSettingModal();
+        } else {
+          showToast(json.message || 'Failed to delete setting', 'error');
+        }
+      } catch (err) {
+        console.error('Delete setting failed:', err);
+        showToast('Network error deleting setting', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Delete Setting';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+        if (adminUser.fullName) {
+          document.getElementById('headerAdminName').textContent = adminUser.fullName;
+          document.getElementById('headerAdminRole').textContent = adminUser.role || 'Super Admin';
+          const initials = adminUser.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+          document.getElementById('headerAdminAvatar').textContent = initials || 'AD';
+        }
+      } catch (e) {}
+
+      loadSettings();
+    });
+  </script>
+</body>
+</html>

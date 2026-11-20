@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Alerts & Incident Center — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body-wrap">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="admin-users.html" class="sidebar-nav-item"><i class="fa-solid fa-users"></i><span class="nav-text">All Users</span></a>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item active"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER CONTAINER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+
+    <!-- TOP HEADER -->
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="securitySearchInput" placeholder="Search by alert title, flagged email, severity...">
+      </div>
+      <div class="top-header-right">
+        <button id="btnRefreshSecurity" class="btn-action-icon" style="width: auto; padding: 0 12px; font-size: 0.82rem;" title="Refresh Alerts">
+          <i class="fa-solid fa-arrows-rotate"></i> Sync Live
+        </button>
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN PAGE CONTAINER -->
+    <main class="admin-page-container">
+      <div class="page-title-block" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h1>Security Alerts & Suspicious Activity</h1>
+          <p>Real-time platform access monitoring, suspended user compliance, and automated risk detection.</p>
+        </div>
+        <button id="btnOpenNewAlertModal" class="btn-primary">
+          <i class="fa-solid fa-triangle-exclamation"></i> Log Security Incident
+        </button>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="kpi-grid-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 20px;">
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">Active Incidents</span><span class="kpi-badge-tag badge-tag-alert">Live</span></div>
+          <div class="kpi-number-display" id="secStatTotal">--</div>
+        </div>
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">High Severity Flags</span><span class="kpi-badge-tag badge-tag-down">Risk</span></div>
+          <div class="kpi-number-display" id="secStatHigh" style="color: #EF4444;">--</div>
+        </div>
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">Blocked / Suspended</span><span class="kpi-badge-tag badge-tag-alert">Accounts</span></div>
+          <div class="kpi-number-display" id="secStatSuspended" style="color: #D97706;">--</div>
+        </div>
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">Resolved Events</span><span class="kpi-badge-tag badge-tag-up">Mitigated</span></div>
+          <div class="kpi-number-display" id="secStatResolved" style="color: #059669;">--</div>
+        </div>
+      </div>
+
+      <!-- Security Table Panel -->
+      <div class="admin-card-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+          <h3 style="margin: 0; font-size: 1.05rem;">Live Security Telemetry</h3>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <select id="severityFilter" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.82rem; background: #fff;">
+              <option value="ALL">All Severities</option>
+              <option value="High">High Severity</option>
+              <option value="Medium">Medium Severity</option>
+              <option value="Low">Low Severity</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>Alert ID</th>
+                <th>Incident Details</th>
+                <th>Severity</th>
+                <th>Flagged User / IP</th>
+                <th>Incident Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="securityTbody">
+              <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--admin-text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading security alerts...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL 1: Edit / Review Incident Modal -->
+  <div class="admin-modal-overlay" id="editAlertModal" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="admin-modal-header">
+        <h3 id="modalAlertTitle"><i class="fa-solid fa-shield-halved text-gold"></i> Edit Security Incident</h3>
+        <button class="modal-close-btn" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="editAlertForm" style="padding: 20px;">
+        <input type="hidden" id="editAlertId">
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Incident Title *</label>
+          <input type="text" id="editAlertTitleInput" required style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;">
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Severity</label>
+            <select id="editAlertSeverity" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff;">
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Status</label>
+            <select id="editAlertStatus" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff;">
+              <option value="Action Needed">Action Needed</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" id="editAlertSubmitBtn" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Create New Security Incident Modal -->
+  <div class="admin-modal-overlay" id="createAlertModal" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="admin-modal-header">
+        <h3><i class="fa-solid fa-triangle-exclamation text-gold"></i> Log New Security Incident / Risk</h3>
+        <button class="modal-close-btn" onclick="closeCreateModal()">&times;</button>
+      </div>
+      <form id="createAlertForm" style="padding: 20px;">
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Incident Title *</label>
+          <input type="text" id="newAlertTitle" required placeholder="e.g., Suspicious high-frequency withdrawal attempt" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Severity</label>
+            <select id="newAlertSeverity" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff;">
+              <option value="High">High</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Target Account / User Email</label>
+            <input type="text" id="newAlertUser" placeholder="e.g., student@example.com" style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;">
+          </div>
+        </div>
+        <div style="margin-bottom: 18px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Description / Forensics</label>
+          <textarea id="newAlertDesc" rows="3" placeholder="Additional details, IP addresses or notes..." style="width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.88rem;"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
+          <button type="submit" id="createAlertSubmitBtn" class="btn-primary">Submit Incident</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Delete Alert Confirmation -->
+  <div class="admin-modal-overlay" id="deleteAlertModal" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 440px;">
+      <div class="admin-modal-header" style="border-bottom-color: rgba(239, 68, 68, 0.2);">
+        <h3 style="color: #EF4444;"><i class="fa-solid fa-trash-can"></i> Dismiss Security Alert</h3>
+        <button class="modal-close-btn" onclick="closeDeleteModal()">&times;</button>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 0.9rem; color: #334155; line-height: 1.5; margin: 0 0 16px 0;">
+          Are you sure you want to permanently dismiss/delete this security alert?
+        </p>
+        <div style="background: #f8fafc; border: 1px solid var(--admin-border); border-radius: 6px; padding: 10px; font-size: 0.84rem; margin-bottom: 18px;">
+          <div><strong>Alert ID:</strong> <code id="delAlertId" style="color: var(--admin-navy);"></code></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+          <button type="button" id="confirmDeleteAlertBtn" class="btn-danger" onclick="executeDeleteAlert()">Delete Alert</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="adminToastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; display: flex; flex-direction: column; gap: 8px;"></div>
+
+  <script src="js/admin-core.js"></script>
+  <script>
+    const API_BASE = '/api';
+    let allAlerts = [];
+    let pendingDeleteAlertId = null;
+
+    function getAdminToken() {
+      return localStorage.getItem('token') ||
+             localStorage.getItem('adminToken') ||
+             sessionStorage.getItem('token') ||
+             sessionStorage.getItem('adminToken') ||
+             '';
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('adminToastContainer');
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? '#059669' : (type === 'error' ? '#EF4444' : '#3B82F6');
+      toast.style.cssText = `background: ${bg}; color: white; padding: 12px 18px; border-radius: 8px; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease;`;
+      const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info');
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    async function loadSecurityAlerts() {
+      const tbody = document.getElementById('securityTbody');
+      try {
+        if (window.ensureAdminToken && !getAdminToken()) {
+          await window.ensureAdminToken();
+        }
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/security/alerts`) : fetch(`${API_BASE}/admin/security/alerts`, {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          }
+        }));
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          allAlerts = data.data;
+          updateCounters();
+          renderAlerts();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: #EF4444;">Failed to load security alerts: ${data.message || 'Unknown error'}</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: #EF4444;">Network error communicating with Security service.</td></tr>`;
+      }
+    }
+
+    function updateCounters() {
+      document.getElementById('secStatTotal').textContent = allAlerts.length;
+      document.getElementById('secStatHigh').textContent = allAlerts.filter(a => a.severity === 'High').length;
+      document.getElementById('secStatSuspended').textContent = allAlerts.filter(a => a.type === 'SUSPENDED_USER' || a.title?.includes('Suspended')).length;
+      document.getElementById('secStatResolved').textContent = allAlerts.filter(a => a.status === 'Resolved').length;
+    }
+
+    function renderAlerts() {
+      const tbody = document.getElementById('securityTbody');
+      const search = (document.getElementById('securitySearchInput')?.value || '').toLowerCase().trim();
+      const severity = document.getElementById('severityFilter')?.value || 'ALL';
+
+      let filtered = allAlerts.filter(a => {
+        const matchSearch = (a.title || '').toLowerCase().includes(search) || (a.user || '').toLowerCase().includes(search) || (a.id || '').toLowerCase().includes(search);
+        const matchSev = severity === 'ALL' || a.severity === severity;
+        return matchSearch && matchSev;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--admin-text-muted);">No security alerts match the selected criteria.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(a => {
+        const sevClass = a.severity === 'High' ? 'badge-danger' : a.severity === 'Medium' ? 'badge-warning' : 'badge-info';
+        const statClass = a.status === 'Resolved' ? 'badge-success' : a.status === 'Under Review' ? 'badge-info' : 'badge-warning';
+        const isSuspendedUser = a.id && a.id.startsWith('SEC-SUSP-');
+
+        return `
+          <tr>
+            <td><strong style="font-family: monospace;">${a.id}</strong></td>
+            <td>
+              <div style="font-weight: 700; color: var(--admin-navy);">${a.title}</div>
+              ${a.description ? `<div style="font-size: 0.78rem; color: var(--admin-text-muted);">${a.description}</div>` : ''}
+            </td>
+            <td><span class="badge-status ${sevClass}">${a.severity}</span></td>
+            <td style="font-size: 0.85rem; font-weight: 600;">${a.user}</td>
+            <td style="font-size: 0.82rem; color: var(--admin-text-muted);">${a.date}</td>
+            <td><span class="badge-status ${statClass}">${a.status}</span></td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn-action-icon" title="Edit / Review Incident" onclick="openEditModal('${a.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                ${isSuspendedUser ? `
+                  <button class="btn-action-icon" title="Unsuspend Account" style="color: #059669;" onclick="unsuspendAccount('${a.id}')"><i class="fa-solid fa-lock-open"></i></button>
+                ` : `
+                  <button class="btn-action-icon" title="Resolve Alert" style="color: #059669;" onclick="quickResolveAlert('${a.id}')"><i class="fa-solid fa-check"></i></button>
+                `}
+                <button class="btn-action-icon" title="Dismiss / Delete Alert" style="color: #EF4444;" onclick="openDeleteModal('${a.id}')"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Edit Modal Logic
+    window.openEditModal = function(id) {
+      const alert = allAlerts.find(a => a.id === id);
+      if (!alert) return;
+      document.getElementById('editAlertId').value = alert.id;
+      document.getElementById('editAlertTitleInput').value = alert.title;
+      document.getElementById('editAlertSeverity').value = alert.severity || 'Medium';
+      document.getElementById('editAlertStatus').value = alert.status || 'Under Review';
+      document.getElementById('editAlertModal').style.display = 'flex';
+    };
+
+    window.closeEditModal = function() {
+      document.getElementById('editAlertModal').style.display = 'none';
+    };
+
+    document.getElementById('editAlertForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('editAlertSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+      const id = document.getElementById('editAlertId').value;
+      const title = document.getElementById('editAlertTitleInput').value;
+      const severity = document.getElementById('editAlertSeverity').value;
+      const status = document.getElementById('editAlertStatus').value;
+
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/security/alerts/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ title, severity, status }),
+        }) : fetch(`${API_BASE}/admin/security/alerts/${id}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          },
+          body: JSON.stringify({ title, severity, status }),
+        }));
+        const json = await res.json();
+        if (json.success) {
+          showToast('Security incident updated in real-time!');
+          closeEditModal();
+          loadSecurityAlerts();
+        } else {
+          showToast('Update failed: ' + (json.message || 'Unknown error'), 'error');
+        }
+      } catch (err) {
+        showToast('Failed to connect to backend: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Save Changes';
+      }
+    });
+
+    // Create Modal Logic
+    document.getElementById('btnOpenNewAlertModal').addEventListener('click', () => {
+      document.getElementById('createAlertForm').reset();
+      document.getElementById('createAlertModal').style.display = 'flex';
+    });
+
+    window.closeCreateModal = function() {
+      document.getElementById('createAlertModal').style.display = 'none';
+    };
+
+    document.getElementById('createAlertForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('createAlertSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+
+      const title = document.getElementById('newAlertTitle').value;
+      const severity = document.getElementById('newAlertSeverity').value;
+      const user = document.getElementById('newAlertUser').value || 'System Monitor';
+      const description = document.getElementById('newAlertDesc').value;
+
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/security/alerts`, {
+          method: 'POST',
+          body: JSON.stringify({ title, severity, user, description }),
+        }) : fetch(`${API_BASE}/admin/security/alerts`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          },
+          body: JSON.stringify({ title, severity, user, description }),
+        }));
+        const json = await res.json();
+        if (json.success) {
+          showToast('Security incident logged successfully!');
+          closeCreateModal();
+          document.getElementById('createAlertForm').reset();
+          loadSecurityAlerts();
+        } else {
+          showToast('Failed to log incident: ' + (json.message || 'Unknown error'), 'error');
+        }
+      } catch (err) {
+        showToast('Network error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Incident';
+      }
+    });
+
+    // Quick Actions
+    window.quickResolveAlert = async function(id) {
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/security/alerts/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'Resolved' }),
+        }) : fetch(`${API_BASE}/admin/security/alerts/${id}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          },
+          body: JSON.stringify({ status: 'Resolved' }),
+        }));
+        if (res.ok) {
+          showToast(`Alert ${id} marked as Resolved!`);
+          loadSecurityAlerts();
+        }
+      } catch {
+        showToast('Failed to resolve alert.', 'error');
+      }
+    };
+
+    window.unsuspendAccount = async function(id) {
+      if (!confirm('Are you sure you want to restore and unsuspend this student account?')) return;
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/security/alerts/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ action: 'UNSUSPEND' }),
+        }) : fetch(`${API_BASE}/admin/security/alerts/${id}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          },
+          body: JSON.stringify({ action: 'UNSUSPEND' }),
+        }));
+        if (res.ok) {
+          showToast(`Account successfully unblocked!`);
+          loadSecurityAlerts();
+        }
+      } catch {
+        showToast('Failed to unsuspend account.', 'error');
+      }
+    };
+
+    // Delete Modal Logic
+    window.openDeleteModal = function(id) {
+      pendingDeleteAlertId = id;
+      document.getElementById('delAlertId').textContent = id;
+      document.getElementById('deleteAlertModal').style.display = 'flex';
+    };
+
+    window.closeDeleteModal = function() {
+      pendingDeleteAlertId = null;
+      document.getElementById('deleteAlertModal').style.display = 'none';
+    };
+
+    window.executeDeleteAlert = async function() {
+      if (!pendingDeleteAlertId) return;
+      const btn = document.getElementById('confirmDeleteAlertBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Deleting...`;
+
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/security/alerts/${pendingDeleteAlertId}`, {
+          method: 'DELETE'
+        }) : fetch(`${API_BASE}/admin/security/alerts/${pendingDeleteAlertId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          }
+        }));
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Security alert ${pendingDeleteAlertId} removed.`);
+          closeDeleteModal();
+          loadSecurityAlerts();
+        } else {
+          showToast('Delete failed: ' + (json.message || 'Unknown error'), 'error');
+        }
+      } catch (err) {
+        showToast('Delete failed. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Delete Alert';
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+        if (adminUser.fullName) {
+          document.getElementById('headerAdminName').textContent = adminUser.fullName;
+          document.getElementById('headerAdminRole').textContent = adminUser.role || 'Security Officer';
+          const initials = adminUser.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+          document.getElementById('headerAdminAvatar').textContent = initials || 'SA';
+        }
+      } catch (e) {}
+
+      loadSecurityAlerts();
+      document.getElementById('securitySearchInput')?.addEventListener('input', renderAlerts);
+      document.getElementById('severityFilter')?.addEventListener('change', renderAlerts);
+      document.getElementById('btnRefreshSecurity')?.addEventListener('click', () => {
+        showToast('Refreshing security telemetry...');
+        loadSecurityAlerts();
+      });
+      // Auto-refresh every 15 seconds
+      setInterval(loadSecurityAlerts, 15000);
+    });
+  </script>
+</body>
+</html>

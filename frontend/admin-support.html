@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Desk & Inquiry Tickets — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .btn-action-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action-sm:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .btn-action-edit {
+      background: #2563EB;
+      color: #FFFFFF;
+    }
+    .btn-action-reply {
+      background: var(--admin-navy);
+      color: var(--admin-gold);
+    }
+    .btn-action-delete {
+      background: #EF4444;
+      color: #FFFFFF;
+    }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-dialog {
+      background: #FFFFFF;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item active"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="ticketSearchInput" oninput="filterTickets()" placeholder="Search ticket ID, student name, email, subject, category...">
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+        <button onclick="handleAdminLogout(event)" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" title="Sign Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <div class="page-title-block">
+        <div>
+          <h1>Support Desk & Inquiry Tickets</h1>
+          <p>Review and manage student and visitor inquiries, dispatch advisor replies, edit details, or remove resolved records.</p>
+        </div>
+        <button onclick="loadSupportTickets()" class="btn-action-icon" style="width: auto; padding: 6px 14px; font-size: 0.82rem; font-weight: 700; cursor: pointer;" title="Refresh tickets from database">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Quick KPI Counters -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted); font-weight: 700; text-transform: uppercase;">Total Inquiries</div>
+            <div id="statTotal" style="font-size: 1.5rem; font-weight: 900; color: var(--admin-navy);">0</div>
+          </div>
+          <i class="fa-solid fa-ticket" style="font-size: 1.5rem; color: #94A3B8;"></i>
+        </div>
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: #D97706; font-weight: 700; text-transform: uppercase;">Open & Pending</div>
+            <div id="statOpen" style="font-size: 1.5rem; font-weight: 900; color: #D97706;">0</div>
+          </div>
+          <i class="fa-solid fa-clock" style="font-size: 1.5rem; color: #F59E0B;"></i>
+        </div>
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: #2563EB; font-weight: 700; text-transform: uppercase;">In Progress</div>
+            <div id="statProgress" style="font-size: 1.5rem; font-weight: 900; color: #2563EB;">0</div>
+          </div>
+          <i class="fa-solid fa-spinner" style="font-size: 1.5rem; color: #3B82F6;"></i>
+        </div>
+        <div class="admin-card-panel" style="padding: 14px 18px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: #059669; font-weight: 700; text-transform: uppercase;">Resolved</div>
+            <div id="statResolved" style="font-size: 1.5rem; font-weight: 900; color: #059669;">0</div>
+          </div>
+          <i class="fa-solid fa-circle-check" style="font-size: 1.5rem; color: #10B981;"></i>
+        </div>
+      </div>
+
+      <!-- Filter Buttons & Table -->
+      <div class="admin-card-panel">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--admin-border); padding-bottom: 12px;">
+          <div style="display: flex; gap: 8px;" id="statusFilterTabs">
+            <button onclick="setStatusFilter('ALL')" class="btn-filter-tab active" data-status="ALL" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-navy); color: #fff; font-size: 0.8rem; font-weight: 700; cursor: pointer;">All</button>
+            <button onclick="setStatusFilter('OPEN')" class="btn-filter-tab" data-status="OPEN" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: #fff; color: var(--admin-text); font-size: 0.8rem; font-weight: 600; cursor: pointer;">Open</button>
+            <button onclick="setStatusFilter('IN_PROGRESS')" class="btn-filter-tab" data-status="IN_PROGRESS" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: #fff; color: var(--admin-text); font-size: 0.8rem; font-weight: 600; cursor: pointer;">In Progress</button>
+            <button onclick="setStatusFilter('RESOLVED')" class="btn-filter-tab" data-status="RESOLVED" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: #fff; color: var(--admin-text); font-size: 0.8rem; font-weight: 600; cursor: pointer;">Resolved</button>
+            <button onclick="setStatusFilter('CLOSED')" class="btn-filter-tab" data-status="CLOSED" style="padding: 6px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: #fff; color: var(--admin-text); font-size: 0.8rem; font-weight: 600; cursor: pointer;">Closed</button>
+          </div>
+          <div style="font-size: 0.82rem; color: var(--admin-text-muted);" id="ticketCountLabel">Showing 0 inquiries</div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Student / Sender</th>
+                <th>Subject & Category</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Advisor Reply</th>
+                <th>Date Received</th>
+                <th style="text-align: right; min-width: 220px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="supportTbody">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 30px; color: var(--admin-text-muted);">
+                  <i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i> Loading support tickets...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════
+       MODAL 1: EDIT TICKET DETAILS
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="editTicketModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 600px;">
+      <div style="padding: 16px 20px; background: #1E293B; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.75rem; color: #94A3B8; font-weight: 700; text-transform: uppercase;" id="editModalTicketCode">EDIT TICKET #ST-0000</div>
+          <h3 style="margin: 2px 0 0 0; font-size: 1.1rem; color: #fff;">Edit Support Ticket Details</h3>
+        </div>
+        <button onclick="closeEditModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 1.2rem; cursor: pointer; padding: 4px;" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="editTicketForm" onsubmit="submitEditTicket(event)" style="padding: 20px; overflow-y: auto; flex: 1;">
+        <input type="hidden" id="editTicketId" value="">
+
+        <div style="margin-bottom: 12px; background: #F8FAFC; padding: 10px 14px; border-radius: 8px; border: 1px solid #E2E8F0; font-size: 0.8rem;">
+          <span style="color: var(--admin-text-muted);">Sender:</span>
+          <strong id="editModalSenderInfo" style="color: var(--admin-navy); margin-left: 6px;">Name (email)</strong>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Subject *</label>
+          <input type="text" id="editTicketSubject" required style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.88rem; box-sizing: border-box;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Category</label>
+            <select id="editTicketCategory" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff; box-sizing: border-box;">
+              <option value="General Inquiry">General Inquiry</option>
+              <option value="Admissions & Courses">Admissions & Courses</option>
+              <option value="Fee & Scholarship Aid">Fee & Scholarship Aid</option>
+              <option value="Document Verification">Document Verification</option>
+              <option value="Technical Support">Technical Support</option>
+              <option value="Billing & Payments">Billing & Payments</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Priority</label>
+            <select id="editTicketPriority" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff; box-sizing: border-box;">
+              <option value="LOW">LOW</option>
+              <option value="MEDIUM">MEDIUM</option>
+              <option value="HIGH">HIGH</option>
+              <option value="URGENT">URGENT</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Status</label>
+          <select id="editTicketStatus" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff; box-sizing: border-box;">
+            <option value="OPEN">OPEN (Under Review)</option>
+            <option value="IN_PROGRESS">IN_PROGRESS (Working on Resolution)</option>
+            <option value="RESOLVED">RESOLVED (Resolved & Answered)</option>
+            <option value="CLOSED">CLOSED (Completed & Archived)</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Inquiry Message *</label>
+          <textarea id="editTicketMessage" rows="3" required style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; box-sizing: border-box; resize: vertical; line-height: 1.4;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Advisor Resolution Notes (Optional)</label>
+          <textarea id="editTicketResolutionNotes" rows="2" placeholder="Record internal notes or resolution steps taken..." style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; box-sizing: border-box; resize: vertical; line-height: 1.4;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
+          <button type="button" onclick="closeEditModal()" class="btn-action-icon" style="width: auto; padding: 8px 16px; background: #F1F5F9; color: var(--admin-text); border: 1px solid var(--admin-border); font-weight: 600; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit" id="saveEditBtn" class="btn-action-sm btn-action-edit" style="padding: 8px 20px; font-size: 0.85rem;">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════
+       MODAL 2: ADVISOR REPLY & GUIDANCE
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="replyTicketModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 620px;">
+      <div style="padding: 16px 20px; background: var(--admin-navy); color: #fff; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--admin-gold); font-weight: 700; text-transform: uppercase;" id="modalTicketCode">TICKET #ST-0000</div>
+          <h3 style="margin: 2px 0 0 0; font-size: 1.1rem; color: #fff;" id="modalTicketSubject">Ticket Subject</h3>
+        </div>
+        <button onclick="closeReplyModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 1.2rem; cursor: pointer; padding: 4px;" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div style="padding: 20px; overflow-y: auto; flex: 1;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px 14px; border-radius: 10px; font-size: 0.8rem; margin-bottom: 16px;">
+          <div>
+            <span style="color: var(--admin-text-muted); display: block;">Student:</span>
+            <strong id="modalStudentName" style="color: var(--admin-navy);">Name</strong>
+          </div>
+          <div>
+            <span style="color: var(--admin-text-muted); display: block;">Email:</span>
+            <strong id="modalStudentEmail" style="color: var(--admin-navy);">Email</strong>
+          </div>
+          <div>
+            <span style="color: var(--admin-text-muted); display: block;">Category:</span>
+            <strong id="modalTicketCategory" style="color: var(--admin-navy);">Category</strong>
+          </div>
+          <div>
+            <span style="color: var(--admin-text-muted); display: block;">Priority:</span>
+            <span id="modalTicketPriority" class="badge-status badge-warning">MEDIUM</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--admin-text-muted); display: block; margin-bottom: 6px;">Student's Inquiry Message</label>
+          <div id="modalStudentMessage" style="background: #F1F5F9; border-left: 4px solid var(--admin-navy); padding: 14px; border-radius: 8px; font-size: 0.88rem; color: #334155; line-height: 1.5; white-space: pre-wrap;">
+            Student message details...
+          </div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 4px;" id="modalTicketDate">Submitted on ...</div>
+        </div>
+
+        <div id="modalPreviousReplyBox" style="display: none; margin-bottom: 16px;">
+          <label style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #059669; display: block; margin-bottom: 6px;">Previous Advisor Response</label>
+          <div id="modalPreviousReplyText" style="background: #ECFDF5; border: 1px solid #A7F3D0; padding: 12px 14px; border-radius: 8px; font-size: 0.85rem; color: #065F46; line-height: 1.45; white-space: pre-wrap;">
+          </div>
+        </div>
+
+        <form id="replyTicketForm" onsubmit="submitTicketReply(event)">
+          <input type="hidden" id="replyTicketId" value="">
+
+          <div style="margin-bottom: 14px;">
+            <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px; color: var(--admin-navy);">Update Ticket Status</label>
+            <select id="replyTicketStatus" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.88rem; background: #fff; box-sizing: border-box;">
+              <option value="OPEN">OPEN (Under Review)</option>
+              <option value="IN_PROGRESS">IN_PROGRESS (Working on Resolution)</option>
+              <option value="RESOLVED" selected>RESOLVED (Issue Answered & Resolved)</option>
+              <option value="CLOSED">CLOSED (Completed & Archived)</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px; color: var(--admin-navy);">Advisor Reply & Guidance *</label>
+            <textarea id="replyMessageText" rows="4" placeholder="Write response to student. This reply will immediately appear on the student's dashboard and be delivered to their email..." required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.88rem; box-sizing: border-box; resize: vertical; line-height: 1.45;"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 14px;">
+            <button type="button" onclick="closeReplyModal()" class="btn-action-icon" style="width: auto; padding: 8px 16px; background: #F1F5F9; color: var(--admin-text); border: 1px solid var(--admin-border); font-weight: 600; cursor: pointer;">
+              Cancel
+            </button>
+            <button type="submit" id="submitReplyBtn" class="btn-action-sm btn-action-reply" style="padding: 8px 20px; font-size: 0.85rem;">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Send Reply to Student</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════
+       MODAL 3: DELETE CONFIRMATION
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="deleteTicketModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 440px;">
+      <div style="padding: 16px 20px; background: #EF4444; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 1.05rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Delete Support Ticket</span>
+        </h3>
+        <button onclick="closeDeleteModal()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; padding: 4px;" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 0.88rem; color: #334155; margin: 0 0 10px 0; line-height: 1.5;">
+          Are you sure you want to permanently delete ticket <strong id="deleteModalTicketCode" style="color: #EF4444;">#ST-0000</strong>?
+        </p>
+        <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin: 0 0 20px 0;">
+          This action will permanently remove this inquiry from the database and cannot be undone.
+        </p>
+        <input type="hidden" id="deleteTicketId" value="">
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" onclick="closeDeleteModal()" class="btn-action-icon" style="width: auto; padding: 8px 16px; background: #F1F5F9; color: var(--admin-text); border: 1px solid var(--admin-border); font-weight: 600; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="button" id="confirmDeleteBtn" onclick="executeDeleteTicket()" class="btn-action-sm btn-action-delete" style="padding: 8px 20px; font-size: 0.85rem;">
+            <i class="fa-solid fa-trash-can"></i>
+            <span>Yes, Delete Ticket</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-core.js"></script>
+  <script>
+    let allTickets = [];
+    let currentStatusFilter = 'ALL';
+
+    async function loadSupportTickets() {
+      const tbody = document.getElementById('supportTbody');
+      try {
+        const res = await fetch('/api/admin/support-tickets?limit=150', { credentials: 'include' });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          allTickets = data.data;
+          updateCounters();
+          renderTicketsTable();
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 30px; color: #DC2626;">
+                Failed to load support tickets. Please ensure you are logged in as admin.
+              </td>
+            </tr>
+          `;
+        }
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 30px; color: #DC2626;">
+              Network error connecting to support tickets API.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function updateCounters() {
+      const total = allTickets.length;
+      const open = allTickets.filter(t => t.status === 'OPEN').length;
+      const inProgress = allTickets.filter(t => t.status === 'IN_PROGRESS').length;
+      const resolved = allTickets.filter(t => t.status === 'RESOLVED').length;
+
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statOpen').innerText = open;
+      document.getElementById('statProgress').innerText = inProgress;
+      document.getElementById('statResolved').innerText = resolved;
+    }
+
+    function setStatusFilter(status) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.btn-filter-tab').forEach(btn => {
+        if (btn.getAttribute('data-status') === status) {
+          btn.style.background = 'var(--admin-navy)';
+          btn.style.color = '#fff';
+        } else {
+          btn.style.background = '#fff';
+          btn.style.color = 'var(--admin-text)';
+        }
+      });
+      renderTicketsTable();
+    }
+
+    function filterTickets() {
+      renderTicketsTable();
+    }
+
+    function renderTicketsTable() {
+      const tbody = document.getElementById('supportTbody');
+      const searchQuery = (document.getElementById('ticketSearchInput')?.value || '').toLowerCase().trim();
+
+      const filtered = allTickets.filter(t => {
+        const matchesStatus = currentStatusFilter === 'ALL' || t.status === currentStatusFilter;
+        const matchesSearch = !searchQuery ||
+          (t.id && t.id.toLowerCase().includes(searchQuery)) ||
+          (t.subject && t.subject.toLowerCase().includes(searchQuery)) ||
+          (t.category && t.category.toLowerCase().includes(searchQuery)) ||
+          (t.user?.fullName && t.user.fullName.toLowerCase().includes(searchQuery)) ||
+          (t.user?.email && t.user.email.toLowerCase().includes(searchQuery)) ||
+          (t.message && t.message.toLowerCase().includes(searchQuery));
+        return matchesStatus && matchesSearch;
+      });
+
+      document.getElementById('ticketCountLabel').innerText = `Showing ${filtered.length} of ${allTickets.length} inquiries`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 40px; color: var(--admin-text-muted);">
+              <i class="fa-solid fa-inbox" style="font-size: 2rem; color: #CBD5E1; margin-bottom: 10px; display: block;"></i>
+              No support tickets found for the selected criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(t => {
+        const shortId = t.id ? `#ST-${t.id.slice(0, 6).toUpperCase()}` : '#ST-000';
+        const userName = t.user?.fullName || 'Guest Student';
+        const userEmail = t.user?.email || 'N/A';
+        const hasReply = Boolean(t.resolutionNotes && t.resolutionNotes.trim());
+
+        let statusClass = 'badge-warning';
+        if (t.status === 'RESOLVED') statusClass = 'badge-success';
+        else if (t.status === 'IN_PROGRESS') statusClass = 'badge-info';
+        else if (t.status === 'CLOSED') statusClass = 'badge-danger';
+
+        let priorityClass = 'badge-warning';
+        if (t.priority === 'HIGH' || t.priority === 'URGENT') priorityClass = 'badge-danger';
+        else if (t.priority === 'LOW') priorityClass = 'badge-info';
+
+        return `
+          <tr>
+            <td><strong style="color: var(--admin-navy);">${escapeHtml(shortId)}</strong></td>
+            <td>
+              <div style="font-weight: 700; color: var(--admin-navy);">${escapeHtml(userName)}</div>
+              <div style="font-size: 0.76rem; color: var(--admin-text-muted);">${escapeHtml(userEmail)}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: #1E293B;">${escapeHtml(t.subject)}</div>
+              <div style="font-size: 0.75rem; color: var(--admin-gold); font-weight: 600;">${escapeHtml(t.category || 'General')}</div>
+            </td>
+            <td><span class="badge-status ${priorityClass}">${escapeHtml(t.priority || 'MEDIUM')}</span></td>
+            <td><span class="badge-status ${statusClass}">${escapeHtml(t.status || 'OPEN')}</span></td>
+            <td>
+              ${hasReply ? `
+                <span style="display: inline-flex; align-items: center; gap: 4px; color: #059669; font-weight: 700; font-size: 0.78rem;">
+                  <i class="fa-solid fa-check"></i> Replied
+                </span>
+              ` : `
+                <span style="display: inline-flex; align-items: center; gap: 4px; color: #D97706; font-weight: 600; font-size: 0.78rem;">
+                  <i class="fa-regular fa-clock"></i> Pending Reply
+                </span>
+              `}
+            </td>
+            <td style="font-size: 0.8rem; color: var(--admin-text-muted);">
+              ${new Date(t.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end;">
+                <!-- EDIT BUTTON -->
+                <button onclick="openEditModal('${t.id}')" class="btn-action-sm btn-action-edit" title="Edit Ticket Details">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                  <span>Edit</span>
+                </button>
+
+                <!-- REPLY BUTTON -->
+                <button onclick="openReplyModal('${t.id}')" class="btn-action-sm btn-action-reply" title="Review and Send Advisor Reply">
+                  <i class="fa-solid fa-reply"></i>
+                  <span>${hasReply ? 'Edit Reply' : 'Reply'}</span>
+                </button>
+
+                <!-- DELETE BUTTON -->
+                <button onclick="openDeleteModal('${t.id}')" class="btn-action-sm btn-action-delete" title="Permanently Delete Ticket">
+                  <i class="fa-solid fa-trash-can"></i>
+                  <span>Delete</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // --- EDIT MODAL HANDLERS ---
+    function openEditModal(ticketId) {
+      const ticket = allTickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      const shortId = `#ST-${ticket.id.slice(0, 6).toUpperCase()}`;
+      document.getElementById('editModalTicketCode').innerText = `EDIT TICKET ${shortId}`;
+      document.getElementById('editModalSenderInfo').innerText = `${ticket.user?.fullName || 'Guest'} (${ticket.user?.email || 'N/A'})`;
+
+      document.getElementById('editTicketId').value = ticket.id;
+      document.getElementById('editTicketSubject').value = ticket.subject || '';
+      document.getElementById('editTicketCategory').value = ticket.category || 'General Inquiry';
+      document.getElementById('editTicketPriority').value = ticket.priority || 'MEDIUM';
+      document.getElementById('editTicketStatus').value = ticket.status || 'OPEN';
+      document.getElementById('editTicketMessage').value = ticket.message || '';
+      document.getElementById('editTicketResolutionNotes').value = ticket.resolutionNotes || '';
+
+      document.getElementById('editTicketModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editTicketModal').style.display = 'none';
+    }
+
+    async function submitEditTicket(e) {
+      e.preventDefault();
+      const ticketId = document.getElementById('editTicketId').value;
+      const subject = document.getElementById('editTicketSubject').value.trim();
+      const category = document.getElementById('editTicketCategory').value;
+      const priority = document.getElementById('editTicketPriority').value;
+      const status = document.getElementById('editTicketStatus').value;
+      const message = document.getElementById('editTicketMessage').value.trim();
+      const resolutionNotes = document.getElementById('editTicketResolutionNotes').value.trim();
+      const saveBtn = document.getElementById('saveEditBtn');
+
+      if (!ticketId || !subject || !message) {
+        showAdminToast('Subject and message cannot be empty.', 'danger');
+        return;
+      }
+
+      const origHtml = saveBtn.innerHTML;
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+      try {
+        const res = await fetch(`/api/admin/support-tickets/${ticketId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            subject,
+            category,
+            priority,
+            status,
+            message,
+            resolutionNotes: resolutionNotes || undefined,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showAdminToast('Support ticket updated successfully!', 'success');
+          closeEditModal();
+          loadSupportTickets();
+        } else {
+          showAdminToast(data.message || 'Failed to update ticket', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error while saving ticket changes.', 'danger');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = origHtml;
+      }
+    }
+
+    // --- REPLY MODAL HANDLERS ---
+    function openReplyModal(ticketId) {
+      const ticket = allTickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      const shortId = `#ST-${ticket.id.slice(0, 6).toUpperCase()}`;
+      document.getElementById('modalTicketCode').innerText = `TICKET ${shortId}`;
+      document.getElementById('modalTicketSubject').innerText = ticket.subject;
+      document.getElementById('modalStudentName').innerText = ticket.user?.fullName || 'Student Scholar';
+      document.getElementById('modalStudentEmail').innerText = ticket.user?.email || 'N/A';
+      document.getElementById('modalTicketCategory').innerText = ticket.category || 'General';
+      document.getElementById('modalTicketPriority').innerText = ticket.priority || 'MEDIUM';
+      document.getElementById('modalStudentMessage').innerText = ticket.message || '';
+      document.getElementById('modalTicketDate').innerText = `Submitted: ${new Date(ticket.createdAt).toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' })}`;
+
+      document.getElementById('replyTicketId').value = ticket.id;
+      document.getElementById('replyTicketStatus').value = ticket.status === 'OPEN' ? 'RESOLVED' : ticket.status;
+      document.getElementById('replyMessageText').value = ticket.resolutionNotes || '';
+
+      const prevBox = document.getElementById('modalPreviousReplyBox');
+      if (ticket.resolutionNotes && ticket.resolutionNotes.trim()) {
+        prevBox.style.display = 'block';
+        document.getElementById('modalPreviousReplyText').innerText = ticket.resolutionNotes;
+      } else {
+        prevBox.style.display = 'none';
+      }
+
+      document.getElementById('replyTicketModal').style.display = 'flex';
+    }
+
+    function closeReplyModal() {
+      document.getElementById('replyTicketModal').style.display = 'none';
+    }
+
+    async function submitTicketReply(e) {
+      e.preventDefault();
+      const ticketId = document.getElementById('replyTicketId').value;
+      const status = document.getElementById('replyTicketStatus').value;
+      const resolutionNotes = document.getElementById('replyMessageText').value.trim();
+      const submitBtn = document.getElementById('submitReplyBtn');
+
+      if (!ticketId || !resolutionNotes) {
+        showAdminToast('Please write a reply message before submitting.', 'danger');
+        return;
+      }
+
+      const origHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Reply...';
+
+      try {
+        const res = await fetch(`/api/admin/support-tickets/${ticketId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ status, resolutionNotes }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showAdminToast('Reply sent to student and notification dispatched!', 'success');
+          closeReplyModal();
+          loadSupportTickets();
+        } else {
+          showAdminToast(data.message || 'Failed to submit reply', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error while updating support ticket.', 'danger');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origHtml;
+      }
+    }
+
+    // --- DELETE MODAL HANDLERS ---
+    function openDeleteModal(ticketId) {
+      const ticket = allTickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      const shortId = `#ST-${ticket.id.slice(0, 6).toUpperCase()}`;
+      document.getElementById('deleteModalTicketCode').innerText = shortId;
+      document.getElementById('deleteTicketId').value = ticket.id;
+      document.getElementById('deleteTicketModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteTicketModal').style.display = 'none';
+    }
+
+    async function executeDeleteTicket() {
+      const ticketId = document.getElementById('deleteTicketId').value;
+      const deleteBtn = document.getElementById('confirmDeleteBtn');
+      if (!ticketId) return;
+
+      const origHtml = deleteBtn.innerHTML;
+      deleteBtn.disabled = true;
+      deleteBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+
+      try {
+        const res = await fetch(`/api/admin/support-tickets/${ticketId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showAdminToast('Support ticket deleted successfully.', 'success');
+          closeDeleteModal();
+          loadSupportTickets();
+        } else {
+          showAdminToast(data.message || 'Failed to delete ticket', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error while deleting support ticket.', 'danger');
+      } finally {
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = origHtml;
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSupportTickets();
+    });
+  </script>
+</body>
+</html>

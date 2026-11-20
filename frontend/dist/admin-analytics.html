@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Analytics & Financial Insights — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .status-dot-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      margin-right: 6px;
+      animation: pulseGlow 1.8s infinite;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .period-btn {
+      padding: 5px 12px;
+      border: 1px solid var(--admin-border);
+      background: #FFFFFF;
+      color: var(--admin-text-muted);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .period-btn.active {
+      background: var(--admin-navy);
+      color: #FFFFFF;
+      border-color: var(--admin-navy);
+    }
+    .period-btn:hover:not(.active) {
+      background: #F1F5F9;
+      color: var(--admin-navy);
+    }
+    .chart-container-panel {
+      height: 280px;
+      position: relative;
+      margin-top: 14px;
+    }
+    .analytics-table-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #07166F;
+      color: #FFB52E;
+      font-weight: 800;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item active"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- REVIEWS MANAGEMENT -->
+      <a href="admin-reviews.html" class="sidebar-nav-item"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="analyticsSearchInput" placeholder="Filter metrics, academic streams, or contributors...">
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <!-- Title & Realtime Actions -->
+      <div class="page-title-block">
+        <div>
+          <h1>Analytics &amp; Financial Insights</h1>
+          <p>Live PostgreSQL metrics, academic stream breakdown, funding trends, and contributor leaderboard.</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <span class="badge-status badge-success" id="syncStatusBadge">
+            <span class="status-dot-pulse"></span> Live PostgreSQL Data
+          </span>
+          <button onclick="loadAnalyticsData()" class="btn-action-icon" style="width: auto; padding: 0 16px; cursor: pointer;" title="Refresh live telemetry">
+            <i class="fa-solid fa-arrows-rotate" id="refreshIcon" style="margin-right: 6px;"></i> Refresh
+          </button>
+          <button onclick="exportAnalyticsCSV()" class="btn-action-icon" style="width: auto; padding: 0 16px; background: #07166F; color: #FFB52E; font-weight: 700; border: none; cursor: pointer;" title="Export CSV Report">
+            <i class="fa-solid fa-download" style="margin-right: 6px;"></i> Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 REAL-TIME FINANCIAL & OPERATIONAL KPI CARDS -->
+      <div class="kpi-grid-container" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-bottom: 24px;">
+        <div class="kpi-stat-card">
+          <div class="kpi-header">
+            <span class="kpi-title-text">Total Funds Raised</span>
+            <span class="kpi-badge-tag badge-tag-up" id="kpiPlatformFeeTag">0% Platform Fee</span>
+          </div>
+          <div class="kpi-number-display" id="kpiTotalRaised">₹0</div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 6px;">
+            <i class="fa-solid fa-shield-check" style="color: #10B981; margin-right: 4px;"></i> Direct college fee reconciliation
+          </div>
+        </div>
+
+        <div class="kpi-stat-card">
+          <div class="kpi-header">
+            <span class="kpi-title-text">Verified Scholars</span>
+            <span class="kpi-badge-tag badge-tag-up" id="kpiScholarRateTag">Active Scholars</span>
+          </div>
+          <div class="kpi-number-display" id="kpiVerifiedScholars" style="color: #059669;">--</div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 6px;" id="kpiTotalBeneficiariesSub">
+            Loading scholar records...
+          </div>
+        </div>
+
+        <div class="kpi-stat-card">
+          <div class="kpi-header">
+            <span class="kpi-title-text">Admissions Guidance</span>
+            <span class="kpi-badge-tag badge-tag-up">Live Enquiries</span>
+          </div>
+          <div class="kpi-number-display" id="kpiTotalEnquiries" style="color: #2563EB;">--</div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 6px;" id="kpiEnquiriesSub">
+            Engineering &amp; Medical candidates
+          </div>
+        </div>
+
+        <div class="kpi-stat-card">
+          <div class="kpi-header">
+            <span class="kpi-title-text">Resolution &amp; Support</span>
+            <span class="kpi-badge-tag badge-tag-up" id="kpiResolutionRateTag">99.2% Resolved</span>
+          </div>
+          <div class="kpi-number-display" id="kpiResolvedTickets" style="color: #D97706;">--</div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 6px;" id="kpiTicketsSub">
+            Desk turnaround &lt; 24h
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS SECTION: 2 PRIMARY PANELS -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; margin-bottom: 24px;">
+        
+        <!-- Chart 1: Admissions Demand by Academic Stream (Real Data) -->
+        <div class="admin-card-panel" style="margin-bottom: 0;">
+          <div class="panel-header-row">
+            <div>
+              <h3><i class="fa-solid fa-graduation-cap text-gold" style="margin-right: 8px;"></i> Admissions Demand by Academic Stream</h3>
+              <p style="font-size: 0.8rem; color: var(--admin-text-muted);">Real-time applicant distribution across course categories from PostgreSQL enquiries.</p>
+            </div>
+            <span class="badge-status badge-success">Live Enquiries</span>
+          </div>
+          <div class="chart-container-panel">
+            <canvas id="categoryDoughnutChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Monthly Disbursal Trend with Dynamic Time Period Selector -->
+        <div class="admin-card-panel" style="margin-bottom: 0;">
+          <div class="panel-header-row">
+            <div>
+              <h3><i class="fa-solid fa-chart-simple text-gold" style="margin-right: 8px;"></i> Financial Aid &amp; Disbursal Trend</h3>
+              <p style="font-size: 0.8rem; color: var(--admin-text-muted);">Monthly institutional disbursals &amp; educational grants in INR (₹).</p>
+            </div>
+            <div style="display: flex; gap: 4px;">
+              <button class="period-btn" data-period="7d" onclick="setTrendPeriod('7d')">7D</button>
+              <button class="period-btn active" data-period="30d" onclick="setTrendPeriod('30d')">30D</button>
+              <button class="period-btn" data-period="6m" onclick="setTrendPeriod('6m')">6M</button>
+              <button class="period-btn" data-period="1y" onclick="setTrendPeriod('1y')">1Y</button>
+            </div>
+          </div>
+          <div class="chart-container-panel">
+            <canvas id="disbursalLineChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECONDARY CHARTS & TABLES GRID -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 24px; margin-bottom: 24px;">
+
+        <!-- Panel A: Top Contributors Leaderboard (Real DB) -->
+        <div class="admin-card-panel" style="margin-bottom: 0;">
+          <div class="panel-header-row">
+            <div>
+              <h3><i class="fa-solid fa-trophy text-gold" style="margin-right: 8px;"></i> Top Contributors Leaderboard</h3>
+              <p style="font-size: 0.8rem; color: var(--admin-text-muted);">Aggregated donor contributions ranking from verified transactions.</p>
+            </div>
+            <span class="badge-status badge-success">Donor Repository</span>
+          </div>
+
+          <div style="margin-top: 12px; max-height: 320px; overflow-y: auto;" id="topDonorsListContainer">
+            <div style="padding: 30px; text-align: center; color: var(--admin-text-muted);">
+              <i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i> Loading contributors...
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel B: Recent Admissions & Career Guidance Enquiries (Real DB) -->
+        <div class="admin-card-panel" style="margin-bottom: 0;">
+          <div class="panel-header-row">
+            <div>
+              <h3><i class="fa-solid fa-user-clock text-gold" style="margin-right: 8px;"></i> Recent Career &amp; College Enquiries</h3>
+              <p style="font-size: 0.8rem; color: var(--admin-text-muted);">Live candidates seeking guidance across Indian engineering &amp; medical colleges.</p>
+            </div>
+            <a href="admin-requests.html" class="btn-action-icon" style="width: auto; padding: 0 12px; text-decoration: none; font-size: 0.75rem; font-weight: 700;">
+              View All &rarr;
+            </a>
+          </div>
+
+          <div style="overflow-x: auto; margin-top: 8px;">
+            <table class="admin-data-table" style="font-size: 0.8rem;">
+              <thead>
+                <tr>
+                  <th>Student Candidate</th>
+                  <th>Interested Course</th>
+                  <th>Stream / Education</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="recentEnquiriesTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 24px; color: var(--admin-text-muted);">
+                    <i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i> Loading live candidate enquiries...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-core.js"></script>
+  <script>
+    let categoryChartInstance = null;
+    let disbursalChartInstance = null;
+    let currentAnalyticsData = null;
+    let currentTrendPeriod = '30d';
+
+    function formatCurrency(val) {
+      return '₹' + Number(val || 0).toLocaleString('en-IN');
+    }
+
+    function timeAgo(dateString) {
+      if (!dateString) return '';
+      const now = new Date();
+      const date = new Date(dateString);
+      const diffSec = Math.floor((now - date) / 1000);
+      if (diffSec < 60) return 'Just now';
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin}m ago`;
+      const diffHour = Math.floor(diffMin / 60);
+      if (diffHour < 24) return `${diffHour}h ago`;
+      const diffDays = Math.floor(diffHour / 24);
+      if (diffDays < 7) return `${diffDays}d ago`;
+      return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    }
+
+    // 1. Fetch live comprehensive analytics report from PostgreSQL backend
+    async function loadAnalyticsData() {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+      try {
+        const [reportsRes, topDonorsRes] = await Promise.all([
+          adminFetch('/api/admin/reports'),
+          adminFetch('/api/admin/analytics/top-donors?limit=6')
+        ]);
+
+        if (reportsRes.ok) {
+          const reportsJson = await reportsRes.json();
+          if (reportsJson.success && reportsJson.data) {
+            currentAnalyticsData = reportsJson.data;
+            renderKPIs(currentAnalyticsData.summary);
+            renderCategoryChart(currentAnalyticsData.categoryBreakdown);
+            renderMonthlyDisbursalChart(currentAnalyticsData.monthlyDisbursals);
+            renderRecentEnquiries(currentAnalyticsData.recentEnquiries);
+          }
+        }
+
+        if (topDonorsRes.ok) {
+          const donorsJson = await topDonorsRes.json();
+          if (donorsJson.success && Array.isArray(donorsJson.data)) {
+            renderTopDonors(donorsJson.data);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load live analytics:', err);
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+      }
+    }
+
+    // 2. Render 4 Top KPI Cards
+    function renderKPIs(summary) {
+      if (!summary) return;
+
+      const totalRaisedEl = document.getElementById('kpiTotalRaised');
+      if (totalRaisedEl) totalRaisedEl.textContent = formatCurrency(summary.totalRaised);
+
+      const verifiedScholarsEl = document.getElementById('kpiVerifiedScholars');
+      if (verifiedScholarsEl) verifiedScholarsEl.textContent = `${summary.verifiedScholars || 0} Scholars`;
+
+      const beneficiariesSubEl = document.getElementById('kpiTotalBeneficiariesSub');
+      if (beneficiariesSubEl) {
+        beneficiariesSubEl.textContent = `${summary.totalBeneficiaries || 0} registered • ${summary.unverifiedCount || 0} initial verification`;
+      }
+
+      const totalEnquiriesEl = document.getElementById('kpiTotalEnquiries');
+      if (totalEnquiriesEl) totalEnquiriesEl.textContent = `${summary.totalEnquiries || 0} Candidates`;
+
+      const resolvedTicketsEl = document.getElementById('kpiResolvedTickets');
+      if (resolvedTicketsEl) {
+        resolvedTicketsEl.textContent = `${summary.resolvedTickets || 0} / ${(summary.resolvedTickets || 0) + (summary.openTickets || 0)} Closed`;
+      }
+
+      const ticketsSubEl = document.getElementById('kpiTicketsSub');
+      if (ticketsSubEl) {
+        ticketsSubEl.textContent = `${summary.openTickets || 0} open tickets awaiting review`;
+      }
+    }
+
+    // 3. Render Stream Demand Doughnut Chart with Real Data
+    function renderCategoryChart(categories) {
+      const ctx = document.getElementById('categoryDoughnutChart')?.getContext('2d');
+      if (!ctx) return;
+
+      const palette = ['#07166F', '#FFB52E', '#10B981', '#3B82F6', '#8B5CF6', '#F97316', '#64748B'];
+
+      let labels = [];
+      let counts = [];
+
+      if (Array.isArray(categories) && categories.length > 0) {
+        labels = categories.map(c => c.category);
+        counts = categories.map(c => c.count);
+      } else {
+        labels = ['General Admissions Inquiries', 'College Guidance'];
+        counts = [1, 1];
+      }
+
+      if (categoryChartInstance) {
+        categoryChartInstance.destroy();
+      }
+
+      categoryChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: counts,
+            backgroundColor: palette.slice(0, labels.length),
+            borderWidth: 2,
+            borderColor: '#FFFFFF',
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 14,
+                font: { family: 'Inter', size: 11, weight: '600' },
+                color: '#475569'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const val = context.raw || 0;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                  return ` ${label}: ${val} inquiries (${pct}%)`;
+                }
+              }
+            }
+          },
+          cutout: '62%'
+        }
+      });
+    }
+
+    // 4. Render Disbursal Trend Chart (with period switching)
+    function renderMonthlyDisbursalChart(monthlyData) {
+      const ctx = document.getElementById('disbursalLineChart')?.getContext('2d');
+      if (!ctx) return;
+
+      const labels = monthlyData?.labels || ['Jun 2026', 'Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026', 'Nov 2026'];
+      const values = monthlyData?.values || [0, 0, 0, 0, 0, 0];
+
+      if (disbursalChartInstance) {
+        disbursalChartInstance.destroy();
+      }
+
+      disbursalChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Institutional Aid Disbursed (₹)',
+            data: values,
+            backgroundColor: 'rgba(7, 22, 111, 0.9)',
+            borderColor: '#07166F',
+            borderRadius: 6,
+            borderSkipped: false,
+            maxBarThickness: 38
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return ` Disbursed: ₹${Number(context.raw || 0).toLocaleString('en-IN')}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                font: { family: 'Inter', size: 10 },
+                color: '#94A3B8',
+                callback: function(val) {
+                  return '₹' + Number(val).toLocaleString('en-IN');
+                }
+              },
+              grid: {
+                color: '#F1F5F9'
+              }
+            },
+            x: {
+              ticks: {
+                font: { family: 'Inter', size: 10, weight: '600' },
+                color: '#475569'
+              },
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Switch period for trends dynamically
+    async function setTrendPeriod(period) {
+      currentTrendPeriod = period;
+      document.querySelectorAll('.period-btn').forEach(btn => {
+        if (btn.getAttribute('data-period') === period) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      try {
+        const res = await adminFetch(`/api/admin/analytics/trends?period=${period}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            renderMonthlyDisbursalChart({
+              labels: json.data.labels,
+              values: json.data.values
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Failed to update trend period:', e);
+      }
+    }
+
+    // 5. Render Top Donors Leaderboard
+    function renderTopDonors(donors) {
+      const container = document.getElementById('topDonorsListContainer');
+      if (!container) return;
+
+      if (!Array.isArray(donors) || donors.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 34px 20px; text-align: center; color: var(--admin-text-muted);">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #F1F5F9; color: #94A3B8; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.3rem;">
+              <i class="fa-solid fa-hand-holding-heart"></i>
+            </div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 4px;">
+              No Donor Contributions Recorded Yet
+            </div>
+            <div style="font-size: 0.74rem; color: #94A3B8; max-width: 320px; margin: 0 auto; line-height: 1.5;">
+              Online donor contributions processed through the Razorpay gateway will be automatically aggregated and ranked here.
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = donors.map((d, index) => {
+        const initials = d.user?.fullName
+          ? d.user.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+          : 'D';
+        return `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid #F1F5F9;">
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+              <span style="font-weight: 800; font-size: 0.8rem; color: ${index === 0 ? '#D97706' : '#64748B'}; width: 18px;">
+                #${d.rank || index + 1}
+              </span>
+              <div class="analytics-table-avatar">
+                ${initials}
+              </div>
+              <div style="min-width: 0;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  ${d.user?.fullName || 'Anonymous Supporter'}
+                </div>
+                <div style="font-size: 0.7rem; color: #94A3B8;">
+                  ${d.donationsCount || 1} contribution${(d.donationsCount || 1) > 1 ? 's' : ''} • ${d.user?.location || 'India'}
+                </div>
+              </div>
+            </div>
+            <div style="font-size: 0.85rem; font-weight: 800; color: #07166F; white-space: nowrap;">
+              ${formatCurrency(d.totalDonated)}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 6. Render Recent Inquiries from Real Database
+    function renderRecentEnquiries(enquiries) {
+      const tbody = document.getElementById('recentEnquiriesTableBody');
+      if (!tbody) return;
+
+      if (!Array.isArray(enquiries) || enquiries.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 24px; color: var(--admin-text-muted);">
+              No student guidance enquiries found in database.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = enquiries.map(e => `
+        <tr>
+          <td>
+            <div style="font-weight: 700; color: #0F172A;">${e.fullName || 'Candidate Scholar'}</div>
+            <div style="font-size: 0.7rem; color: #94A3B8;">${e.email || 'Direct Inquiry'}</div>
+          </td>
+          <td>
+            <span style="font-weight: 600; color: #07166F;">${e.interestedCourse || 'Engineering (B.Tech / BE)'}</span>
+          </td>
+          <td>
+            <span style="font-size: 0.72rem; color: #475569;">${e.currentStream || e.highestEducation || 'Merit Candidate'}</span>
+          </td>
+          <td>
+            <span class="badge-status ${e.status === 'RESOLVED' ? 'badge-success' : 'badge-warning'}">
+              ${e.status || 'NEW'}
+            </span>
+          </td>
+          <td style="color: #94A3B8; font-size: 0.72rem; white-space: nowrap;">
+            ${timeAgo(e.createdAt)}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 7. Instant Real-time Search Filter for Inquiries
+    document.getElementById('analyticsSearchInput')?.addEventListener('input', function(e) {
+      const term = e.target.value.toLowerCase().trim();
+      if (!currentAnalyticsData || !Array.isArray(currentAnalyticsData.recentEnquiries)) return;
+
+      const filtered = currentAnalyticsData.recentEnquiries.filter(item => {
+        return (item.fullName || '').toLowerCase().includes(term) ||
+               (item.email || '').toLowerCase().includes(term) ||
+               (item.interestedCourse || '').toLowerCase().includes(term);
+      });
+      renderRecentEnquiries(filtered);
+    });
+
+    // 8. One-click CSV Export from Live PostgreSQL Data
+    function exportAnalyticsCSV() {
+      if (!currentAnalyticsData) return;
+
+      const summary = currentAnalyticsData.summary || {};
+      const categories = currentAnalyticsData.categoryBreakdown || [];
+
+      let csv = 'EduCareus Administrative & Financial Analytics Report\n';
+      csv += `Generated At,${new Date().toISOString()}\n\n`;
+
+      csv += 'METRIC SUMMARY\n';
+      csv += `Total Funds Raised,INR ${summary.totalRaised || 0}\n`;
+      csv += `Total Transactions,${summary.totalDonations || 0}\n`;
+      csv += `Total Users,${summary.totalUsers || 0}\n`;
+      csv += `Total Beneficiaries,${summary.totalBeneficiaries || 0}\n`;
+      csv += `Verified Scholars,${summary.verifiedScholars || 0}\n`;
+      csv += `Total Inquiries,${summary.totalEnquiries || 0}\n`;
+      csv += `Resolved Tickets,${summary.resolvedTickets || 0}\n`;
+      csv += `Platform Fee Guaranteed,0.00%\n\n`;
+
+      csv += 'ACADEMIC STREAM DEMAND BREAKDOWN\n';
+      csv += 'Course Stream,Inquiries Count,Percentage\n';
+      categories.forEach(c => {
+        csv += `"${c.category}",${c.count},${c.percent}%\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `EduCareus_Analytics_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Initialize on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAnalyticsData();
+    });
+  </script>
+</body>
+</html>

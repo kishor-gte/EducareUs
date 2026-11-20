@@ -1,0 +1,364 @@
+/* ==========================================================================
+   EDUCARRUS — COMPREHENSIVE 16-SECTION RESPONSIVE STYLESHEET
+   Breakpoints:
+   - 1280px (Large Laptop / Medium Desktop)
+   - 1080px (Tablet Landscape & Small Laptops -> Drawer Navigation)
+   - 768px  (Tablet Portrait)
+   - 576px  (Mobile Large)
+   - 420px  (Mobile Small)
+   ========================================================================== */
+
+/* 1. Large Laptops (max-width: 1280px) */
+@media (max-width: 1280px) {
+  .container {
+    max-width: 1140px;
+    padding: 0 20px;
+  }
+  .nav-menu {
+    gap: 14px;
+  }
+  .nav-link {
+    font-size: 0.88rem;
+  }
+  .hero-content h1 {
+    font-size: 3rem;
+  }
+  .trust-grid {
+    gap: 16px;
+  }
+  .stat-number {
+    font-size: 2.6rem;
+  }
+}
+
+/* 2. Tablet & Small Laptop (max-width: 1080px) */
+@media (max-width: 1080px) {
+  .section-padding {
+    padding: 70px 0;
+  }
+
+  /* Header & Navigation Drawer */
+  .top-bar {
+    display: none;
+  }
+
+  .nav-menu, .expert-contact {
+    display: none;
+  }
+
+  .mobile-toggle {
+    display: block;
+  }
+
+  .nav-menu.active {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 75vh;
+    overflow-y: auto;
+    background: var(--bg-white);
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    border-bottom: 2px solid var(--border-light);
+    align-items: flex-start;
+    gap: 16px;
+    z-index: 10000;
+  }
+
+  /* WhatsApp widget offset above sticky bar on mobile */
+  .whatsapp-widget-wrapper {
+    bottom: 82px;
+    right: 16px;
+  }
+
+  .whatsapp-chat-card {
+    width: 290px;
+  }
+
+  .dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    border: none;
+    padding: 0 0 0 16px;
+    width: 100%;
+    display: none;
+  }
+
+  .nav-item.active .dropdown-menu {
+    display: block;
+  }
+
+  /* Hero Section */
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .hero-content {
+    margin: 0 auto;
+  }
+
+  .hero-lead {
+    margin: 0 auto 28px auto;
+  }
+
+  .trust-pills {
+    justify-content: center;
+  }
+
+  .hero-btns {
+    justify-content: center;
+  }
+
+  .hero-image-wrapper img {
+    height: 420px;
+  }
+
+  /* Trust Strip */
+  .trust-strip {
+    margin-top: -24px;
+    padding: 36px 20px;
+  }
+
+  .trust-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .trust-stat-card {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 16px;
+  }
+
+  .trust-stat-card:nth-child(3),
+  .trust-stat-card:nth-child(4) {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* Grids */
+  .confused-grid,
+  .family-box {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .courses-grid,
+  .college-grid,
+  .testimonial-grid,
+  .counsellor-grid,
+  .roadmap-grid,
+  .why-grid,
+  .blogs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .college-finder-section {
+    padding: 40px 28px;
+  }
+
+  .finder-form {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px;
+  }
+
+  .mobile-sticky-bar {
+    display: block;
+  }
+
+  body {
+    padding-bottom: 64px;
+  }
+}
+
+/* 3. Tablet Portrait (max-width: 768px) */
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 50px 0;
+  }
+
+  .section-header {
+    margin-bottom: 36px;
+  }
+
+  .section-header h2 {
+    font-size: 2.1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.3rem;
+  }
+
+  .hero-image-wrapper img {
+    height: 340px;
+  }
+
+  .floating-badge {
+    left: 10px;
+    bottom: 15px;
+    padding: 12px 18px;
+  }
+
+  .problem-cards,
+  .courses-grid,
+  .college-grid,
+  .testimonial-grid,
+  .counsellor-grid,
+  .roadmap-grid,
+  .why-grid,
+  .blogs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .final-cta-btns {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .final-cta-btns .btn {
+    width: 100%;
+  }
+
+  .family-image img,
+  .confused-visual img {
+    height: 320px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+  }
+}
+
+/* 4. Mobile Devices (max-width: 576px) */
+@media (max-width: 576px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .navbar-container {
+    height: 72px;
+  }
+
+  .logo-brand .brand-title {
+    font-size: 1.6rem;
+  }
+
+  .logo-brand .brand-tagline {
+    font-size: 0.65rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.95rem;
+  }
+
+  .hero-lead {
+    font-size: 1rem;
+  }
+
+  .hero-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-btns .btn {
+    width: 100%;
+  }
+
+  .final-cta-btns {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .final-cta-btns .btn {
+    width: 100%;
+  }
+
+  .footer {
+    padding-bottom: 90px;
+  }
+
+  .stat-number {
+    font-size: 2.1rem;
+  }
+
+  .stat-label {
+    font-size: 0.88rem;
+  }
+
+  .college-finder-section {
+    padding: 28px 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .college-finder-section h2 {
+    font-size: 1.75rem;
+  }
+
+  .modal-card {
+    padding: 24px 18px;
+    width: 95%;
+    max-height: 88vh;
+  }
+
+  .modal-header h3 {
+    font-size: 1.5rem;
+  }
+
+  .floating-badge {
+    position: relative;
+    left: 0;
+    bottom: 0;
+    margin-top: 14px;
+    width: 100%;
+  }
+}
+
+/* 5. Extra Small Mobile (max-width: 420px) */
+@media (max-width: 420px) {
+  .section-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-stat-card {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 16px;
+  }
+
+  .trust-stat-card:last-child {
+    border-bottom: none;
+  }
+}

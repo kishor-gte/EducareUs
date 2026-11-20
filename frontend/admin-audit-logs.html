@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Logs — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body-wrap">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="admin-users.html" class="sidebar-nav-item"><i class="fa-solid fa-users"></i><span class="nav-text">All Users</span></a>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item active"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER CONTAINER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+
+    <!-- TOP HEADER -->
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="auditSearchInput" placeholder="Search by actor, action, module, or ID...">
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-page-container">
+
+      <!-- TITLE ROW & ACTIONS -->
+      <div class="page-title-block" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <h1>Administrative Audit Logs</h1>
+          <p>Immutable traceability and real-time ledger of administrative mutations, configuration adjustments, and user states.</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="loadAuditLogs()" style="display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-rotate"></i> <span>Refresh Logs</span>
+          </button>
+          <button class="btn-action-icon" onclick="openClearAllModal()" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.4); width: auto; padding: 0 14px;" title="Wipe all audit history">
+            <i class="fa-solid fa-trash-can" style="margin-right: 6px;"></i> Clear Logs
+          </button>
+        </div>
+      </div>
+
+      <!-- AUDIT LOGS KPI STAT CARDS -->
+      <div class="kpi-grid-container" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 24px;">
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">Total Recorded Events</span><span class="kpi-badge-tag badge-tag-info">PostgreSQL</span></div>
+          <div class="kpi-number-display" id="kpiTotalEvents" style="color: var(--admin-navy);">--</div>
+        </div>
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">Active Admin Actors</span><span class="kpi-badge-tag badge-tag-up">Identity</span></div>
+          <div class="kpi-number-display" id="kpiUniqueActors" style="color: #059669;">--</div>
+        </div>
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">Mutation Modules</span><span class="kpi-badge-tag badge-tag-alert">Scope</span></div>
+          <div class="kpi-number-display" id="kpiUniqueModules" style="color: var(--admin-gold);">--</div>
+        </div>
+        <div class="kpi-stat-card">
+          <div class="kpi-header"><span class="kpi-title-text">Most Recent Entry</span><span class="kpi-badge-tag badge-tag-info">Realtime</span></div>
+          <div class="kpi-number-display" id="kpiLatestTimestamp" style="font-size: 1rem; line-height: 1.4; color: var(--admin-text-main); font-weight: 600;">--</div>
+        </div>
+      </div>
+
+      <!-- MAIN AUDIT LOGS CARD -->
+      <div class="admin-card-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 style="margin: 0; font-size: 1.05rem;"><i class="fa-solid fa-list-check text-gold" style="margin-right: 6px;"></i> Audit Event Stream</h3>
+            <span class="badge-status badge-success" id="realtimeIndicator"><span class="status-dot-pulse"></span> Live Sync</span>
+          </div>
+
+          <!-- MODULE FILTER -->
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <label style="font-size: 0.82rem; color: var(--admin-text-muted); font-weight: 600;">Filter Module:</label>
+            <select id="moduleFilterSelect" onchange="handleModuleFilterChange()" style="padding: 7px 12px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.82rem; background: #fff; font-weight: 500;">
+              <option value="ALL">All Modules</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th style="min-width: 170px;">Administrator</th>
+                <th style="min-width: 150px;">Action Taken</th>
+                <th style="min-width: 130px;">Module</th>
+                <th style="min-width: 160px;">Target ID</th>
+                <th style="min-width: 150px;">Date & Time</th>
+                <th style="min-width: 100px;">Network IP</th>
+                <th style="min-width: 120px; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="auditTbody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 36px; color: var(--admin-text-muted);">
+                  <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Fetching real-time audit logs...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAGINATION BAR -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--admin-border); flex-wrap: wrap; gap: 12px;">
+          <div style="font-size: 0.84rem; color: var(--admin-text-muted);" id="paginationInfo">Showing 0 of 0 entries</div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-action-icon" id="prevPageBtn" onclick="changePage(-1)" style="width: auto; padding: 0 14px;" disabled><i class="fa-solid fa-chevron-left" style="margin-right: 4px;"></i> Prev</button>
+            <button class="btn-action-icon" id="nextPageBtn" onclick="changePage(1)" style="width: auto; padding: 0 14px;" disabled>Next <i class="fa-solid fa-chevron-right" style="margin-left: 4px;"></i></button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: STATE & PAYLOAD INSPECTOR -->
+  <div class="admin-modal-overlay" id="inspectModal" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 680px; width: 90%;">
+      <div class="admin-modal-header">
+        <h3 id="inspectModalTitle"><i class="fa-solid fa-magnifying-glass-chart text-gold" style="margin-right: 8px;"></i> Audit Payload Inspector</h3>
+        <button class="modal-close-btn" onclick="closeInspectModal()">&times;</button>
+      </div>
+      <div style="padding: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--admin-border);">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 700;">Actor</div>
+            <div id="modalActorText" style="font-weight: 600; font-size: 0.88rem;">--</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 700;">Action & Module</div>
+            <div id="modalActionText" style="font-weight: 600; font-size: 0.88rem;">--</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 700;">Target ID</div>
+            <div id="modalTargetId" style="font-family: monospace; font-size: 0.82rem; word-break: break-all;">--</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 700;">Recorded Timestamp</div>
+            <div id="modalTimeText" style="font-size: 0.82rem;">--</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">New State / Parameters Payload:</label>
+          <pre id="modalNewState" style="background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 6px; font-size: 0.82rem; max-height: 180px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; margin: 0;"></pre>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Previous State Payload:</label>
+          <pre id="modalPrevState" style="background: #f1f5f9; color: #334155; padding: 12px; border-radius: 6px; font-size: 0.82rem; max-height: 120px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; margin: 0; border: 1px solid var(--admin-border);"></pre>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+          <button type="button" class="btn-primary" onclick="closeInspectModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM DELETE SINGLE LOG -->
+  <div class="admin-modal-overlay" id="deleteSingleModal" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 440px;">
+      <div class="admin-modal-header" style="border-bottom-color: rgba(239, 68, 68, 0.2);">
+        <h3 style="color: #EF4444;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i> Delete Audit Log Entry</h3>
+        <button class="modal-close-btn" onclick="closeDeleteSingleModal()">&times;</button>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 0.9rem; color: #334155; line-height: 1.5; margin: 0 0 16px 0;">
+          Are you sure you want to permanently delete this audit log record? This action will remove it from the PostgreSQL ledger and cannot be undone.
+        </p>
+        <div style="background: #f8fafc; border: 1px solid var(--admin-border); border-radius: 6px; padding: 10px; font-size: 0.82rem; margin-bottom: 18px;">
+          <div><strong>Log ID:</strong> <span id="delLogId" style="font-family: monospace;"></span></div>
+          <div><strong>Action:</strong> <span id="delLogAction"></span></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn-action-icon" style="width: auto; padding: 0 16px;" onclick="closeDeleteSingleModal()">Cancel</button>
+          <button type="button" id="confirmDeleteSingleBtn" class="btn-primary" style="background: #EF4444; border-color: #EF4444;" onclick="executeDeleteSingleLog()">Delete Permanently</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM CLEAR ALL LOGS -->
+  <div class="admin-modal-overlay" id="clearAllModal" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 440px;">
+      <div class="admin-modal-header" style="border-bottom-color: rgba(239, 68, 68, 0.2);">
+        <h3 style="color: #EF4444;"><i class="fa-solid fa-radiation" style="margin-right: 8px;"></i> Clear All Audit History</h3>
+        <button class="modal-close-btn" onclick="closeClearAllModal()">&times;</button>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 0.9rem; color: #334155; line-height: 1.5; margin: 0 0 16px 0;">
+          <strong>Warning:</strong> You are about to clear ALL administrative audit logs from the system. This purge is permanent and cannot be recovered.
+        </p>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn-action-icon" style="width: auto; padding: 0 16px;" onclick="closeClearAllModal()">Cancel</button>
+          <button type="button" id="confirmClearAllBtn" class="btn-primary" style="background: #EF4444; border-color: #EF4444;" onclick="executeClearAllLogs()">Confirm Purge All</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="adminToastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 8px;"></div>
+
+  <script src="js/admin-core.js"></script>
+  <script>
+    const API_BASE = '/api';
+    let allLogs = [];
+    let filteredLogs = [];
+    let currentPage = 1;
+    const PAGE_SIZE = 15;
+    let pendingDeleteId = null;
+
+    function getAdminToken() {
+      return localStorage.getItem('token') ||
+             localStorage.getItem('adminToken') ||
+             sessionStorage.getItem('token') ||
+             sessionStorage.getItem('adminToken') ||
+             '';
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('adminToastContainer');
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? '#059669' : (type === 'error' ? '#EF4444' : '#3B82F6');
+      toast.style.cssText = `background: ${bg}; color: white; padding: 12px 18px; border-radius: 8px; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease;`;
+      const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info');
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    async function loadAuditLogs() {
+      const tbody = document.getElementById('auditTbody');
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 36px; color: var(--admin-text-muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Refreshing audit logs...</td></tr>`;
+
+      try {
+        if (window.ensureAdminToken && !getAdminToken()) {
+          await window.ensureAdminToken();
+        }
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/audit-logs?limit=200`) : fetch(`${API_BASE}/admin/audit-logs?limit=200`, {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          }
+        }));
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          allLogs = json.data;
+          updateKpis(allLogs);
+          populateModuleDropdown(allLogs);
+          applyFilters();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 36px; color: #EF4444;"><i class="fa-solid fa-circle-exclamation"></i> Failed to retrieve audit logs: ${json.message || 'Unknown error'}</td></tr>`;
+        }
+      } catch (err) {
+        console.error('Audit logs fetch failed:', err);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 36px; color: #EF4444;"><i class="fa-solid fa-circle-exclamation"></i> Network error connecting to backend service.</td></tr>`;
+      }
+    }
+
+    function updateKpis(logs) {
+      document.getElementById('kpiTotalEvents').textContent = logs.length;
+      const uniqueActors = new Set(logs.map(l => l.actor?.email || l.actorId || 'System')).size;
+      document.getElementById('kpiUniqueActors').textContent = uniqueActors;
+
+      const uniqueModules = new Set(logs.map(l => l.entityType || 'General')).size;
+      document.getElementById('kpiUniqueModules').textContent = uniqueModules;
+
+      if (logs.length > 0 && logs[0].createdAt) {
+        const d = new Date(logs[0].createdAt);
+        document.getElementById('kpiLatestTimestamp').textContent = d.toLocaleString('en-US', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+      } else {
+        document.getElementById('kpiLatestTimestamp').textContent = 'No records';
+      }
+    }
+
+    function populateModuleDropdown(logs) {
+      const select = document.getElementById('moduleFilterSelect');
+      const currentVal = select.value;
+      const modules = Array.from(new Set(logs.map(l => l.entityType).filter(Boolean))).sort();
+
+      select.innerHTML = `<option value="ALL">All Modules (${logs.length})</option>` +
+        modules.map(m => `<option value="${m}">${m}</option>`).join('');
+
+      if (modules.includes(currentVal)) {
+        select.value = currentVal;
+      }
+    }
+
+    function applyFilters() {
+      const search = (document.getElementById('auditSearchInput').value || '').trim().toLowerCase();
+      const mod = document.getElementById('moduleFilterSelect').value;
+
+      filteredLogs = allLogs.filter(log => {
+        const matchesMod = mod === 'ALL' || log.entityType === mod;
+        if (!matchesMod) return false;
+
+        if (!search) return true;
+
+        const actorName = (log.actor?.fullName || '').toLowerCase();
+        const actorEmail = (log.actor?.email || '').toLowerCase();
+        const action = (log.action || '').toLowerCase();
+        const entityType = (log.entityType || '').toLowerCase();
+        const entityId = (log.entityId || '').toLowerCase();
+        const ip = (log.ipAddress || '').toLowerCase();
+
+        return actorName.includes(search) ||
+               actorEmail.includes(search) ||
+               action.includes(search) ||
+               entityType.includes(search) ||
+               entityId.includes(search) ||
+               ip.includes(search);
+      });
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleModuleFilterChange() {
+      applyFilters();
+    }
+
+    document.getElementById('auditSearchInput').addEventListener('input', () => {
+      applyFilters();
+    });
+
+    function getActionBadge(action) {
+      const act = (action || '').toUpperCase();
+      if (act.includes('DELETE') || act.includes('REMOVE') || act.includes('PURGE')) {
+        return `<span class="badge-status badge-alert" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;"><i class="fa-solid fa-trash" style="font-size: 0.72rem; margin-right: 4px;"></i>${action}</span>`;
+      }
+      if (act.includes('CREATE') || act.includes('DISPATCH') || act.includes('APPROVE')) {
+        return `<span class="badge-status badge-success"><i class="fa-solid fa-check" style="font-size: 0.72rem; margin-right: 4px;"></i>${action}</span>`;
+      }
+      if (act.includes('UPDATE') || act.includes('MODIFY') || act.includes('SETTING')) {
+        return `<span class="badge-status badge-info"><i class="fa-solid fa-pen" style="font-size: 0.72rem; margin-right: 4px;"></i>${action}</span>`;
+      }
+      return `<span class="badge-status badge-info">${action || 'EVENT'}</span>`;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('auditTbody');
+      const total = filteredLogs.length;
+
+      if (total === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--admin-text-muted);"><i class="fa-solid fa-inbox" style="font-size: 1.6rem; display: block; margin-bottom: 8px;"></i> No matching audit log records found.</td></tr>`;
+        document.getElementById('paginationInfo').textContent = 'Showing 0 of 0 entries';
+        document.getElementById('prevPageBtn').disabled = true;
+        document.getElementById('nextPageBtn').disabled = true;
+        return;
+      }
+
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const startIndex = (currentPage - 1) * PAGE_SIZE;
+      const endIndex = Math.min(startIndex + PAGE_SIZE, total);
+      const pageLogs = filteredLogs.slice(startIndex, endIndex);
+
+      document.getElementById('paginationInfo').textContent = `Showing ${startIndex + 1} to ${endIndex} of ${total} entries (Page ${currentPage} of ${totalPages})`;
+      document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+      document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
+
+      tbody.innerHTML = pageLogs.map(log => {
+        const actorName = log.actor?.fullName || 'System Root';
+        const actorEmail = log.actor?.email || 'automated';
+        const role = log.actor?.role ? `<span style="font-size: 0.7rem; color: var(--admin-text-muted); display: block;">${log.actor.role}</span>` : '';
+        const dateStr = log.createdAt ? new Date(log.createdAt).toLocaleString('en-US', {
+          year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+        }) : 'Unknown';
+
+        const shortEntityId = log.entityId ? (log.entityId.length > 14 ? `${log.entityId.slice(0, 14)}...` : log.entityId) : 'N/A';
+        const safeLogData = encodeURIComponent(JSON.stringify(log));
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight: 700; color: var(--admin-text-main); font-size: 0.88rem;">${actorName}</div>
+              <div style="font-size: 0.76rem; color: var(--admin-text-muted);">${actorEmail}</div>
+              ${role}
+            </td>
+            <td>${getActionBadge(log.action)}</td>
+            <td><span class="badge-status badge-info" style="font-size: 0.76rem;">${log.entityType || 'General'}</span></td>
+            <td>
+              <code style="font-size: 0.76rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;" title="${log.entityId || ''}">${shortEntityId}</code>
+            </td>
+            <td style="font-size: 0.8rem; color: var(--admin-text-muted); white-space: nowrap;">${dateStr}</td>
+            <td style="font-size: 0.78rem; font-family: monospace; color: #475569;">${log.ipAddress || '127.0.0.1'}</td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button class="btn-action-icon" title="Inspect State Payload" onclick="openInspectModal('${safeLogData}')" style="margin-right: 4px;">
+                <i class="fa-solid fa-eye text-gold"></i>
+              </button>
+              <button class="btn-action-icon" title="Delete Log Record" onclick="openDeleteSingleModal('${log.id}', '${encodeURIComponent(log.action || '')}')" style="color: #EF4444;">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function changePage(delta) {
+      currentPage += delta;
+      renderTable();
+    }
+
+    // --- MODAL: INSPECT PAYLOAD ---
+    function openInspectModal(encodedLog) {
+      try {
+        const log = JSON.parse(decodeURIComponent(encodedLog));
+        document.getElementById('modalActorText').textContent = `${log.actor?.fullName || 'System'} (${log.actor?.email || 'automated'})`;
+        document.getElementById('modalActionText').textContent = `${log.action} [${log.entityType || 'General'}]`;
+        document.getElementById('modalTargetId').textContent = log.entityId || 'None';
+        document.getElementById('modalTimeText').textContent = log.createdAt ? new Date(log.createdAt).toLocaleString() : 'N/A';
+
+        document.getElementById('modalNewState').textContent = log.newState ? JSON.stringify(log.newState, null, 2) : 'No state payload recorded (empty)';
+        document.getElementById('modalPrevState').textContent = log.previousState ? JSON.stringify(log.previousState, null, 2) : 'None recorded';
+
+        document.getElementById('inspectModal').style.display = 'flex';
+      } catch (err) {
+        console.error('Failed to parse payload for inspector:', err);
+      }
+    }
+
+    function closeInspectModal() {
+      document.getElementById('inspectModal').style.display = 'none';
+    }
+
+    // --- MODAL: DELETE SINGLE LOG ---
+    function openDeleteSingleModal(id, encodedAction) {
+      pendingDeleteId = id;
+      document.getElementById('delLogId').textContent = id;
+      document.getElementById('delLogAction').textContent = decodeURIComponent(encodedAction);
+      document.getElementById('deleteSingleModal').style.display = 'flex';
+    }
+
+    function closeDeleteSingleModal() {
+      pendingDeleteId = null;
+      document.getElementById('deleteSingleModal').style.display = 'none';
+    }
+
+    async function executeDeleteSingleLog() {
+      if (!pendingDeleteId) return;
+      const btn = document.getElementById('confirmDeleteSingleBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Deleting...`;
+
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/audit-logs/${pendingDeleteId}`, {
+          method: 'DELETE'
+        }) : fetch(`${API_BASE}/admin/audit-logs/${pendingDeleteId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          }
+        }));
+        const json = await res.json();
+        if (json.success) {
+          showToast('Audit log record deleted successfully');
+          allLogs = allLogs.filter(l => l.id !== pendingDeleteId);
+          updateKpis(allLogs);
+          applyFilters();
+          closeDeleteSingleModal();
+        } else {
+          showToast(json.message || 'Failed to delete audit log', 'error');
+        }
+      } catch (err) {
+        console.error('Delete audit log failed:', err);
+        showToast('Network error deleting audit log', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Delete Permanently';
+      }
+    }
+
+    // --- MODAL: CLEAR ALL LOGS ---
+    function openClearAllModal() {
+      document.getElementById('clearAllModal').style.display = 'flex';
+    }
+
+    function closeClearAllModal() {
+      document.getElementById('clearAllModal').style.display = 'none';
+    }
+
+    async function executeClearAllLogs() {
+      const btn = document.getElementById('confirmClearAllBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Purging...`;
+
+      try {
+        const res = await (window.adminFetch ? window.adminFetch(`${API_BASE}/admin/audit-logs`, {
+          method: 'DELETE'
+        }) : fetch(`${API_BASE}/admin/audit-logs`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getAdminToken() && { 'Authorization': `Bearer ${getAdminToken()}` })
+          }
+        }));
+        const json = await res.json();
+        if (json.success) {
+          showToast('All audit logs successfully purged');
+          allLogs = [];
+          filteredLogs = [];
+          updateKpis(allLogs);
+          applyFilters();
+          closeClearAllModal();
+        } else {
+          showToast(json.message || 'Failed to clear logs', 'error');
+        }
+      } catch (err) {
+        console.error('Clear audit logs failed:', err);
+        showToast('Network error clearing audit logs', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Confirm Purge All';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sync user profile name in header if available
+      try {
+        const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+        if (adminUser.fullName) {
+          document.getElementById('headerAdminName').textContent = adminUser.fullName;
+          document.getElementById('headerAdminRole').textContent = adminUser.role || 'Super Admin';
+          const initials = adminUser.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+          document.getElementById('headerAdminAvatar').textContent = initials || 'AD';
+        }
+      } catch (e) {}
+
+      loadAuditLogs();
+    });
+  </script>
+</body>
+</html>

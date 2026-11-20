@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms &amp; Conditions Editor — EduCareus Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-dialog {
+      background: #FFFFFF;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .btn-action-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action-sm:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .section-chip {
+      background: #F1F5F9;
+      color: var(--admin-navy);
+      border: 1px solid var(--admin-border);
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .section-chip:hover {
+      background: var(--admin-navy);
+      color: #FFFFFF;
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand">
+        <i class="fa-solid fa-graduation-cap text-gold"></i>
+        <span>EduCareus</span>
+        <span class="brand-sub">Admin</span>
+      </a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-users.html" class="sidebar-sub-item">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub active"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-up chevron-icon"></i></a>
+      <div class="sidebar-sub-menu open">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item active">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+
+      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
+      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div class="admin-search-bar">
+        <i class="fa-solid fa-scale-balanced text-gold"></i>
+        <span style="font-size: 0.88rem; font-weight: 600; color: #1E293B; margin-left: 8px;">Legal Publications &amp; Platform Governance</span>
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+        <button onclick="handleAdminLogout(event)" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" title="Sign Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <div class="page-title-block" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px;">
+        <div>
+          <h1>Publications — Terms &amp; Conditions Editor</h1>
+          <p>Maintain, revise, and publish the official legal terms governing student scholars, donors, and admission guidance.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <a href="/terms-and-conditions" target="_blank" class="btn-action-icon" style="width: auto; padding: 8px 14px; font-weight: 700; font-size: 0.82rem; background: #FFFFFF; border: 1px solid var(--admin-border); text-decoration: none; color: var(--admin-navy);" title="View public terms page">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> View Published Page
+          </a>
+          <button onclick="openRevisionsModal()" class="btn-action-icon" style="width: auto; padding: 8px 14px; font-weight: 700; font-size: 0.82rem; background: var(--admin-navy); color: #fff; cursor: pointer;" title="Inspect revision history">
+            <i class="fa-solid fa-clock-rotate-left"></i> Version History (<span id="revisionsCount">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Status & Version Meta Strip -->
+      <div class="admin-card-panel" style="padding: 14px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; background: #F8FAFC; border-left: 4px solid var(--admin-navy);">
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <div>
+            <span style="font-size: 0.72rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700; display: block;">Document Status</span>
+            <span id="pageStatusBadge" class="badge-status badge-published">PUBLISHED</span>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700; display: block;">Live Version</span>
+            <strong id="pageVersionText" style="color: var(--admin-navy); font-size: 0.95rem;">v1.0</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700; display: block;">Effective Date</span>
+            <strong id="pageEffectiveDateText" style="color: #334155; font-size: 0.9rem;">2026-01-01</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700; display: block;">Last Published By</span>
+            <span id="pageUpdatedByText" style="color: #334155; font-size: 0.88rem;">Super Administrator</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button onclick="previewTermsPage()" class="btn-action-sm" style="background: #0F172A; color: var(--admin-gold);">
+            <i class="fa-solid fa-eye"></i> Preview
+          </button>
+          <button onclick="saveTermsDraft()" id="saveDraftBtn" class="btn-action-sm" style="background: #475569; color: #FFFFFF;">
+            <i class="fa-solid fa-floppy-disk"></i> Save Draft
+          </button>
+          <button onclick="publishTermsPage()" id="publishBtn" class="btn-action-sm" style="background: #059669; color: #FFFFFF;">
+            <i class="fa-solid fa-rocket"></i> Publish &amp; Update Live Version
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor Panel -->
+      <div class="admin-card-panel" style="margin-top: 16px;">
+        <form id="termsForm" onsubmit="event.preventDefault(); publishTermsPage();">
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Page Document Title</label>
+              <input type="text" id="termsTitleInput" value="Terms & Conditions" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.95rem; font-weight: 700; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Public URL Slug (Fixed)</label>
+              <input type="text" id="termsSlugInput" value="terms-and-conditions" readonly style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; font-family: monospace; background: #F1F5F9; color: #64748B; box-sizing: border-box;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Effective Date</label>
+              <input type="date" id="termsEffectiveDateInput" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Next Publication Version</label>
+              <input type="text" id="termsVersionInput" placeholder="e.g. 1.1" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Publication Status</label>
+              <select id="termsStatusSelect" style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff; box-sizing: border-box;">
+                <option value="PUBLISHED">PUBLISHED (Live on Website)</option>
+                <option value="DRAFT">DRAFT (Hidden from Public)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Introduction -->
+          <div style="margin-bottom: 16px;">
+            <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Preamble / Introduction Overview</label>
+            <textarea id="termsIntroInput" rows="2" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.88rem; box-sizing: border-box; line-height: 1.45;"></textarea>
+          </div>
+
+          <!-- Reusable Section Insertion Helpers -->
+          <div style="margin-bottom: 12px; background: #F8FAFC; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--admin-border);">
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--admin-navy); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-puzzle-piece text-gold"></i>
+              <span>Quick-Insert Standard Policy Sections:</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Eligibility and User Accounts')">+ Eligibility</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('User Responsibilities and Academic Verification')">+ Verification</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Acceptable Platform Use Policy')">+ Acceptable Use</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Educational & Admission Guidance Services')">+ Educational Services</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Crowdfunding Donations & Fee Disbursements')">+ Payments &amp; Disbursements</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Intellectual Property and Proprietary Rights')">+ Intellectual Property</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Limitation of Liability & Disclaimers')">+ Liability</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Governing Law & Dispute Resolution')">+ Governing Law</button>
+              <button type="button" class="section-chip" onclick="insertSectionHeader('Contact & Compliance Office')">+ Contact Details</button>
+            </div>
+          </div>
+
+          <!-- Rich-Text Editor -->
+          <div style="margin-bottom: 16px;">
+            <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 4px; color: var(--admin-navy);">Detailed Legal Articles (Rich-Text Editor) *</label>
+            <div class="editor-toolbar">
+              <button type="button" class="editor-btn" onclick="execCmd('formatBlock', '<h2>')"><strong>H2 Section</strong></button>
+              <button type="button" class="editor-btn" onclick="execCmd('formatBlock', '<h3>')"><strong>H3 Clause</strong></button>
+              <button type="button" class="editor-btn" onclick="execCmd('formatBlock', '<p>')"><i class="fa-solid fa-paragraph"></i> Paragraph</button>
+              <button type="button" class="editor-btn" onclick="execCmd('bold')"><i class="fa-solid fa-bold"></i></button>
+              <button type="button" class="editor-btn" onclick="execCmd('italic')"><i class="fa-solid fa-italic"></i></button>
+              <button type="button" class="editor-btn" onclick="execCmd('underline')"><i class="fa-solid fa-underline"></i></button>
+              <button type="button" class="editor-btn" onclick="execCmd('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+              <button type="button" class="editor-btn" onclick="execCmd('insertOrderedList')"><i class="fa-solid fa-list-ol"></i> Numbered</button>
+              <button type="button" class="editor-btn" onclick="promptInsertLink()"><i class="fa-solid fa-link"></i> Link</button>
+              <button type="button" class="editor-btn" onclick="execCmd('formatBlock', '<blockquote>')"><i class="fa-solid fa-quote-left"></i> Note</button>
+              <button type="button" class="editor-btn" onclick="execCmd('removeFormat')"><i class="fa-solid fa-eraser"></i> Clear Formatting</button>
+            </div>
+            <div id="termsContentEditor" class="editor-content-area" contenteditable="true" style="min-height: 380px;">
+              <p>Loading terms content...</p>
+            </div>
+          </div>
+
+          <!-- SEO Meta -->
+          <div style="border: 1px solid var(--admin-border); border-radius: 8px; padding: 14px; background: #F8FAFC; margin-bottom: 16px;">
+            <div style="font-weight: 700; font-size: 0.82rem; color: var(--admin-navy); margin-bottom: 8px;">SEO Search Engine Optimization</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="font-size: 0.76rem; font-weight: 600; display: block; margin-bottom: 3px;">SEO Title</label>
+                <input type="text" id="termsMetaTitle" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.82rem; background: #fff;">
+              </div>
+              <div>
+                <label style="font-size: 0.76rem; font-weight: 600; display: block; margin-bottom: 3px;">SEO Description</label>
+                <input type="text" id="termsMetaDesc" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--admin-border); font-size: 0.82rem; background: #fff;">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════
+       MODAL 1: PREVIEW TERMS MODAL
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="previewModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 820px;">
+      <div style="padding: 14px 20px; background: #0F172A; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.82rem; font-weight: 700; color: var(--admin-gold);"><i class="fa-solid fa-eye"></i> TERMS &amp; CONDITIONS — PUBLIC VIEW</span>
+        <button onclick="closePreviewModal()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div style="padding: 30px; overflow-y: auto; flex: 1; background: #FFFFFF;">
+        <div style="max-width: 720px; margin: 0 auto;">
+          <div style="font-size: 0.8rem; color: #64748B; margin-bottom: 6px;">Effective Date: <span id="prevEffective"></span> | Version <span id="prevVersion"></span></div>
+          <h1 id="prevTitle" style="font-size: 1.8rem; font-weight: 900; color: #0F172A; margin-bottom: 12px;">Terms &amp; Conditions</h1>
+          <p id="prevIntro" style="font-size: 1rem; color: #475569; line-height: 1.5; margin-bottom: 24px; font-weight: 500;"></p>
+          <div id="prevContent" class="editor-content-area" style="border: none; padding: 0; line-height: 1.7; font-size: 0.95rem; color: #334155;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════
+       MODAL 2: VERSION REVISIONS HISTORY
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="revisionsModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 700px;">
+      <div style="padding: 14px 20px; background: var(--admin-navy); color: #fff; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.88rem; font-weight: 700; color: var(--admin-gold);"><i class="fa-solid fa-clock-rotate-left"></i> Terms &amp; Conditions Version Revisions</span>
+        <button onclick="closeRevisionsModal()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div style="padding: 20px; overflow-y: auto; flex: 1; background: #FFFFFF;">
+        <table class="admin-data-table">
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Effective Date</th>
+              <th>Published By</th>
+              <th>Published Date</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="revisionsTbody">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-core.js"></script>
+  <script>
+    let activePage = null;
+    let revisionsList = [];
+
+    function execCmd(command, value = null) {
+      document.execCommand(command, false, value);
+      document.getElementById('termsContentEditor').focus();
+    }
+
+    function promptInsertLink() {
+      const url = prompt('Enter link URL (https://...):', 'https://');
+      if (url && url !== 'https://') {
+        execCmd('createLink', url);
+      }
+    }
+
+    function insertSectionHeader(title) {
+      const editor = document.getElementById('termsContentEditor');
+      editor.focus();
+      document.execCommand('insertHTML', false, `<h2>${title}</h2><p>Enter guidelines and policy specifics for ${title} here...</p>`);
+    }
+
+    async function loadTermsPage() {
+      try {
+        const res = await fetch('/api/admin/pages/terms-and-conditions', { credentials: 'include' });
+        const data = await res.json();
+        if (data.success && data.data) {
+          activePage = data.data;
+          renderPageData(activePage);
+          loadRevisions();
+        }
+      } catch (err) {
+        showAdminToast('Error loading Terms & Conditions', 'danger');
+      }
+    }
+
+    async function loadRevisions() {
+      try {
+        const res = await fetch('/api/admin/pages/terms-and-conditions/revisions', { credentials: 'include' });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          revisionsList = data.data;
+          document.getElementById('revisionsCount').innerText = revisionsList.length;
+          renderRevisionsTable();
+        }
+      } catch (err) {
+        console.warn('Could not load revisions:', err);
+      }
+    }
+
+    function renderPageData(p) {
+      document.getElementById('termsTitleInput').value = p.title || 'Terms & Conditions';
+      document.getElementById('termsIntroInput').value = p.introduction || '';
+      document.getElementById('termsContentEditor').innerHTML = p.content || p.publishedContent || '';
+      document.getElementById('termsEffectiveDateInput').value = p.effectiveDate || '2026-01-01';
+      document.getElementById('termsVersionInput').value = incrementVersion(p.version || '1.0');
+      document.getElementById('termsStatusSelect').value = p.status || 'PUBLISHED';
+      document.getElementById('termsMetaTitle').value = p.metaTitle || '';
+      document.getElementById('termsMetaDesc').value = p.metaDescription || '';
+
+      document.getElementById('pageStatusBadge').className = `badge-status ${p.status === 'PUBLISHED' ? 'badge-published' : 'badge-draft'}`;
+      document.getElementById('pageStatusBadge').innerText = p.status;
+      document.getElementById('pageVersionText').innerText = `v${p.version || '1.0'}`;
+      document.getElementById('pageEffectiveDateText').innerText = p.effectiveDate || '2026-01-01';
+      document.getElementById('pageUpdatedByText').innerText = p.lastUpdatedBy || 'Administrator';
+    }
+
+    function incrementVersion(ver = '1.0') {
+      try {
+        const parts = ver.split('.');
+        if (parts.length === 2) {
+          return `${parts[0]}.${parseInt(parts[1], 10) + 1}`;
+        }
+        return '1.1';
+      } catch {
+        return '1.1';
+      }
+    }
+
+    async function saveTermsDraft() {
+      const payload = {
+        title: document.getElementById('termsTitleInput').value.trim(),
+        introduction: document.getElementById('termsIntroInput').value.trim(),
+        content: document.getElementById('termsContentEditor').innerHTML.trim(),
+        effectiveDate: document.getElementById('termsEffectiveDateInput').value,
+        version: document.getElementById('termsVersionInput').value.trim(),
+        metaTitle: document.getElementById('termsMetaTitle').value.trim(),
+        metaDescription: document.getElementById('termsMetaDesc').value.trim(),
+        status: 'DRAFT',
+      };
+
+      try {
+        const res = await fetch('/api/admin/pages/terms-and-conditions', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast('Terms & Conditions draft saved successfully!', 'success');
+          loadTermsPage();
+        } else {
+          showAdminToast(json.message || 'Failed to save draft', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error saving draft', 'danger');
+      }
+    }
+
+    async function publishTermsPage() {
+      const btn = document.getElementById('publishBtn');
+      const orig = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
+
+      const payload = {
+        title: document.getElementById('termsTitleInput').value.trim(),
+        introduction: document.getElementById('termsIntroInput').value.trim(),
+        content: document.getElementById('termsContentEditor').innerHTML.trim(),
+        effectiveDate: document.getElementById('termsEffectiveDateInput').value,
+        version: document.getElementById('termsVersionInput').value.trim(),
+        metaTitle: document.getElementById('termsMetaTitle').value.trim(),
+        metaDescription: document.getElementById('termsMetaDesc').value.trim(),
+      };
+
+      try {
+        const res = await fetch('/api/admin/pages/terms-and-conditions/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAdminToast(`Terms & Conditions v${payload.version} published to live website!`, 'success');
+          loadTermsPage();
+        } else {
+          showAdminToast(json.message || 'Failed to publish', 'danger');
+        }
+      } catch (err) {
+        showAdminToast('Network error publishing page', 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+      }
+    }
+
+    function previewTermsPage() {
+      document.getElementById('prevTitle').innerText = document.getElementById('termsTitleInput').value.trim() || 'Terms & Conditions';
+      document.getElementById('prevIntro').innerText = document.getElementById('termsIntroInput').value.trim() || '';
+      document.getElementById('prevEffective').innerText = document.getElementById('termsEffectiveDateInput').value || '2026-01-01';
+      document.getElementById('prevVersion').innerText = document.getElementById('termsVersionInput').value.trim() || '1.0';
+      document.getElementById('prevContent').innerHTML = document.getElementById('termsContentEditor').innerHTML;
+      document.getElementById('previewModal').style.display = 'flex';
+    }
+
+    function closePreviewModal() {
+      document.getElementById('previewModal').style.display = 'none';
+    }
+
+    function openRevisionsModal() {
+      document.getElementById('revisionsModal').style.display = 'flex';
+    }
+
+    function closeRevisionsModal() {
+      document.getElementById('revisionsModal').style.display = 'none';
+    }
+
+    function renderRevisionsTable() {
+      const tbody = document.getElementById('revisionsTbody');
+      if (revisionsList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--admin-text-muted);">No revisions recorded yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = revisionsList.map(r => `
+        <tr>
+          <td><strong style="color: var(--admin-navy);">v${escapeHtml(r.version)}</strong></td>
+          <td>${escapeHtml(r.effectiveDate || 'N/A')}</td>
+          <td>${escapeHtml(r.publishedBy || 'Admin')}</td>
+          <td style="font-size: 0.78rem; color: var(--admin-text-muted);">
+            ${new Date(r.publishedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+          </td>
+          <td style="text-align: right;">
+            <button onclick="restoreRevisionContent('${r.id}')" class="btn-action-sm" style="background: var(--admin-navy); color: var(--admin-gold); padding: 4px 8px; font-size: 0.75rem;" title="Load this revision into editor">
+              <i class="fa-solid fa-rotate-left"></i> Restore Draft
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function restoreRevisionContent(revId) {
+      const rev = revisionsList.find(r => r.id === revId);
+      if (!rev) return;
+      document.getElementById('termsIntroInput').value = rev.introduction || '';
+      document.getElementById('termsContentEditor').innerHTML = rev.content || '';
+      document.getElementById('termsEffectiveDateInput').value = rev.effectiveDate || '';
+      document.getElementById('termsVersionInput').value = incrementVersion(rev.version);
+      closeRevisionsModal();
+      showAdminToast(`Revision v${rev.version} restored into editor. Click Save or Publish to apply.`, 'success');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTermsPage();
+    });
+  </script>
+</body>
+</html>

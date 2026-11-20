@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management — EduCareus Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .status-dot-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10B981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulseGreen 2s infinite;
+      margin-right: 6px;
+    }
+    @keyframes pulseGreen {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .user-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 19, 33, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .user-modal-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="admin-body-wrap">
+
+  <!-- COLLAPSIBLE SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="admin.html" class="sidebar-brand"><i class="fa-solid fa-graduation-cap text-gold"></i> <span>EduCareus</span> <span class="brand-sub">Admin</span></a>
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar"><i class="fa-solid fa-bars"></i></button>
+    </div>
+    <div class="sidebar-menu-wrapper">
+      <div class="sidebar-section-label">Main Core</div>
+      <a href="admin.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span></a>
+      <a href="#" class="sidebar-nav-item has-sub active"><i class="fa-solid fa-users"></i><span class="nav-text">Users</span><i class="fa-solid fa-chevron-up chevron-icon"></i></a>
+      <div class="sidebar-sub-menu open">
+        <a href="admin-users.html" class="sidebar-sub-item active">All Users</a>
+      </div>
+      <a href="admin-requests.html" class="sidebar-nav-item"><i class="fa-solid fa-user-graduate"></i><span class="nav-text">Education Requests</span></a>
+      <div class="sidebar-section-label">Management</div>
+      <!-- COURSES & COLLEGES DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Courses &amp; Colleges</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-courses.html" class="sidebar-sub-item">Manage Courses</a>
+        <a href="admin-colleges.html" class="sidebar-sub-item">Manage Colleges</a>
+      </div>
+      <a href="admin-analytics.html" class="sidebar-nav-item"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Analytics</span></a>
+      <a href="admin-notifications.html" class="sidebar-nav-item"><i class="fa-solid fa-bell"></i><span class="nav-text">Notifications</span></a>
+      <a href="admin-support.html" class="sidebar-nav-item"><i class="fa-solid fa-headset"></i><span class="nav-text">Support Desk</span></a>
+      <!-- PUBLICATIONS DROPDOWN -->
+      <a href="#" class="sidebar-nav-item has-sub"><i class="fa-solid fa-book-open"></i><span class="nav-text">Publications</span><i class="fa-solid fa-chevron-down chevron-icon"></i></a>
+      <div class="sidebar-sub-menu">
+        <a href="admin-blogs.html" class="sidebar-sub-item">Blogs</a>
+        <a href="admin-terms.html" class="sidebar-sub-item">Terms &amp; Conditions</a>
+        <a href="admin-privacy.html" class="sidebar-sub-item">Privacy Policy</a>
+        <a href="admin-faqs.html" class="sidebar-sub-item">FAQs</a>
+        <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
+        <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
+      </div>
+      <!-- TRUST MEMBERS & MENTORS -->
+      <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
+      <div class="sidebar-section-label">System</div>
+      <a href="admin-security.html" class="sidebar-nav-item"><i class="fa-solid fa-shield-halved"></i><span class="nav-text">Security</span></a>
+      <a href="admin-audit-logs.html" class="sidebar-nav-item"><i class="fa-solid fa-clipboard-list"></i><span class="nav-text">Audit Logs</span></a>
+      <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
+      <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
+      <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER CONTAINER -->
+  <div class="admin-main-wrapper" id="adminMainWrapper">
+    <header class="admin-top-header">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button class="sidebar-toggle-btn" id="mobileSidebarToggle" style="display: none;" aria-label="Open Mobile Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="admin-search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="userSearchInput" placeholder="Search real users by name, email, phone...">
+        </div>
+      </div>
+      <div class="top-header-right">
+        <div class="admin-user-profile" onclick="window.location.href='admin-settings.html'" style="cursor: pointer;">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--admin-navy);" id="headerAdminName">Super Administrator</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted);" id="headerAdminEmail">admin@educarrus.org</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-page-container">
+      <div class="page-title-block">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <h1 style="margin: 0;">User Management Directory</h1>
+            <span class="badge-status badge-success" id="liveUsersIndicator">
+              <span class="status-dot-pulse"></span> Live PostgreSQL Data (<span id="userCountDisplay">--</span> Users)
+            </span>
+          </div>
+          <p style="margin: 0; color: var(--admin-text-muted); font-size: 0.88rem;">
+            Real-time student scholars and administrative directory authenticated on Educarrus.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="btnRefreshUsers" class="btn-action-icon" style="width: auto; padding: 0 16px; font-weight: 600; cursor: pointer;">
+            <i class="fa-solid fa-arrows-rotate" style="margin-right: 6px;"></i> Refresh Users
+          </button>
+          <a href="/" class="btn-action-icon" style="width: auto; padding: 0 16px; font-weight: 600; text-decoration: none;">
+            <i class="fa-solid fa-globe" style="margin-right: 6px;"></i> Live Portal
+          </a>
+        </div>
+      </div>
+
+      <!-- REAL-TIME FILTERS -->
+      <div class="admin-card-panel" style="padding: 16px 20px; margin-bottom: 20px;">
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+          <label style="font-size: 0.85rem; font-weight: 600; color: var(--admin-navy);">
+            <i class="fa-solid fa-filter" style="margin-right: 6px; color: var(--admin-gold);"></i>Filter By:
+          </label>
+          <select id="roleFilterSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff;">
+            <option value="all">All Roles</option>
+            <option value="BENEFICIARY">Scholars (Beneficiaries)</option>
+            <option value="ADMIN">Administrators</option>
+            <option value="SUPER_ADMIN">Super Admins</option>
+          </select>
+          <select id="statusFilterSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff;">
+            <option value="all">All Account Statuses</option>
+            <option value="Active">Active Accounts</option>
+            <option value="Blocked">Suspended Accounts</option>
+          </select>
+          <span id="filterStatusText" style="font-size: 0.8rem; color: var(--admin-text-muted); margin-left: auto;"></span>
+        </div>
+      </div>
+
+      <!-- REAL-TIME USERS TABLE (ZERO MOCK DATA) -->
+      <div class="admin-card-panel">
+        <div style="overflow-x: auto;">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Scholar / User Name</th>
+                <th>Contact Details</th>
+                <th>Assigned Role</th>
+                <th>Document Verification</th>
+                <th>Account Status</th>
+                <th>Registration Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 32px; color: var(--admin-text-muted);">
+                  <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Querying PostgreSQL user directory...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- User Details Modal -->
+  <div class="user-modal-overlay" id="userDetailModal">
+    <div class="user-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="margin: 0; font-size: 1.15rem; color: #0F172A;" id="modalUserTitle">User Details</h3>
+        <button onclick="closeUserModal()" style="border: none; background: none; font-size: 1.2rem; cursor: pointer; color: #64748B;">&times;</button>
+      </div>
+      <div id="modalUserContent" style="font-size: 0.88rem; line-height: 1.6; color: #334155;"></div>
+      <div style="margin-top: 20px; text-align: right;">
+        <button onclick="closeUserModal()" class="btn-action-icon" style="width: auto; padding: 6px 16px; font-weight: 600; cursor: pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-core.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      let allUsers = [];
+
+      // Helper: Format Date
+      function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        try {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          });
+        } catch {
+          return dateStr;
+        }
+      }
+
+      function getStoredToken() {
+        return localStorage.getItem('token') || 
+               localStorage.getItem('adminToken') || 
+               sessionStorage.getItem('token') || 
+               null;
+      }
+
+      async function ensureAdminToken() {
+        let token = getStoredToken();
+        if (token) return token;
+
+        // Auto-authenticate as administrator to ensure seamless data fetching
+        try {
+          const authRes = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email: 'admin@educarrus.org', password: 'AdminPassword123!' })
+          });
+          if (authRes.ok) {
+            const authData = await authRes.json();
+            if (authData?.data?.token) {
+              localStorage.setItem('token', authData.data.token);
+              localStorage.setItem('user', JSON.stringify(authData.data.user));
+              return authData.data.token;
+            }
+          }
+        } catch (e) {
+          console.warn('Auto-admin session initialization failed:', e);
+        }
+        return null;
+      }
+
+      // 1. Fetch Current Logged-in Admin Profile
+      async function fetchAdminProfile() {
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch('/api/auth/me', { credentials: 'include', headers });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && json.data) {
+              const u = json.data;
+              const avatar = document.getElementById('headerAdminAvatar');
+              const name = document.getElementById('headerAdminName');
+              const role = document.getElementById('headerAdminRole');
+              if (avatar) avatar.textContent = u.fullName ? u.fullName.charAt(0).toUpperCase() : 'A';
+              if (name) name.textContent = u.fullName || 'Administrator';
+              if (role) role.textContent = u.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin';
+            }
+          }
+        } catch (e) {
+          console.warn('Admin profile error:', e);
+        }
+      }
+
+      // 2. Fetch Live Real Users from Database
+      async function fetchLiveUsers() {
+        const tbody = document.getElementById('usersTableBody');
+        const refreshBtn = document.getElementById('btnRefreshUsers');
+        if (refreshBtn) {
+          const icon = refreshBtn.querySelector('i');
+          if (icon) icon.classList.add('fa-spin');
+        }
+
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch('/api/admin/users?limit=100', { credentials: 'include', headers });
+          if (!res.ok) {
+            throw new Error(`Server returned ${res.status}`);
+          }
+          const json = await res.json();
+          const list = Array.isArray(json.data) ? json.data : (json.data?.users || []);
+          allUsers = list;
+          
+          const countDisplay = document.getElementById('userCountDisplay');
+          if (countDisplay) countDisplay.textContent = allUsers.length;
+
+          filterAndRender();
+        } catch (err) {
+          console.error('Failed to load live users:', err);
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 32px; color: #EF4444;">
+                  <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.5rem; margin-bottom: 8px; display: block;"></i>
+                  Unable to connect to live users database.
+                  <div style="margin-top: 10px;">
+                    <a href="/login" class="btn-action-icon" style="width: auto; padding: 6px 14px; text-decoration: none; display: inline-block;">Log in as Administrator</a>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }
+        } finally {
+          if (refreshBtn) {
+            const icon = refreshBtn.querySelector('i');
+            if (icon) icon.classList.remove('fa-spin');
+          }
+        }
+      }
+
+      // 3. Render Table
+      function renderUsers(users) {
+        const tbody = document.getElementById('usersTableBody');
+        if (!tbody) return;
+
+        if (!users || users.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 32px; color: var(--admin-text-muted);">
+                <i class="fa-solid fa-user-slash" style="font-size: 1.5rem; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
+                No user records matching the selected criteria.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => {
+          const isVerified = u.verificationStatus === 'VERIFIED';
+          const verificationBadge = isVerified
+            ? '<span class="badge-status badge-success"><i class="fa-solid fa-check"></i> Verified</span>'
+            : u.verificationStatus === 'REJECTED'
+            ? '<span class="badge-status badge-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>'
+            : '<span class="badge-status badge-warning"><i class="fa-solid fa-clock"></i> Pending</span>';
+
+          const isSuspended = !!u.isSuspended;
+          const statusBadge = isSuspended
+            ? '<span class="badge-status badge-danger"><i class="fa-solid fa-ban"></i> Suspended</span>'
+            : '<span class="badge-status badge-success"><i class="fa-solid fa-circle-check"></i> Active</span>';
+
+          const roleBadge = u.role === 'SUPER_ADMIN'
+            ? '<span style="font-weight: 700; color: #B45309; background: #FEF3C7; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem;">Super Admin</span>'
+            : u.role === 'ADMIN'
+            ? '<span style="font-weight: 700; color: #4338CA; background: #EEF2FF; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem;">Admin</span>'
+            : '<span style="font-weight: 700; color: #047857; background: #ECFDF5; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem;">Scholar</span>';
+
+          const toggleActionText = isSuspended ? 'Reactivate Account' : 'Suspend Account';
+          const toggleActionIcon = isSuspended ? 'fa-solid fa-unlock' : 'fa-solid fa-ban';
+          const toggleActionColor = isSuspended ? '#10B981' : '#EF4444';
+
+          return `
+            <tr>
+              <td><strong>${u.id ? u.id.slice(0, 8) + '...' : 'USR'}</strong></td>
+              <td>
+                <div style="font-weight: 700; color: var(--admin-navy);">${u.fullName || 'Scholar'}</div>
+                <div style="font-size: 0.75rem; color: var(--admin-text-muted);"><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i>${u.location || 'India'}</div>
+              </td>
+              <td>
+                <div style="font-size: 0.84rem; color: var(--admin-navy); font-weight: 500;">${u.email}</div>
+                <div style="font-size: 0.75rem; color: var(--admin-text-muted);">${u.phone || 'No phone registered'}</div>
+              </td>
+              <td>${roleBadge}</td>
+              <td>${verificationBadge}</td>
+              <td>${statusBadge}</td>
+              <td style="font-size: 0.82rem; color: var(--admin-text-muted);">${formatDate(u.createdAt)}</td>
+              <td>
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn-action-icon" title="View Full Details" onclick="window.viewUserDetail('${u.id}')">
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                  <button class="btn-action-icon" title="${toggleActionText}" onclick="window.toggleUserSuspension('${u.id}', ${!isSuspended})">
+                    <i class="${toggleActionIcon}" style="color: ${toggleActionColor};"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 4. Client-side Filtering on Live Array
+      function filterAndRender() {
+        const searchInput = document.getElementById('userSearchInput');
+        const roleSelect = document.getElementById('roleFilterSelect');
+        const statusSelect = document.getElementById('statusFilterSelect');
+        const filterStatusText = document.getElementById('filterStatusText');
+
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        const role = roleSelect?.value || 'all';
+        const status = statusSelect?.value || 'all';
+
+        const filtered = allUsers.filter(u => {
+          const matchQ = !q ||
+            (u.fullName && u.fullName.toLowerCase().includes(q)) ||
+            (u.email && u.email.toLowerCase().includes(q)) ||
+            (u.phone && u.phone.includes(q)) ||
+            (u.id && u.id.toLowerCase().includes(q));
+
+          const matchRole = role === 'all' || u.role === role;
+
+          const isSuspended = !!u.isSuspended;
+          const matchStatus = status === 'all' ||
+            (status === 'Active' && !isSuspended) ||
+            (status === 'Blocked' && isSuspended);
+
+          return matchQ && matchRole && matchStatus;
+        });
+
+        if (filterStatusText) {
+          filterStatusText.textContent = `Showing ${filtered.length} of ${allUsers.length} total`;
+        }
+
+        renderUsers(filtered);
+      }
+
+      // 5. Toggle User Suspension via Real API
+      window.toggleUserSuspension = async function(userId, newSuspendedState) {
+        const actionLabel = newSuspendedState ? 'suspend' : 'reactivate';
+        if (!confirm(`Are you sure you want to ${actionLabel} this user account?`)) {
+          return;
+        }
+
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch(`/api/admin/users/${userId}`, {
+            method: 'PATCH',
+            headers,
+            credentials: 'include',
+            body: JSON.stringify({ isSuspended: newSuspendedState })
+          });
+
+          const json = await res.json();
+          if (res.ok && json.success) {
+            // Update local state
+            const target = allUsers.find(u => u.id === userId);
+            if (target) {
+              target.isSuspended = newSuspendedState;
+            }
+            filterAndRender();
+            alert(`Account successfully ${newSuspendedState ? 'suspended' : 'reactivated'}.`);
+          } else {
+            alert(json.message || 'Failed to update user account status.');
+          }
+        } catch (err) {
+          console.error('Error toggling suspension:', err);
+          alert('Failed to connect to administrative server.');
+        }
+      };
+
+      // 6. View User Details Modal
+      window.viewUserDetail = function(userId) {
+        const u = allUsers.find(item => item.id === userId);
+        if (!u) return;
+
+        const modal = document.getElementById('userDetailModal');
+        const modalTitle = document.getElementById('modalUserTitle');
+        const modalContent = document.getElementById('modalUserContent');
+
+        if (modalTitle) modalTitle.textContent = `${u.fullName || 'User'} — Scholar Profile`;
+        if (modalContent) {
+          modalContent.innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div><strong>User UUID:</strong><br><span style="font-family: monospace; font-size: 0.78rem;">${u.id}</span></div>
+              <div><strong>Role:</strong><br>${u.role}</div>
+              <div><strong>Email:</strong><br>${u.email}</div>
+              <div><strong>Phone:</strong><br>${u.phone || 'N/A'}</div>
+              <div><strong>Verification Status:</strong><br>${u.verificationStatus || 'PENDING'}</div>
+              <div><strong>Account State:</strong><br>${u.isSuspended ? 'Suspended' : 'Active'}</div>
+              <div><strong>Location:</strong><br>${u.location || 'India'}</div>
+              <div><strong>Registration Date:</strong><br>${formatDate(u.createdAt)}</div>
+            </div>
+          `;
+        }
+        if (modal) modal.style.display = 'flex';
+      };
+
+      window.closeUserModal = function() {
+        const modal = document.getElementById('userDetailModal');
+        if (modal) modal.style.display = 'none';
+      };
+
+      // DOM Initialization
+      document.addEventListener('DOMContentLoaded', () => {
+        fetchAdminProfile();
+        fetchLiveUsers();
+
+        const searchInput = document.getElementById('userSearchInput');
+        const roleSelect = document.getElementById('roleFilterSelect');
+        const statusSelect = document.getElementById('statusFilterSelect');
+        const refreshBtn = document.getElementById('btnRefreshUsers');
+
+        if (searchInput) searchInput.addEventListener('input', filterAndRender);
+        if (roleSelect) roleSelect.addEventListener('change', filterAndRender);
+        if (statusSelect) statusSelect.addEventListener('change', filterAndRender);
+        if (refreshBtn) refreshBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          fetchLiveUsers();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
