@@ -13,12 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.admin-top-header');
   if (!mobileToggle && header) {
     mobileToggle = document.createElement('button');
-    mobileToggle.className = 'sidebar-toggle-btn';
+    mobileToggle.className = 'sidebar-toggle-btn mobile-header-toggle';
     mobileToggle.id = 'mobileSidebarToggle';
     mobileToggle.setAttribute('aria-label', 'Open Navigation Menu');
     mobileToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
-    const leftGroup = header.querySelector('div') || header;
-    leftGroup.prepend(mobileToggle);
+    // Ensure mobile toggle is placed directly into header, BEFORE the search bar, NEVER inside .admin-search-bar!
+    const searchBar = header.querySelector('.admin-search-bar');
+    if (searchBar && searchBar.parentElement === header) {
+      header.insertBefore(mobileToggle, searchBar);
+    } else {
+      header.prepend(mobileToggle);
+    }
   }
 
   if (toggleBtn && sidebar && mainWrapper) {

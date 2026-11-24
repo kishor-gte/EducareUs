@@ -109,16 +109,32 @@ export class AdminService {
     };
   }
 
-  static async updateUserStatus(userId, { isSuspended, role }) {
+  static async updateUserStatus(userId, { isSuspended, role, verificationStatus }) {
     const data = {};
     if (typeof isSuspended === 'boolean') data.isSuspended = isSuspended;
     if (role) data.role = role;
+    if (verificationStatus) data.verificationStatus = verificationStatus;
 
-    return await prisma.user.update({
+    const updated = await prisma.user.update({
       where: { id: userId },
       data,
-      select: { id: true, email: true, fullName: true, role: true, isSuspended: true },
+      select: { id: true, email: true, fullName: true, role: true, isSuspended: true, verificationStatus: true },
     });
+
+    if (verificationStatus) {
+      await prisma.notification.create({
+        data: {
+          userId,
+          type: 'VERIFICATION',
+          title: verificationStatus === 'VERIFIED' ? '✅ Scholar Verified!' : 'ℹ️ Verification Status Updated',
+          message: verificationStatus === 'VERIFIED'
+            ? 'Your scholar profile has been officially verified by the administrator.'
+            : 'Your profile verification status has been updated to unverified by the administrator.',
+        },
+      }).catch(() => {});
+    }
+
+    return updated;
   }
 
   static async deleteUser(userId, currentAdminId) {

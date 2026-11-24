@@ -37,6 +37,7 @@ router.patch(
       body: z.object({
         isSuspended: z.boolean().optional(),
         role: z.enum(['DONOR', 'BENEFICIARY', 'ADMIN', 'SUPER_ADMIN']).optional(),
+        verificationStatus: z.enum(['UNVERIFIED', 'PENDING', 'UNDER_REVIEW', 'VERIFIED', 'REJECTED']).optional(),
       }),
     })
   ),

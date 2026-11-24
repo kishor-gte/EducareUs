@@ -110,6 +110,11 @@ body.admin-body-wrap {
   color: var(--admin-navy);
 }
 
+#mobileSidebarToggle,
+.mobile-header-toggle {
+  display: none !important;
+}
+
 .admin-sidebar.collapsed .sidebar-brand span {
   display: none;
 }
@@ -267,25 +272,51 @@ body.admin-body-wrap {
 
 .admin-search-bar {
   position: relative;
-  width: 320px;
+  width: 340px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .admin-search-bar input {
+  display: block;
   width: 100%;
-  padding: 10px 16px 10px 40px;
+  height: 40px;
+  padding: 0 16px 0 42px;
   border-radius: 20px;
   border: 1px solid var(--admin-border);
   background: var(--admin-bg);
   font-size: 0.88rem;
   outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.admin-search-bar input:focus {
+  border-color: var(--admin-gold);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
 .admin-search-bar i {
   position: absolute;
-  left: 14px;
+  left: 15px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--admin-text-muted);
+  font-size: 0.9rem;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 2;
+  margin: 0;
+}
+
+.admin-search-bar span + i,
+.admin-search-bar i + span {
+  position: static;
+  transform: none;
+  display: inline-flex;
+  align-items: center;
 }
 
 .top-header-right {
@@ -901,8 +932,21 @@ body.admin-body-wrap {
     width: 100% !important;
     min-width: 0 !important;
   }
-  #mobileSidebarToggle {
-    display: flex !important;
+  #mobileSidebarToggle,
+  .mobile-header-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: #F1F5F9;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-navy);
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-right: 12px;
   }
   .admin-page-container {
     padding: clamp(14px, 2.5vw, 24px);
@@ -923,10 +967,17 @@ body.admin-body-wrap {
     width: 100%;
     max-width: 100%;
     min-width: 100%;
-    margin-top: 4px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
   }
   .admin-search-bar input {
-    padding: 8px 14px 8px 36px;
+    height: 38px;
+    padding: 0 14px 0 38px;
+    font-size: 0.82rem;
+  }
+  .admin-search-bar i {
+    left: 13px;
     font-size: 0.82rem;
   }
   #headerAdminName, #headerAdminEmail {

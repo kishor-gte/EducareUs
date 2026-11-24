@@ -9,6 +9,16 @@ export const AuthProvider = ({ children }) => {
 
   // Fetch authenticated user profile on initial mount
   const checkAuth = async () => {
+    // Only attempt to verify authentication if a session token or cookie exists
+    const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+    const hasAuthCookie = typeof document !== 'undefined' && document.cookie.includes('token=');
+
+    if (!token && !hasAuthCookie) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.get('/auth/me');
       if (response.data?.success && response.data?.data) {
@@ -76,6 +86,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = (updatedUserData) => {
+    setUser((prev) => {
+      const merged = { ...(prev || {}), ...(updatedUserData || {}) };
+      try {
+        localStorage.setItem('user', JSON.stringify(merged));
+        if (merged.role === 'ADMIN' || merged.role === 'SUPER_ADMIN') {
+          localStorage.setItem('adminUser', JSON.stringify(merged));
+        }
+      } catch (err) {
+        console.error('Failed to update user in localStorage:', err);
+      }
+      return merged;
+    });
+  };
+
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const isBeneficiary = user?.role === 'BENEFICIARY';
@@ -89,6 +114,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         checkAuth,
+        updateUser,
         isAdmin,
         isSuperAdmin,
         isBeneficiary,

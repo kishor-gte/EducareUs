@@ -82,8 +82,6 @@
         <a href="admin-about.html" class="sidebar-sub-item">About Us</a>
         <a href="admin-why-choose-us.html" class="sidebar-sub-item">Why Choose Us</a>
       </div>
-      <!-- REVIEWS MANAGEMENT -->
-      <a href="admin-reviews.html" class="sidebar-nav-item"><i class="fa-solid fa-star"></i><span class="nav-text">Reviews</span></a>
       <!-- TRUST MEMBERS & MENTORS -->
       <a href="admin-trust-members.html" class="sidebar-nav-item"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Trust Members</span></a>
       <div class="sidebar-section-label">System</div>
@@ -92,10 +90,6 @@
       <a href="admin-administrators.html" class="sidebar-nav-item"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Administrators</span></a>
       <a href="admin-system-health.html" class="sidebar-nav-item"><i class="fa-solid fa-server"></i><span class="nav-text">System Health</span></a>
       <a href="admin-settings.html" class="sidebar-nav-item"><i class="fa-solid fa-gear"></i><span class="nav-text">Settings</span></a>
-      <div class="sidebar-section-label" style="margin-top: 16px;">Account</div>
-      <a href="javascript:void(0)" onclick="handleAdminLogout(event)" class="sidebar-nav-item sidebar-logout-item" title="Sign Out">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="nav-text">Sign Out</span>
-      </a>
     </div>
   </aside>
 
@@ -161,6 +155,11 @@
             <option value="all">All Account Statuses</option>
             <option value="Active">Active Accounts</option>
             <option value="Blocked">Suspended Accounts</option>
+          </select>
+          <select id="verificationFilterSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; background: #fff;">
+            <option value="all">All Verifications</option>
+            <option value="VERIFIED">Verified Scholars</option>
+            <option value="UNVERIFIED">Unverified / Pending</option>
           </select>
           <span id="filterStatusText" style="font-size: 0.8rem; color: var(--admin-text-muted); margin-left: auto;"></span>
         </div>
@@ -358,10 +357,10 @@
         tbody.innerHTML = users.map(u => {
           const isVerified = u.verificationStatus === 'VERIFIED';
           const verificationBadge = isVerified
-            ? '<span class="badge-status badge-success"><i class="fa-solid fa-check"></i> Verified</span>'
+            ? `<button type="button" class="badge-status badge-success" onclick="window.toggleUserVerification('${u.id}', false)" title="Click to Unverify Scholar" style="cursor: pointer; border: 1px solid #10B981; font-size: 0.72rem; padding: 4px 8px; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-check"></i> Verified</button>`
             : u.verificationStatus === 'REJECTED'
-            ? '<span class="badge-status badge-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>'
-            : '<span class="badge-status badge-warning"><i class="fa-solid fa-clock"></i> Pending</span>';
+            ? `<button type="button" class="badge-status badge-danger" onclick="window.toggleUserVerification('${u.id}', true)" title="Click to Verify Scholar" style="cursor: pointer; border: 1px solid #EF4444; font-size: 0.72rem; padding: 4px 8px; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-xmark"></i> Rejected</button>`
+            : `<button type="button" class="badge-status badge-warning" onclick="window.toggleUserVerification('${u.id}', true)" title="Click to Verify Scholar" style="cursor: pointer; border: 1px solid #F59E0B; font-size: 0.72rem; padding: 4px 8px; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Unverified</button>`;
 
           const isSuspended = !!u.isSuspended;
           const statusBadge = isSuspended
@@ -377,6 +376,12 @@
           const toggleActionText = isSuspended ? 'Reactivate Account' : 'Suspend Account';
           const toggleActionIcon = isSuspended ? 'fa-solid fa-unlock' : 'fa-solid fa-ban';
           const toggleActionColor = isSuspended ? '#10B981' : '#EF4444';
+
+          const verifyActionTitle = isVerified ? 'Click to Unverify User' : 'Click to Verify User';
+          const verifyActionIcon = isVerified ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-check';
+          const verifyActionColor = isVerified ? '#10B981' : '#D97706';
+          const verifyActionBg = isVerified ? '#ECFDF5' : '#FFFBEB';
+          const verifyActionBorder = isVerified ? '#A7F3D0' : '#FDE68A';
 
           return `
             <tr>
@@ -398,6 +403,9 @@
                   <button class="btn-action-icon" title="View Full Details" onclick="window.viewUserDetail('${u.id}')">
                     <i class="fa-regular fa-eye"></i>
                   </button>
+                  <button class="btn-action-icon" title="${verifyActionTitle}" onclick="window.toggleUserVerification('${u.id}', ${!isVerified})" style="background: ${verifyActionBg}; border-color: ${verifyActionBorder}; cursor: pointer;">
+                    <i class="${verifyActionIcon}" style="color: ${verifyActionColor}; font-size: 0.95rem;"></i>
+                  </button>
                   <button class="btn-action-icon" title="${toggleActionText}" onclick="window.toggleUserSuspension('${u.id}', ${!isSuspended})">
                     <i class="${toggleActionIcon}" style="color: ${toggleActionColor};"></i>
                   </button>
@@ -413,11 +421,13 @@
         const searchInput = document.getElementById('userSearchInput');
         const roleSelect = document.getElementById('roleFilterSelect');
         const statusSelect = document.getElementById('statusFilterSelect');
+        const verifySelect = document.getElementById('verificationFilterSelect');
         const filterStatusText = document.getElementById('filterStatusText');
 
         const q = (searchInput?.value || '').trim().toLowerCase();
         const role = roleSelect?.value || 'all';
         const status = statusSelect?.value || 'all';
+        const verification = verifySelect?.value || 'all';
 
         const filtered = allUsers.filter(u => {
           const matchQ = !q ||
@@ -433,7 +443,11 @@
             (status === 'Active' && !isSuspended) ||
             (status === 'Blocked' && isSuspended);
 
-          return matchQ && matchRole && matchStatus;
+          const matchVerification = verification === 'all' ||
+            (verification === 'VERIFIED' && u.verificationStatus === 'VERIFIED') ||
+            (verification === 'UNVERIFIED' && u.verificationStatus !== 'VERIFIED');
+
+          return matchQ && matchRole && matchStatus && matchVerification;
         });
 
         if (filterStatusText) {
@@ -443,7 +457,46 @@
         renderUsers(filtered);
       }
 
-      // 5. Toggle User Suspension via Real API
+      // 5. Toggle User Verification Status via Real Backend API
+      window.toggleUserVerification = async function(userId, shouldVerify) {
+        const target = allUsers.find(item => item.id === userId);
+        const name = target ? (target.fullName || target.email) : 'this user';
+        const actionLabel = shouldVerify ? 'VERIFY' : 'UNVERIFY';
+
+        if (!confirm(`Are you sure you want to ${actionLabel} ${name}?\n\n${shouldVerify ? 'The user will be granted Verified Scholar status on their dashboard and public profile.' : 'The user will be set to Unverified status.'}`)) {
+          return;
+        }
+
+        try {
+          const token = await ensureAdminToken();
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch(`/api/admin/users/${userId}`, {
+            method: 'PATCH',
+            headers,
+            credentials: 'include',
+            body: JSON.stringify({ verificationStatus: shouldVerify ? 'VERIFIED' : 'UNVERIFIED' })
+          });
+
+          const json = await res.json();
+          if (res.ok && json.success) {
+            // Update local state in allUsers array
+            if (target) {
+              target.verificationStatus = shouldVerify ? 'VERIFIED' : 'UNVERIFIED';
+            }
+            filterAndRender();
+            alert(`User ${name} has been successfully ${shouldVerify ? 'VERIFIED' : 'UNVERIFIED'}.`);
+          } else {
+            alert(json.message || 'Failed to update user verification status.');
+          }
+        } catch (err) {
+          console.error('Error toggling user verification:', err);
+          alert('Failed to connect to administrative server.');
+        }
+      };
+
+      // 6. Toggle User Suspension via Real API
       window.toggleUserSuspension = async function(userId, newSuspendedState) {
         const actionLabel = newSuspendedState ? 'suspend' : 'reactivate';
         if (!confirm(`Are you sure you want to ${actionLabel} this user account?`)) {
@@ -480,7 +533,7 @@
         }
       };
 
-      // 6. View User Details Modal
+      // 7. View User Details Modal
       window.viewUserDetail = function(userId) {
         const u = allUsers.find(item => item.id === userId);
         if (!u) return;
@@ -488,19 +541,31 @@
         const modal = document.getElementById('userDetailModal');
         const modalTitle = document.getElementById('modalUserTitle');
         const modalContent = document.getElementById('modalUserContent');
+        const isVerified = u.verificationStatus === 'VERIFIED';
 
         if (modalTitle) modalTitle.textContent = `${u.fullName || 'User'} — Scholar Profile`;
         if (modalContent) {
           modalContent.innerHTML = `
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
               <div><strong>User UUID:</strong><br><span style="font-family: monospace; font-size: 0.78rem;">${u.id}</span></div>
               <div><strong>Role:</strong><br>${u.role}</div>
               <div><strong>Email:</strong><br>${u.email}</div>
               <div><strong>Phone:</strong><br>${u.phone || 'N/A'}</div>
-              <div><strong>Verification Status:</strong><br>${u.verificationStatus || 'PENDING'}</div>
+              <div><strong>Verification Status:</strong><br>
+                <span class="badge-status ${isVerified ? 'badge-success' : 'badge-warning'}">
+                  <i class="${isVerified ? 'fa-solid fa-check' : 'fa-solid fa-clock'}"></i>
+                  ${u.verificationStatus || 'UNVERIFIED'}
+                </span>
+              </div>
               <div><strong>Account State:</strong><br>${u.isSuspended ? 'Suspended' : 'Active'}</div>
               <div><strong>Location:</strong><br>${u.location || 'India'}</div>
               <div><strong>Registration Date:</strong><br>${formatDate(u.createdAt)}</div>
+            </div>
+            <div style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; gap: 10px; justify-content: flex-start; align-items: center;">
+              <button onclick="window.toggleUserVerification('${u.id}', ${!isVerified}); window.closeUserModal();" class="btn-action-icon" style="width: auto; padding: 6px 14px; font-weight: 700; cursor: pointer; background: ${isVerified ? '#FEF2F2' : '#ECFDF5'}; color: ${isVerified ? '#DC2626' : '#059669'}; border-color: ${isVerified ? '#FCA5A5' : '#6EE7B7'};">
+                <i class="${isVerified ? 'fa-solid fa-user-xmark' : 'fa-solid fa-user-check'}" style="margin-right: 6px;"></i>
+                ${isVerified ? 'Unverify Scholar' : 'Verify Scholar'}
+              </button>
             </div>
           `;
         }
@@ -520,11 +585,13 @@
         const searchInput = document.getElementById('userSearchInput');
         const roleSelect = document.getElementById('roleFilterSelect');
         const statusSelect = document.getElementById('statusFilterSelect');
+        const verifySelect = document.getElementById('verificationFilterSelect');
         const refreshBtn = document.getElementById('btnRefreshUsers');
 
         if (searchInput) searchInput.addEventListener('input', filterAndRender);
         if (roleSelect) roleSelect.addEventListener('change', filterAndRender);
         if (statusSelect) statusSelect.addEventListener('change', filterAndRender);
+        if (verifySelect) verifySelect.addEventListener('change', filterAndRender);
         if (refreshBtn) refreshBtn.addEventListener('click', (e) => {
           e.preventDefault();
           fetchLiveUsers();

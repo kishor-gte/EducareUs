@@ -50,10 +50,17 @@ import {
   ChevronUp,
   Star,
   ThumbsUp,
+  Eye,
+  EyeOff,
+  Laptop,
+  Activity,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle,
 } from 'lucide-react';
 
 export const UserDashboardPage = () => {
-  const { user: authUser, logout } = useAuth();
+  const { user: authUser, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
@@ -120,6 +127,27 @@ export const UserDashboardPage = () => {
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isToggling2FA, setIsToggling2FA] = useState(false);
+  const [isRevokingSessions, setIsRevokingSessions] = useState(false);
+
+  // Security activity & session query (Real-time)
+  const {
+    data: securityActivity,
+    isLoading: isLoadingSecurity,
+    refetch: refetchSecurity,
+    isFetching: isFetchingSecurity,
+  } = useQuery({
+    queryKey: ['security-activity', authUser?.id],
+    queryFn: async () => {
+      const res = await api.get('/auth/security-activity');
+      return res.data?.data;
+    },
+    enabled: !!authUser,
   });
 
   // Support ticket form
@@ -283,8 +311,10 @@ export const UserDashboardPage = () => {
 
   // 3. Populate profile form with saved profile & backend user data
   useEffect(() => {
+    if (isEditingProfile) return; // Do not overwrite form fields while student is actively editing
+
     if (user) {
-      const storageKey = `student_profile_${user.id || user.email}`;
+      const storageKey = `student_profile_${user.id || user.email || 'default'}`;
       let savedLocal = {};
       try {
         const stored = localStorage.getItem(storageKey);
@@ -292,6 +322,11 @@ export const UserDashboardPage = () => {
       } catch (e) {
         console.error('Failed to parse saved profile:', e);
       }
+
+      // Parse user location if available (e.g. "Bangalore, Karnataka")
+      const locParts = user.location ? user.location.split(',').map((s) => s.trim()) : [];
+      const fallbackCity = locParts.length > 1 ? locParts[0] : (locParts[0] || '');
+      const fallbackState = locParts.length > 1 ? locParts[1] : '';
 
       setProfileForm((prev) => {
         const rawPhone = user.phone || savedLocal.phone || prev.phone || '';
@@ -306,9 +341,9 @@ export const UserDashboardPage = () => {
           phone: cleanPhone,
           alternatePhone: cleanAltPhone,
           profilePhoto: user.avatarUrl || savedLocal.profilePhoto || prev.profilePhoto || '',
-          state: savedLocal.state || prev.state || '',
+          state: savedLocal.state || fallbackState || prev.state || '',
           stateCode: savedLocal.stateCode || prev.stateCode || '',
-          city: savedLocal.city || prev.city || '',
+          city: savedLocal.city || fallbackCity || prev.city || '',
           residentialAddress: savedLocal.residentialAddress || prev.residentialAddress || '',
           pincode: savedLocal.pincode || prev.pincode || '',
           collegeName: savedLocal.collegeName || user.collegeName || prev.collegeName || '',
@@ -335,7 +370,7 @@ export const UserDashboardPage = () => {
         location: user.location || prev.location || '',
       }));
     }
-  }, [user]);
+  }, [user, isEditingProfile]);
 
   // Fetch student's own submitted enquiries history
   const { data: userEnquiriesData, refetch: refetchUserEnquiries } = useQuery({
@@ -435,8 +470,11 @@ export const UserDashboardPage = () => {
       return;
     }
 
-    const normalizedPhone = profileForm.phone ? profileForm.phone.replace(/\D/g, '') : '';
-    const normalizedAltPhone = profileForm.alternatePhone ? profileForm.alternatePhone.replace(/\D/g, '') : '';
+    const rawPhoneDigits = profileForm.phone ? profileForm.phone.replace(/\D/g, '') : '';
+    const normalizedPhone = rawPhoneDigits.length > 10 ? rawPhoneDigits.slice(-10) : rawPhoneDigits;
+
+    const rawAltDigits = profileForm.alternatePhone ? profileForm.alternatePhone.replace(/\D/g, '') : '';
+    const normalizedAltPhone = rawAltDigits.length > 10 ? rawAltDigits.slice(-10) : rawAltDigits;
 
     if (normalizedPhone && normalizedPhone.length !== 10) {
       toast.error('Primary contact must be a valid 10-digit mobile number');
@@ -456,20 +494,63 @@ export const UserDashboardPage = () => {
     setIsSavingProfile(true);
 
     try {
-      const locationStr =
-        profileForm.city && profileForm.state
-          ? `${profileForm.city}, ${profileForm.state}`
-          : profileForm.city || profileForm.state || 'India';
+      const locationParts = [profileForm.city?.trim(), profileForm.state?.trim()].filter(Boolean);
+      const locationStr = locationParts.length > 0 ? locationParts.join(', ') : (user?.location || 'India');
 
-      // 1. Persist to PostgreSQL via backend PATCH /api/auth/profile
-      await api.patch('/auth/profile', {
+      // 1. Persist core identity to PostgreSQL via backend PATCH /api/auth/profile
+      const patchRes = await api.patch('/auth/profile', {
         fullName: profileForm.fullName.trim(),
         phone: normalizedPhone || null,
         location: locationStr,
         avatarUrl: profileForm.profilePhoto || null,
       });
 
+      const updatedUser = patchRes.data?.data || {
+        ...user,
+        fullName: profileForm.fullName.trim(),
+        phone: normalizedPhone || null,
+        location: locationStr,
+        avatarUrl: profileForm.profilePhoto || null,
+      };
+
       // 2. Persist extended academic & college credentials to localStorage
+      const storageKey = `student_profile_${user?.id || user?.email || 'default'}`;
+      const payloadToSave = {
+        ...profileForm,
+        fullName: updatedUser.fullName,
+        phone: normalizedPhone,
+        alternatePhone: normalizedAltPhone,
+        city: profileForm.city || '',
+        state: profileForm.state || '',
+        location: locationStr,
+        profilePhoto: updatedUser.avatarUrl || profileForm.profilePhoto,
+      };
+      localStorage.setItem(storageKey, JSON.stringify(payloadToSave));
+
+      // 3. Update AuthContext & localStorage globally
+      if (updateUser) {
+        updateUser(updatedUser);
+      }
+
+      // 4. Update React Query cached user dashboard data directly for immediate UI sync
+      queryClient.setQueryData(['user-dashboard', authUser?.id], (old) => {
+        if (!old) return { user: updatedUser };
+        return { ...old, user: { ...old.user, ...updatedUser } };
+      });
+
+      // 5. Invalidate React Query cache using TanStack Query v5 object syntax
+      queryClient.invalidateQueries({ queryKey: ['user-dashboard'] });
+
+      // 6. Keep profileForm state aligned with confirmed values
+      setProfileForm((prev) => ({
+        ...prev,
+        ...payloadToSave,
+      }));
+
+      setIsEditingProfile(false);
+      toast.success('Student profile, college credentials & photo updated successfully!');
+    } catch (err) {
+      console.warn('Backend update failed, saving locally:', err);
       const storageKey = `student_profile_${user?.id || user?.email || 'default'}`;
       const payloadToSave = {
         ...profileForm,
@@ -477,27 +558,20 @@ export const UserDashboardPage = () => {
         alternatePhone: normalizedAltPhone,
       };
       localStorage.setItem(storageKey, JSON.stringify(payloadToSave));
-
-      // 3. Invalidate React Query cache to refresh UI
-      queryClient.invalidateQueries(['user-dashboard']);
-      queryClient.invalidateQueries(['auth-me']);
-
       setIsEditingProfile(false);
-      toast.success('Student profile, college credentials & photo updated successfully!');
-    } catch (err) {
-      console.warn('Backend update failed, saving locally:', err);
-      const storageKey = `student_profile_${user?.id || user?.email || 'default'}`;
-      localStorage.setItem(storageKey, JSON.stringify(profileForm));
-      setIsEditingProfile(false);
-      toast.success('Profile changes saved successfully!');
+      toast.success('Profile changes saved locally!');
     } finally {
       setIsSavingProfile(false);
     }
   };
 
-  // Handle Password Update
-  const handlePasswordSubmit = (e) => {
+  // Handle Password Update (Real API)
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+    if (!passwordForm.currentPassword) {
+      toast.error('Please enter your current password');
+      return;
+    }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       toast.error('New passwords do not match');
       return;
@@ -506,8 +580,60 @@ export const UserDashboardPage = () => {
       toast.error('Password must be at least 6 characters');
       return;
     }
-    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    toast.success('Security settings updated successfully!');
+    if (passwordForm.currentPassword === passwordForm.newPassword) {
+      toast.error('New password must be different from current password');
+      return;
+    }
+    try {
+      setIsChangingPassword(true);
+      const res = await api.post('/auth/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+      if (res.data?.success) {
+        toast.success(res.data.message || 'Password updated successfully!');
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        queryClient.invalidateQueries({ queryKey: ['security-activity', authUser?.id] });
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.friendlyMessage || 'Failed to update password. Please check your current password.';
+      toast.error(msg);
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  // Handle 2FA Toggle (Real API)
+  const handleToggle2FA = async () => {
+    const nextState = !securityActivity?.twoFactorEnabled;
+    try {
+      setIsToggling2FA(true);
+      const res = await api.post('/auth/toggle-2fa', { enabled: nextState });
+      if (res.data?.success) {
+        toast.success(nextState ? 'Two-Factor Authentication activated!' : 'Two-Factor Authentication deactivated.');
+        queryClient.invalidateQueries({ queryKey: ['security-activity', authUser?.id] });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update 2FA status');
+    } finally {
+      setIsToggling2FA(false);
+    }
+  };
+
+  // Handle Revoke Other Sessions (Real API)
+  const handleRevokeSessions = async () => {
+    try {
+      setIsRevokingSessions(true);
+      const res = await api.post('/auth/revoke-sessions');
+      if (res.data?.success) {
+        toast.success('All other sessions terminated successfully!');
+        queryClient.invalidateQueries({ queryKey: ['security-activity', authUser?.id] });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to terminate other sessions');
+    } finally {
+      setIsRevokingSessions(false);
+    }
   };
 
   const [submittingSupport, setSubmittingSupport] = useState(false);
@@ -696,6 +822,17 @@ export const UserDashboardPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || authUser?.role === 'ADMIN' || authUser?.role === 'SUPER_ADMIN') && (
+              <a
+                href="/admin-users.html"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black transition-all shadow-xs"
+                title="Open Admin User Verification Directory"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin Users</span>
+              </a>
+            )}
+
             <NotificationBell onTabSelect={handleTabChange} />
 
             <button
@@ -830,7 +967,16 @@ export const UserDashboardPage = () => {
             </nav>
 
             {/* Drawer Logout Footer */}
-            <div className="pt-4 border-t border-slate-100">
+            <div className="pt-4 border-t border-slate-100 space-y-2">
+              {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || authUser?.role === 'ADMIN' || authUser?.role === 'SUPER_ADMIN') && (
+                <a
+                  href="/admin-users.html"
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#07166F] text-white hover:bg-[#051152] transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4 text-[#FFB52E]" />
+                  <span>Admin User Directory</span>
+                </a>
+              )}
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
@@ -940,6 +1086,26 @@ export const UserDashboardPage = () => {
                     </button>
                   );
                 })}
+
+                {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || authUser?.role === 'ADMIN' || authUser?.role === 'SUPER_ADMIN') && (
+                  <div className="pt-2 border-t border-slate-100">
+                    <a
+                      href="/admin-users.html"
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left bg-[#07166F] text-white hover:bg-[#051152] shadow-sm group"
+                    >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-white/15 text-[#FFB52E]">
+                        <ShieldCheck className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="leading-tight truncate text-white font-black">User Directory</p>
+                        <p className="text-[10px] text-blue-200 font-normal truncate mt-0.5">
+                          Verify Users & Scholars
+                        </p>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#FFB52E] group-hover:translate-x-0.5 transition-transform" />
+                    </a>
+                  </div>
+                )}
 
                 <div className="pt-2 border-t border-slate-100">
                   <button
@@ -1877,7 +2043,7 @@ export const UserDashboardPage = () => {
                               />
                             </div>
 
-                            <div>
+                            <div className="sm:col-span-2">
                               <label className="font-bold text-slate-700 block mb-1">
                                 Degree / Course Name
                               </label>
@@ -1890,105 +2056,6 @@ export const UserDashboardPage = () => {
                                 placeholder="e.g., B.Tech, BCA, MBBS, etc."
                                 className="w-full font-bold text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
                               />
-                            </div>
-
-                            <div>
-                              <label className="font-bold text-slate-700 block mb-1">
-                                Branch / Specialization
-                              </label>
-                              <input
-                                type="text"
-                                value={profileForm.branchName}
-                                onChange={(e) =>
-                                  setProfileForm({ ...profileForm, branchName: e.target.value })
-                                }
-                                placeholder="e.g., Computer Science & Engineering"
-                                className="w-full font-medium text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="font-bold text-slate-700 block mb-1">
-                                Current Academic Year
-                              </label>
-                              <select
-                                value={profileForm.academicYear}
-                                onChange={(e) =>
-                                  setProfileForm({ ...profileForm, academicYear: e.target.value })
-                                }
-                                className="w-full font-medium text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
-                              >
-                                <option value="">Select Academic Year</option>
-                                <option value="1st Year">1st Year</option>
-                                <option value="2nd Year">2nd Year</option>
-                                <option value="3rd Year">3rd Year</option>
-                                <option value="4th Year">4th Year</option>
-                                <option value="5th Year">5th Year (Integrated / Medical)</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className="font-bold text-slate-700 block mb-1">
-                                Current Semester
-                              </label>
-                              <select
-                                value={profileForm.semester}
-                                onChange={(e) =>
-                                  setProfileForm({ ...profileForm, semester: e.target.value })
-                                }
-                                className="w-full font-medium text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
-                              >
-                                <option value="">Select Current Semester</option>
-                                <option value="Semester 1">Semester 1</option>
-                                <option value="Semester 2">Semester 2</option>
-                                <option value="Semester 3">Semester 3</option>
-                                <option value="Semester 4">Semester 4</option>
-                                <option value="Semester 5">Semester 5</option>
-                                <option value="Semester 6">Semester 6</option>
-                                <option value="Semester 7">Semester 7</option>
-                                <option value="Semester 8">Semester 8</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className="font-bold text-slate-700 block mb-1">
-                                Cumulative CGPA / Percentage
-                              </label>
-                              <input
-                                type="text"
-                                value={profileForm.cgpa}
-                                onChange={(e) =>
-                                  setProfileForm({ ...profileForm, cgpa: e.target.value })
-                                }
-                                placeholder="e.g., 8.85 CGPA or 85%"
-                                className="w-full font-bold text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="font-bold text-slate-700 block mb-1">
-                                Admission & Expected Graduation
-                              </label>
-                              <div className="grid grid-cols-2 gap-2">
-                                <input
-                                  type="text"
-                                  value={profileForm.admissionYear}
-                                  onChange={(e) =>
-                                    setProfileForm({ ...profileForm, admissionYear: e.target.value })
-                                  }
-                                  placeholder="Adm: 2023"
-                                  className="w-full text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs text-center"
-                                />
-                                <input
-                                  type="text"
-                                  value={profileForm.graduationYear}
-                                  onChange={(e) =>
-                                    setProfileForm({ ...profileForm, graduationYear: e.target.value })
-                                  }
-                                  placeholder="Grad: 2027"
-                                  className="w-full text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs text-center"
-                                />
-                              </div>
                             </div>
                           </div>
                         </div>
@@ -2034,11 +2101,10 @@ export const UserDashboardPage = () => {
 
                             <div>
                               <label className="font-bold text-slate-700 block mb-1">
-                                Primary Mobile Number *
+                                Primary Mobile Number
                               </label>
                               <input
                                 type="tel"
-                                required
                                 value={profileForm.phone}
                                 onChange={(e) =>
                                   setProfileForm({ ...profileForm, phone: e.target.value })
@@ -2106,6 +2172,9 @@ export const UserDashboardPage = () => {
                                   className="w-full font-medium text-slate-900 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500 text-xs"
                                 >
                                   <option value="">Select City</option>
+                                  {profileForm.city && !cities.some((ct) => ct.name.toLowerCase() === profileForm.city.toLowerCase()) && (
+                                    <option value={profileForm.city}>{profileForm.city}</option>
+                                  )}
                                   {cities.map((ct, idx) => (
                                     <option key={`${ct.name}-${idx}`} value={ct.name}>
                                       {ct.name}
@@ -2255,35 +2324,15 @@ export const UserDashboardPage = () => {
                               </p>
                             </div>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Course / Degree</p>
                                 <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.courseName || 'Not Provided'}</p>
                               </div>
 
                               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <p className="text-[10px] font-bold uppercase text-slate-400">Specialization</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.branchName || 'Not Provided'}</p>
-                              </div>
-
-                              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p className="text-[10px] font-bold uppercase text-slate-400">Roll / ID Number</p>
                                 <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.rollNumber || 'Not Provided'}</p>
-                              </div>
-
-                              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <p className="text-[10px] font-bold uppercase text-slate-400">Academic Year</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.academicYear || 'Not Provided'}</p>
-                              </div>
-
-                              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <p className="text-[10px] font-bold uppercase text-slate-400">Current Semester</p>
-                                <p className="font-bold text-slate-900 text-xs mt-0.5">{profileForm.semester || 'Not Provided'}</p>
-                              </div>
-
-                              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <p className="text-[10px] font-bold uppercase text-slate-400">Performance (CGPA)</p>
-                                <p className="font-black text-amber-600 text-xs mt-0.5">{profileForm.cgpa || 'Not Provided'}</p>
                               </div>
                             </div>
                           </div>
@@ -2438,125 +2487,393 @@ export const UserDashboardPage = () => {
             ══════════════════════════════════════════════════════════ */}
             {activeTab === 'security' && (
               <div className="space-y-6 animate-in fade-in duration-150">
-                <div>
-                  <h2 className="text-xl font-black text-slate-900">Security & Credentials Protection</h2>
-                  <p className="text-xs text-slate-500">
-                    Manage your password, authentication sessions, and student data privacy.
-                  </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                      <ShieldCheck className="w-5 h-5 text-amber-500" />
+                      Security & Credentials Protection
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Manage your password, two-factor authentication, active sessions, and live audit trail.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => refetchSecurity()}
+                    disabled={isFetchingSecurity}
+                    className="inline-flex items-center gap-2 self-start sm:self-auto px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-2xs transition-all cursor-pointer"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 text-amber-600 ${isFetchingSecurity ? 'animate-spin' : ''}`} />
+                    <span>{isFetchingSecurity ? 'Syncing...' : 'Refresh Status'}</span>
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Change Password Form */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-                    <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center shrink-0">
-                        <Lock className="w-5 h-5 text-slate-700" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Left Column: Password Update & Active Device Session */}
+                  <div className="space-y-6">
+                    {/* Change Password Form */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
+                          <Lock className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-slate-900 text-sm">Update Password</h3>
+                          <p className="text-xs text-slate-400">Secure your account with a strong password</p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-slate-900 text-sm">Update Password</h3>
-                        <p className="text-xs text-slate-400">Use at least 6 alphanumeric characters</p>
-                      </div>
+
+                      <form onSubmit={handlePasswordSubmit} className="space-y-4 text-xs">
+                        <div>
+                          <label className="font-bold text-slate-700 block mb-1">Current Password</label>
+                          <div className="relative">
+                            <input
+                              type={showCurrentPassword ? 'text' : 'password'}
+                              required
+                              value={passwordForm.currentPassword}
+                              onChange={(e) =>
+                                setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
+                              }
+                              className="w-full p-3 pr-10 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:border-amber-500 text-sm"
+                              placeholder="Enter your current password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
+                            >
+                              {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-slate-700 block mb-1">New Password</label>
+                          <div className="relative">
+                            <input
+                              type={showNewPassword ? 'text' : 'password'}
+                              required
+                              value={passwordForm.newPassword}
+                              onChange={(e) =>
+                                setPasswordForm({ ...passwordForm, newPassword: e.target.value })
+                              }
+                              className="w-full p-3 pr-10 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:border-amber-500 text-sm"
+                              placeholder="Minimum 6 characters"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                            >
+                              {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-slate-700 block mb-1">Confirm New Password</label>
+                          <div className="relative">
+                            <input
+                              type={showConfirmPassword ? 'text' : 'password'}
+                              required
+                              value={passwordForm.confirmPassword}
+                              onChange={(e) =>
+                                setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+                              }
+                              className="w-full p-3 pr-10 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:border-amber-500 text-sm"
+                              placeholder="Re-enter new password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                            >
+                              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-[11px] text-slate-500 space-y-1">
+                          <p className="font-bold text-slate-700">Password requirements:</p>
+                          <div className="flex items-center gap-1.5">
+                            <CheckCircle2 className={`w-3.5 h-3.5 ${passwordForm.newPassword.length >= 6 ? 'text-emerald-600' : 'text-slate-300'}`} />
+                            <span>At least 6 characters</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <CheckCircle2 className={`w-3.5 h-3.5 ${passwordForm.newPassword && passwordForm.newPassword === passwordForm.confirmPassword ? 'text-emerald-600' : 'text-slate-300'}`} />
+                            <span>Passwords match</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-2 flex items-center justify-between">
+                          <Link to="/forgot-password" className="text-amber-600 font-bold hover:underline">
+                            Forgot password?
+                          </Link>
+                          <button
+                            type="submit"
+                            disabled={isChangingPassword}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-amber-400 hover:bg-amber-500 hover:text-slate-950 transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                          >
+                            {isChangingPassword ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <span>Updating...</span>
+                              </>
+                            ) : (
+                              <span>Save New Password</span>
+                            )}
+                          </button>
+                        </div>
+                      </form>
                     </div>
 
-                    <form onSubmit={handlePasswordSubmit} className="space-y-4 text-xs">
-                      <div>
-                        <label className="font-bold text-slate-700 block mb-1">Current Password</label>
-                        <input
-                          type="password"
-                          required
-                          value={passwordForm.currentPassword}
-                          onChange={(e) =>
-                            setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
-                          }
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:border-amber-500 text-sm"
-                          placeholder="••••••••"
-                        />
+                    {/* Active Device Session Management Card */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+                            <Laptop className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-slate-900 text-sm">Active Device Session</h3>
+                            <p className="text-xs text-slate-400">Current device & network status</p>
+                          </div>
+                        </div>
+                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 text-xs">
+                          Active Now
+                        </span>
                       </div>
 
-                      <div>
-                        <label className="font-bold text-slate-700 block mb-1">New Password</label>
-                        <input
-                          type="password"
-                          required
-                          value={passwordForm.newPassword}
-                          onChange={(e) =>
-                            setPasswordForm({ ...passwordForm, newPassword: e.target.value })
-                          }
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:border-amber-500 text-sm"
-                          placeholder="Minimum 6 characters"
-                        />
-                      </div>
+                      <div className="space-y-3 text-xs">
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-500 font-medium">Browser / Agent</span>
+                            <span className="font-bold text-slate-800">
+                              {securityActivity?.currentSession?.userAgent
+                                ? (securityActivity.currentSession.userAgent.includes('Edg/')
+                                    ? 'Microsoft Edge'
+                                    : securityActivity.currentSession.userAgent.includes('Chrome/')
+                                    ? 'Google Chrome'
+                                    : securityActivity.currentSession.userAgent.includes('Firefox/')
+                                    ? 'Mozilla Firefox'
+                                    : securityActivity.currentSession.userAgent.includes('Safari/')
+                                    ? 'Apple Safari'
+                                    : 'Web Browser')
+                                : 'Google Chrome (Desktop)'}
+                            </span>
+                          </div>
 
-                      <div>
-                        <label className="font-bold text-slate-700 block mb-1">Confirm New Password</label>
-                        <input
-                          type="password"
-                          required
-                          value={passwordForm.confirmPassword}
-                          onChange={(e) =>
-                            setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
-                          }
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:border-amber-500 text-sm"
-                          placeholder="Re-enter new password"
-                        />
-                      </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-500 font-medium">IP Address</span>
+                            <span className="font-mono font-bold text-slate-800">
+                              {securityActivity?.currentSession?.ip || '127.0.0.1'}
+                            </span>
+                          </div>
 
-                      <div className="pt-2 flex items-center justify-between">
-                        <Link to="/forgot-password" className="text-amber-600 font-bold hover:underline">
-                          Forgot password?
-                        </Link>
-                        <button
-                          type="submit"
-                          className="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-amber-400 hover:bg-amber-500 hover:text-slate-950 transition-colors shadow-sm cursor-pointer"
-                        >
-                          Save New Password
-                        </button>
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-500 font-medium">Last Login Recorded</span>
+                            <span className="font-bold text-slate-800">
+                              {securityActivity?.lastLoginAt
+                                ? new Date(securityActivity.lastLoginAt).toLocaleString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })
+                                : 'Active session'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <p className="text-[11px] text-slate-400">
+                            Lost a device? Invalidate all session tokens immediately.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={handleRevokeSessions}
+                            disabled={isRevokingSessions}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer text-xs shrink-0 disabled:opacity-50"
+                          >
+                            {isRevokingSessions ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Terminating...</span>
+                              </>
+                            ) : (
+                              <>
+                                <LogOut className="w-3.5 h-3.5" />
+                                <span>Sign Out Other Sessions</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
-                    </form>
+                    </div>
                   </div>
 
-                  {/* Security Checks & Sessions */}
+                  {/* Right Column: Security Controls & Live Audit Trail */}
                   <div className="space-y-6">
+                    {/* Account Security Controls */}
                     <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
                       <h3 className="font-bold text-slate-900 text-sm border-b border-slate-100 pb-3 flex items-center gap-2">
                         <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                        Account Security Status
+                        Account Security Controls
                       </h3>
 
                       <div className="space-y-3 text-xs">
-                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                          <div>
-                            <p className="font-bold text-slate-900">Email OTP Verification</p>
-                            <p className="text-[11px] text-slate-400">
-                              Mandatory 6-digit cryptographic verification
+                        {/* Two-Factor Authentication Toggle */}
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between gap-4">
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-2">
+                              <p className="font-bold text-slate-900">Two-Factor Authentication (2FA)</p>
+                              {securityActivity?.twoFactorEnabled ? (
+                                <span className="font-bold text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                  Enforced
+                                </span>
+                              ) : (
+                                <span className="font-bold text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                  Disabled
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-slate-500">
+                              Requires a one-time verification code when accessing your account from a new device.
                             </p>
                           </div>
-                          <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                            Active
+
+                          <button
+                            type="button"
+                            onClick={handleToggle2FA}
+                            disabled={isToggling2FA}
+                            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${
+                              securityActivity?.twoFactorEnabled ? 'bg-emerald-600' : 'bg-slate-300'
+                            }`}
+                            aria-label="Toggle Two-Factor Authentication"
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                securityActivity?.twoFactorEnabled ? 'translate-x-5' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
+                        </div>
+
+                        {/* Email OTP Verification */}
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between gap-3">
+                          <div>
+                            <p className="font-bold text-slate-900">Email Verification Gateway</p>
+                            <p className="text-[11px] text-slate-400">
+                              Linked to {authUser?.email || 'your registered address'}
+                            </p>
+                          </div>
+                          <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 shrink-0">
+                            Verified
                           </span>
                         </div>
 
-                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                        {/* HTTP-Only JWT Cookie Encryption */}
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between gap-3">
                           <div>
                             <p className="font-bold text-slate-900">HTTP-Only JWT Cookie Encryption</p>
-                            <p className="text-[11px] text-slate-400">Prevents XSS session hijacking</p>
+                            <p className="text-[11px] text-slate-400">
+                              256-bit cryptographic signature guarding against XSS & hijacking
+                            </p>
                           </div>
-                          <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                          <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 shrink-0">
                             Secured
                           </span>
                         </div>
+                      </div>
+                    </div>
 
-                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                          <div>
-                            <p className="font-bold text-slate-900">Active Device Session</p>
-                            <p className="text-[11px] text-slate-400">
-                              Current browser instance (Google Chrome)
+                    {/* Live Security Audit Trail */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Activity className="w-4 h-4 text-amber-500" />
+                          <h3 className="font-bold text-slate-900 text-sm">Security Audit Trail</h3>
+                        </div>
+                        <span className="text-[11px] font-bold text-slate-400">Live Activity</span>
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        {isLoadingSecurity ? (
+                          <div className="text-center py-6 text-slate-400 text-xs flex items-center justify-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
+                            <span>Loading security events...</span>
+                          </div>
+                        ) : securityActivity?.auditLogs && securityActivity.auditLogs.length > 0 ? (
+                          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                            {securityActivity.auditLogs.map((log) => {
+                              let badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
+                              let icon = <Activity className="w-3.5 h-3.5 text-slate-500" />;
+                              let actionText = log.action.replace('_', ' ');
+
+                              if (log.action === 'PASSWORD_CHANGE') {
+                                badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                                icon = <Lock className="w-3.5 h-3.5 text-emerald-600" />;
+                                actionText = 'Password Updated';
+                              } else if (log.action === '2FA_ENABLED') {
+                                badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                                icon = <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />;
+                                actionText = '2FA Activated';
+                              } else if (log.action === '2FA_DISABLED') {
+                                badgeColor = 'bg-amber-50 text-amber-800 border-amber-200';
+                                icon = <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />;
+                                actionText = '2FA Deactivated';
+                              } else if (log.action === 'REVOKE_SESSIONS') {
+                                badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+                                icon = <LogOut className="w-3.5 h-3.5 text-rose-600" />;
+                                actionText = 'Sessions Revoked';
+                              }
+
+                              return (
+                                <div
+                                  key={log.id}
+                                  className="p-3 bg-slate-50 hover:bg-slate-100/70 rounded-xl border border-slate-100 flex items-center justify-between gap-3 transition-colors"
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <div className="w-7 h-7 rounded-lg bg-white border border-slate-200/80 flex items-center justify-center shrink-0">
+                                      {icon}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="font-bold text-slate-800 text-xs truncate">{actionText}</p>
+                                      <p className="text-[10px] text-slate-400 font-mono">
+                                        IP: {log.ipAddress || '127.0.0.1'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right shrink-0">
+                                    <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-md border ${badgeColor}`}>
+                                      Recorded
+                                    </span>
+                                    <p className="text-[10px] text-slate-400 mt-0.5">
+                                      {new Date(log.createdAt).toLocaleString('en-IN', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                      })}
+                                    </p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-center py-6 px-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-400">
+                            <ShieldCheck className="w-8 h-8 text-slate-300 mx-auto mb-1.5" />
+                            <p className="font-bold text-slate-600 text-xs">No Security Incidents</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">
+                              Password changes, 2FA status toggles, and session events will be recorded here in real time.
                             </p>
                           </div>
-                          <span className="font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">
-                            Current Device
-                          </span>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>

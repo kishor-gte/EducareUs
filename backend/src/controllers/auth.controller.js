@@ -132,4 +132,65 @@ export class AuthController {
       next(err);
     }
   }
+
+  static async changePassword(req, res, next) {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const reqMeta = {
+        ip: req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress,
+        userAgent: req.headers['user-agent'],
+      };
+      const result = await AuthService.changePassword(
+        req.user.id,
+        { currentPassword, newPassword },
+        reqMeta
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async toggleTwoFactor(req, res, next) {
+    try {
+      const { enabled } = req.body;
+      const reqMeta = {
+        ip: req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress,
+        userAgent: req.headers['user-agent'],
+      };
+      const result = await AuthService.toggleTwoFactor(req.user.id, { enabled }, reqMeta);
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getSecurityActivity(req, res, next) {
+    try {
+      const reqMeta = {
+        ip: req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress,
+        userAgent: req.headers['user-agent'],
+      };
+      const result = await AuthService.getSecurityActivity(req.user.id, reqMeta);
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async revokeSessions(req, res, next) {
+    try {
+      const reqMeta = {
+        ip: req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress,
+        userAgent: req.headers['user-agent'],
+      };
+      const result = await AuthService.revokeSessions(req.user.id, reqMeta);
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

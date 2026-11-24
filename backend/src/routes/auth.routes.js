@@ -74,6 +74,24 @@ const resetPasswordSchema = z.object({
   }),
 });
 
+const changePasswordSchema = z.object({
+  body: z.object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+      .regex(/[a-z]/, 'Password must contain lowercase letters')
+      .regex(/[0-9]/, 'Password must contain at least one number'),
+  }),
+});
+
+const toggleTwoFactorSchema = z.object({
+  body: z.object({
+    enabled: z.boolean(),
+  }),
+});
+
 router.post('/send-otp', validateRequest(sendOtpSchema), AuthController.sendOtp);
 router.post('/verify-otp', validateRequest(verifyOtpSchema), AuthController.verifyOtp);
 router.post('/register', validateRequest(registerSchema), AuthController.register);
@@ -85,5 +103,11 @@ router.post('/logout', AuthController.logout);
 router.get('/me', authenticate, AuthController.getMe);
 router.get('/dashboard', authenticate, AuthController.getUserDashboard);
 router.patch('/profile', authenticate, AuthController.updateProfile);
+
+// Real-time Security & Access Management
+router.post('/change-password', authenticate, validateRequest(changePasswordSchema), AuthController.changePassword);
+router.post('/toggle-2fa', authenticate, validateRequest(toggleTwoFactorSchema), AuthController.toggleTwoFactor);
+router.get('/security-activity', authenticate, AuthController.getSecurityActivity);
+router.post('/revoke-sessions', authenticate, AuthController.revokeSessions);
 
 export default router;

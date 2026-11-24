@@ -169,7 +169,7 @@ export const BlogsPage = () => {
           >
             <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-400 to-[#FFB52E] opacity-30 group-hover:opacity-75 blur-sm transition-all" />
             <div className="relative flex items-center">
-              <Search className="w-5 h-5 absolute left-4 text-slate-400 pointer-events-none" />
+              <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 value={search}

@@ -108,6 +108,7 @@ export const HomePage = () => {
   const queryClient = useQueryClient();
   const [activeCourseIndex, setActiveCourseIndex] = useState(0);
   const courseCarouselRef = useRef(null);
+  const mentorCarouselRef = useRef(null);
 
   // Contact form state
   const [formData, setFormData] = useState({
@@ -224,12 +225,6 @@ export const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Column: Headlines & High-Impact CTA */}
             <div className="md:col-span-7 space-y-6 text-center md:text-left">
-              {/* Trust Pill */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#FFB52E] text-xs font-bold tracking-wide shadow-sm mx-auto md:mx-0 backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-[#FFB52E] animate-ping" />
-                <span className="text-[#FFB52E]">DIRECT EDUCATION CROWDFUNDING & AID</span>
-              </div>
-
               {/* Main Headline */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-black tracking-tight leading-[1.1] text-white uppercase">
                 <span style={{ color: '#ffffff' }}>FUND A STUDENT’S DREAM. </span>
@@ -289,6 +284,10 @@ export const HomePage = () => {
                 <img
                   src="/pdf-extracted/img_21_164295.jpg"
                   alt="Educarrus Student Scholar"
+                  width="340"
+                  height="380"
+                  fetchPriority="high"
+                  decoding="async"
                   className="relative z-10 w-[240px] sm:w-[280px] lg:w-[320px] xl:w-[340px] h-auto object-contain drop-shadow-2xl rounded-3xl"
                 />
 
@@ -386,6 +385,10 @@ export const HomePage = () => {
                 <img
                   src="/pdf-extracted/img_19_139563.jpg"
                   alt="Confused about what to study next"
+                  loading="lazy"
+                  decoding="async"
+                  width="1000"
+                  height="600"
                   className="w-full max-h-[70vh] sm:max-h-[80vh] object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
@@ -580,6 +583,10 @@ export const HomePage = () => {
                     <img
                       src={course.image || '/pdf-extracted/img_16_58909.jpg'}
                       alt={course.title}
+                      loading="lazy"
+                      decoding="async"
+                      width="400"
+                      height="260"
                       className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                       onError={(e) => {
                         e.currentTarget.src = '/pdf-extracted/img_16_58909.jpg';
@@ -733,6 +740,10 @@ export const HomePage = () => {
                         <img
                           src={whySection.centralImage}
                           alt={whySection.centralImageAlt || 'Why Choose EduCareus'}
+                          loading="lazy"
+                          decoding="async"
+                          width="460"
+                          height="460"
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             if (!e.target.dataset.retried && whySection.centralImage?.startsWith('/uploads')) {
@@ -784,59 +795,39 @@ export const HomePage = () => {
       ═══════════════════════════════════════════════════════════════════════ */}
       <section id="testimonials" className="py-20 lg:py-28 bg-[#F8FAFC] border-t border-slate-200 w-100">
         <div className="container-fluid px-3 px-sm-4 px-md-5 px-xl-5 w-100">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Image matching PDF img_13 */}
-            <div className="md:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900">
-                <img
-                  src="/pdf-extracted/img_13_7979.jpg"
-                  alt="Student mentorship discussion"
-                  className="w-full h-80 sm:h-96 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
-                  <div className="flex items-center gap-1 text-[#FFB52E]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-sm font-black">4.9 / 5 Average Scholar Rating</p>
-                  <p className="text-xs text-slate-300">From verified Indian student beneficiaries</p>
-                </div>
-              </div>
+          <div className="max-w-6xl mx-auto space-y-8">
+            <div className="text-center">
+              <span className="text-xs font-black text-[#07166F] uppercase tracking-wider">
+                EDUCARRUS REVIEWS
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-heading font-black tracking-tight text-[#172033] mt-1 uppercase">
+                Real People. Real Experience.
+              </h2>
             </div>
 
-            {/* Right Testimonials */}
-            <div className="md:col-span-7 space-y-5">
-              <div>
-                <span className="text-xs font-black text-[#07166F] uppercase tracking-wider">
-                  EDUCARRUS REVIEWS
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-heading font-black tracking-tight text-[#172033] mt-1 uppercase">
-                  Real People. Real Experience.
-                </h2>
-              </div>
-
-              {testimonials.length > 0 ? (
-                testimonials.map((review) => (
+            {testimonials.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {testimonials.map((review) => (
                   <div
                     key={review.id}
-                    className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3 relative hover:shadow-md transition-shadow"
+                    className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3 relative hover:shadow-md transition-shadow flex flex-col justify-between"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-[#FFB52E]">
-                        {[...Array(review.rating || 5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-current" />
-                        ))}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-[#FFB52E]">
+                          {[...Array(review.rating || 5)].map((_, i) => (
+                            <Star key={i} className="w-4 h-4 fill-current" />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                          {review.role}
+                        </span>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                        {review.role}
-                      </span>
+                      <p className="text-xs sm:text-sm text-slate-700 italic leading-relaxed">
+                        “{review.comment}”
+                      </p>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-700 italic leading-relaxed">
-                      “{review.comment}”
-                    </p>
-                    <div className="pt-2 flex items-center gap-3">
+                    <div className="pt-2 flex items-center gap-3 border-t border-slate-100">
                       <div className="w-9 h-9 rounded-full bg-[#07166F] text-[#FFB52E] font-bold text-xs flex items-center justify-center">
                         {review.initials || (review.name ? review.name.trim().substring(0, 2).toUpperCase() : 'S')}
                       </div>
@@ -846,15 +837,15 @@ export const HomePage = () => {
                       </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="p-8 rounded-3xl bg-white border border-dashed border-slate-200 text-center text-slate-400">
-                  <Star className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-slate-500">No scholar reviews published yet.</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Real scholar reviews will dynamically appear here when submitted.</p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 rounded-3xl bg-white border border-dashed border-slate-200 text-center text-slate-400 max-w-md mx-auto">
+                <Star className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-slate-500">No scholar reviews published yet.</p>
+                <p className="text-[11px] text-slate-400 mt-1">Real scholar reviews will dynamically appear here when submitted.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -877,35 +868,86 @@ export const HomePage = () => {
               </p>
             </div>
 
-            <Link
-              to="/userdashboard?tab=enquiry"
-              className="text-xs font-bold text-[#07166F] hover:text-[#FFB52E] flex items-center gap-1 transition-colors"
-            >
-              <span>View All Mentors</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            <div className="flex items-center gap-3 self-start sm:self-end">
+              {/* Slider Navigation Buttons (Active when more than 3 mentors exist) */}
+              {mentors.length > 3 && (
+                <div className="flex items-center gap-2 mr-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (mentorCarouselRef.current) {
+                        const scrollAmount = mentorCarouselRef.current.clientWidth / 3 + 12;
+                        mentorCarouselRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                      }
+                    }}
+                    className="w-9 h-9 rounded-full border border-slate-300 hover:border-[#07166F] hover:bg-slate-50 flex items-center justify-center text-slate-700 hover:text-[#07166F] transition-all cursor-pointer shadow-xs"
+                    aria-label="Previous Mentors"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (mentorCarouselRef.current) {
+                        const scrollAmount = mentorCarouselRef.current.clientWidth / 3 + 12;
+                        mentorCarouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                      }
+                    }}
+                    className="w-9 h-9 rounded-full bg-[#07166F] hover:bg-[#040e48] text-white flex items-center justify-center transition-all cursor-pointer shadow-md"
+                    aria-label="Next Mentors"
+                  >
+                    <ArrowRight className="w-4 h-4 text-[#FFB52E]" />
+                  </button>
+                </div>
+              )}
+
+              <Link
+                to="/userdashboard?tab=enquiry"
+                className="text-xs font-bold text-[#07166F] hover:text-[#FFB52E] flex items-center gap-1 transition-colors px-3 py-1.5 rounded-xl hover:bg-blue-50"
+              >
+                <span>View All Mentors</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
 
           {mentors.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div
+              ref={mentorCarouselRef}
+              className={`flex gap-6 lg:gap-8 overflow-x-auto no-scrollbar scroll-smooth pb-4 pt-1 px-1 ${
+                mentors.length < 3 ? 'justify-center' : 'justify-start'
+              }`}
+              style={{ scrollSnapType: mentors.length > 3 ? 'x mandatory' : 'none' }}
+            >
               {mentors.map((mentor) => (
                 <div
                   key={mentor.id}
-                  className="group bg-[#F8FAFC] rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1.5 flex flex-col justify-between"
+                  className={`group bg-[#F8FAFC] rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1.5 flex flex-col justify-between shrink-0 snap-start ${
+                    mentors.length === 1
+                      ? 'w-full max-w-sm'
+                      : mentors.length === 2
+                      ? 'w-full sm:w-[calc(50%-16px)] max-w-sm'
+                      : 'w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333333%-22px)]'
+                  }`}
+                  style={{ scrollSnapAlign: 'start' }}
                 >
                   <div>
-                    <div className="relative h-64 overflow-hidden bg-slate-900">
+                    <div className="relative h-72 sm:h-80 overflow-hidden bg-slate-100">
                       <img
                         src={mentor.image || '/pdf-extracted/img_4_26483.jpg'}
                         alt={mentor.name}
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = '/pdf-extracted/img_4_26483.jpg';
                         }}
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 filter grayscale"
+                        style={{ objectPosition: 'center 25%' }}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
                       <span
-                        className={`absolute top-4 right-4 text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md ${mentor.badgeColor || 'bg-[#FFB52E] text-[#172033]'}`}
+                        className={`absolute top-4 right-4 text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md backdrop-blur-xs ${mentor.badgeColor || 'bg-[#FFB52E] text-[#172033]'}`}
                       >
                         {mentor.tag || 'Academic Leader'}
                       </span>
@@ -913,27 +955,27 @@ export const HomePage = () => {
                     <div className="p-5 space-y-2">
                       <h3 className="text-base font-black text-[#172033]">{mentor.name}</h3>
                       <p className="text-xs text-[#07166F] font-bold">{mentor.role || mentor.specialization}</p>
-                      <p className="text-xs text-slate-500 leading-relaxed">{mentor.bio || mentor.description}</p>
+                      <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">{mentor.bio || mentor.description}</p>
                     </div>
                   </div>
                   <div className="p-5 pt-0">
                     <div className="pt-3 border-t border-slate-200 flex items-center gap-3 text-slate-400">
                       {mentor.linkedinUrl ? (
-                        <a href={mentor.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#07166F] transition-colors" title="LinkedIn Profile">
+                        <a href={mentor.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#07166F] transition-colors" title="LinkedIn Profile" aria-label={`${mentor.name}'s LinkedIn`}>
                           <Linkedin className="w-4 h-4" />
                         </a>
                       ) : (
                         <Linkedin className="w-4 h-4 hover:text-[#07166F] cursor-pointer transition-colors" />
                       )}
                       {mentor.twitterUrl ? (
-                        <a href={mentor.twitterUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#07166F] transition-colors" title="Twitter Profile">
+                        <a href={mentor.twitterUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#07166F] transition-colors" title="Twitter Profile" aria-label={`${mentor.name}'s Twitter`}>
                           <Twitter className="w-4 h-4" />
                         </a>
                       ) : (
                         <Twitter className="w-4 h-4 hover:text-[#07166F] cursor-pointer transition-colors" />
                       )}
                       {mentor.githubUrl ? (
-                        <a href={mentor.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#07166F] transition-colors" title="GitHub Profile">
+                        <a href={mentor.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#07166F] transition-colors" title="GitHub Profile" aria-label={`${mentor.name}'s GitHub`}>
                           <Github className="w-4 h-4" />
                         </a>
                       ) : (
@@ -959,167 +1001,93 @@ export const HomePage = () => {
       ═══════════════════════════════════════════════════════════════════════ */}
       <section className="py-20 lg:py-28 bg-[#F8FAFC] border-t border-slate-200 w-100">
         <div className="container-fluid px-3 px-sm-4 px-md-5 px-xl-5 w-100">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Column: Contact Form with Live Backend Endpoint */}
-            <div className="md:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl space-y-6">
+          <div className="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 shadow-xl space-y-6">
+            <div>
+              <span className="text-xs font-black text-[#07166F] uppercase tracking-wider">
+                EDUCAREUS SUPPORT DESK
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-heading font-black text-[#172033] mt-1">
+                Have Questions? Our Support Team is Here to Help.
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Fill out the form below and an educational advisor will get back to you within 24 hours.
+              </p>
+            </div>
+
+            <form onSubmit={handleContactSubmit} className="space-y-4">
               <div>
-                <span className="text-xs font-black text-[#07166F] uppercase tracking-wider">
-                  EDUCAREUS SUPPORT DESK
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-heading font-black text-[#172033] mt-1">
-                  Have Questions? Our Support Team is Here to Help.
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Fill out the form below and an educational advisor will get back to you within 24 hours.
-                </p>
+                <label className="block text-xs font-black text-[#172033] uppercase tracking-wider mb-1.5">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  placeholder="e.g. Rahul Sharma"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#07166F] focus:ring-2 focus:ring-[#07166F]/10 outline-none text-xs font-semibold text-slate-800 transition-all"
+                />
               </div>
 
-              <form onSubmit={handleContactSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-black text-[#172033] uppercase tracking-wider mb-1.5">
-                    Full Name *
+                    Email Address *
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     required
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="e.g. Rahul Sharma"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="e.g. rahul@example.com"
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#07166F] focus:ring-2 focus:ring-[#07166F]/10 outline-none text-xs font-semibold text-slate-800 transition-all"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-black text-[#172033] uppercase tracking-wider mb-1.5">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="e.g. rahul@example.com"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#07166F] focus:ring-2 focus:ring-[#07166F]/10 outline-none text-xs font-semibold text-slate-800 transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-black text-[#172033] uppercase tracking-wider mb-1.5">
-                      Subject
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      placeholder="e.g. MBBS Admission Aid"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#07166F] focus:ring-2 focus:ring-[#07166F]/10 outline-none text-xs font-semibold text-slate-800 transition-all"
-                    />
-                  </div>
-                </div>
-
                 <div>
                   <label className="block text-xs font-black text-[#172033] uppercase tracking-wider mb-1.5">
-                    Your Message / Question
+                    Subject
                   </label>
-                  <textarea
-                    rows={3}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Tell us about the college or degree program you are seeking guidance for..."
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#07166F] focus:ring-2 focus:ring-[#07166F]/10 outline-none text-xs font-semibold text-slate-800 transition-all resize-none"
+                  <input
+                    type="text"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    placeholder="e.g. MBBS Admission Aid"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#07166F] focus:ring-2 focus:ring-[#07166F]/10 outline-none text-xs font-semibold text-slate-800 transition-all"
                   />
                 </div>
+              </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={contactMutation.isPending}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#FFB52E] hover:bg-[#ffa710] text-[#172033] font-black text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {contactMutation.isPending ? (
-                    <span>Submitting to Database...</span>
-                  ) : (
-                    <>
-                      <span>Get In Touch</span>
-                      <Send className="w-3.5 h-3.5" />
-                    </>
-                  )}
-                </motion.button>
-              </form>
-            </div>
-
-            {/* Right Column: Photo of student with laptop matching PDF img_1 */}
-            <div className="md:col-span-5 relative flex justify-center">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 max-w-[380px] lg:max-w-[420px] w-full">
-                <img
-                  src="/pdf-extracted/img_1_36393.jpg"
-                  alt="EducareUs support student"
-                  className="w-full h-80 sm:h-96 object-cover"
+              <div>
+                <label className="block text-xs font-black text-[#172033] uppercase tracking-wider mb-1.5">
+                  Your Message / Question
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="Tell us about the college or degree program you are seeking guidance for..."
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#07166F] focus:ring-2 focus:ring-[#07166F]/10 outline-none text-xs font-semibold text-slate-800 transition-all resize-none"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
-                  <p className="text-xs font-bold text-[#FFB52E] uppercase tracking-wide">
-                    Fast Response Desk
-                  </p>
-                  <h4 className="text-sm font-black">Dedicated Student Support Executive</h4>
-                  <p className="text-[11px] text-slate-300">
-                    Direct helpline: +91 98765 43210 • {statsData?.supportEmail || 'help@educarrus.org'}
-                  </p>
-                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          SECTION K: DONATION CTA BANNER (Deep Navy #07166F with Gold Highlights - Fluid Wider)
-      ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 lg:py-24 bg-white w-100">
-        <div className="container-fluid px-3 px-sm-4 px-md-5 px-xl-5 w-100">
-          <div className="rounded-3xl bg-[#07166F] text-white p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl border-2 border-[#FFB52E]/30 w-100">
-            {/* Ambient gold glow */}
-            <div className="absolute -top-24 -left-24 w-80 h-80 bg-[#FFB52E]/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="max-w-4xl mx-auto space-y-6 relative z-10">
-              <span className="inline-block text-xs font-black text-[#FFB52E] uppercase tracking-widest bg-white/10 px-4 py-1.5 rounded-full border border-white/20 backdrop-blur-md">
-                100% DIRECT COLLEGE TUITION DISBURSEMENT
-              </span>
-
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-heading font-black tracking-tight leading-tight uppercase">
-                <span style={{ color: '#ffffff' }}>READY TO SHAPE THE FUTURE OF A </span>
-                <span style={{ color: '#FFB52E' }}>DESERVING SCHOLAR?</span>
-              </h2>
-
-              <p className="text-sm sm:text-base lg:text-lg text-slate-200 leading-relaxed max-w-3xl mx-auto">
-                Every ₹1,000 contributed helps buy semester textbooks, cover laboratory equipment, or secure college tuition for an underprivileged student.
-              </p>
-
-              <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
-                  <Link
-                    to="/userdashboard?tab=enquiry"
-                    className="w-full sm:w-auto px-8 py-4 rounded-full text-xs sm:text-sm font-black bg-[#FFB52E] hover:bg-[#ffa710] text-[#172033] shadow-xl hover:shadow-[#FFB52E]/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span>Browse All Student Appeals</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </motion.div>
-
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
-                  <Link
-                    to="/register"
-                    className="w-full sm:w-auto px-8 py-4 rounded-full text-xs sm:text-sm font-bold bg-white/10 hover:bg-white/15 text-white border border-white/20 transition-all flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer"
-                  >
-                    <HeartHandshake className="w-4 h-4 text-[#FFB52E]" />
-                    <span>Become a Monthly Partner</span>
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={contactMutation.isPending}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#FFB52E] hover:bg-[#ffa710] text-[#172033] font-black text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {contactMutation.isPending ? (
+                  <span>Submitting to Database...</span>
+                ) : (
+                  <>
+                    <span>Get In Touch</span>
+                    <Send className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </motion.button>
+            </form>
           </div>
         </div>
       </section>
